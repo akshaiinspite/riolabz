@@ -39,6 +39,10 @@
   font-weight: 400;
 }
 
+.text-red-solid {
+  color: #d1121c; /* Solid vibrant red */
+}
+
 @media (max-width: 64rem) {
   .hero-title {
     font-size: 5rem;
