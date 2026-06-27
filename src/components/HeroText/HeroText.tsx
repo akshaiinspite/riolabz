@@ -5,11 +5,10 @@ const HeroText = () => {
     <main className="main-content">
       <div className="bottom-content">
         <h1 className="hero-title">
-          Crafting digital reaslities
+          Crafting digital realities
         </h1>
         <p className="hero-subtitle">
-          Those who come here do so regularly.<br />
-          Not for attention, but for the experience itself.
+          Transforming wild imagination into breathtaking cinematic reality.
         </p>
       </div>
     </main>
