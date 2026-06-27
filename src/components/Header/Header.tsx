@@ -14,7 +14,7 @@ const Header = () => {
       </div>
 
       <div className="header-right">
-        <a href="#apply" className="nav-link apply-btn">APPLY NOW</a>
+        <a href="#apply" className="nav-link apply-btn">CONTACT</a>
         <div className="hamburger-menu">
           <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <line x1="3" y1="9" x2="21" y2="9"></line>
