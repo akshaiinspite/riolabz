@@ -5,7 +5,7 @@ const HeroText = () => {
     <main className="main-content">
       <div className="bottom-content">
         <h1 className="hero-title">
-          C<span className="text-red-solid">r</span>afting d<span className="text-red-solid">i</span>gi<span className="text-red-solid">ta</span>l reas<span className="text-red-solid">l</span>i<span className="text-red-solid">t</span>ie<span className="text-red-solid">s</span>
+          Crafting digital reaslities
         </h1>
         <p className="hero-subtitle">
           Those who come here do so regularly.<br />
