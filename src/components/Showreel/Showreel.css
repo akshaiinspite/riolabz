@@ -1,0 +1,29 @@
+.showreel-section {
+  position: relative;
+  z-index: 2; /* Essential: This allows the video to scroll up and seamlessly cover the sticky RevealText paragraph */
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-bg-primary, #0a0a0a);
+}
+
+.showreel-video-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.showreel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.showreel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}

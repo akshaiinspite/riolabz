@@ -10,17 +10,17 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Guarantees the top starts exactly where we tell it to */
   overflow: hidden;
-  padding: 0 4rem; /* side padding matching the rest of the site */
+  padding: 8rem 4rem 0 4rem; /* Exactly 8rem padding top as requested */
 }
 
 .section-title-wrapper {
-  margin-bottom: 2rem;
+  margin-bottom: 5rem; /* Solid gap to strictly separate it from the cards below */
 }
 
 .section-title {
-  font-size: clamp(3rem, 5vw, 4.5rem); /* Made the title big as requested */
+  font-size: clamp(2.5rem, 4.5vw, 4.2rem); 
   font-weight: 400;
   color: var(--color-text-main, #ffffff);
   letter-spacing: -0.02em;
@@ -36,16 +36,16 @@
 }
 
 .scroll-card {
-  width: 55vw; /* Significantly reduced to make the image section smaller */
+  width: 55vw; 
   max-width: 1100px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2vh; /* Responsive spacing */
 }
 
 .scroll-card-title {
-  font-size: clamp(2rem, 4vw, 3.5rem); /* Scaled down the card title so it doesn't overpower the section title */
+  font-size: clamp(2rem, 3.5vw, 3.2rem); 
   color: var(--color-text-main, #ffffff);
   margin: 0;
   font-weight: 300;
@@ -57,12 +57,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 3rem; /* Tighter gap for the smaller card */
+  gap: 3rem; 
 }
 
 .scroll-card-image-wrapper {
   flex: 1.2; 
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 2 / 1; /* Made the image much wider/shorter so it perfectly fits smaller screens */
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0,0,0,0.5);
