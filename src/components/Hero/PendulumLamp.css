@@ -72,14 +72,14 @@
   /* Ultra-soft, realistic volumetric light spreading naturally from the bulb */
   background: radial-gradient(
     ellipse 60% 100% at 50% 0%, 
-    rgba(255, 26, 26, 0.5) 0%, 
-    rgba(255, 26, 26, 0.15) 35%, 
+    rgba(255, 26, 26, 0.35) 0%, /* Reduced from 0.5 for a slightly softer intensity */
+    rgba(255, 26, 26, 0.1) 35%, /* Reduced from 0.15 */
     rgba(255, 26, 26, 0) 70%
   );
   
   /* No clip-path! This removes the ugly hard edges entirely */
   
-  opacity: 0.9;
+  opacity: 0.8; /* Reduced slightly from 0.9 */
   filter: blur(40px); /* Immensely soft atmospheric blur */
   mix-blend-mode: screen; /* Interacts realistically with the background and character */
   z-index: 1; 
