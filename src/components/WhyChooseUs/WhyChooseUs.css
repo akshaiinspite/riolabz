@@ -1,0 +1,183 @@
+.why-choose-us-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #0a0a0a;
+  padding: 10rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.why-title-wrapper {
+  width: 100%;
+  margin-bottom: 8rem;
+}
+
+.why-title {
+  font-size: clamp(2.5rem, 4.5vw, 4.2rem);
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0;
+  text-align: left;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  width: 100%;
+  max-width: 1400px;
+  position: relative;
+  z-index: 20;
+}
+
+.why-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly; 
+  gap: 6rem;
+  width: 100%;
+}
+
+.why-left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.why-right {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.why-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 3rem;
+  /* Liquid glassy border with specular highlights */
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  border-radius: 24px;
+  /* Flowing liquid gradient background - pure frosted glass without muddy red */
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.08) 0%, 
+    rgba(255, 255, 255, 0.03) 50%, 
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  background-size: 200% 200%;
+  animation: liquidFlow 6s ease-in-out infinite;
+  
+  /* Intense blur for that thick liquid feel */
+  backdrop-filter: blur(25px) saturate(120%);
+  -webkit-backdrop-filter: blur(25px) saturate(120%);
+  
+  /* Inset shadows to mimic surface tension and light reflection (pure glass) */
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.8), 
+    inset 0 2px 10px rgba(255, 255, 255, 0.15),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.2);
+    
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes liquidFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.why-item:hover {
+  transform: translateY(-8px);
+  /* No red border on hover, just increased liquid shadow reflections */
+  box-shadow: 
+    0 15px 50px rgba(0, 0, 0, 0.9), 
+    inset 0 2px 20px rgba(255, 255, 255, 0.25),
+    inset 0 -10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.why-item h3 {
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  color: #ff1a1a;
+  margin: 0;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  word-break: break-word;
+}
+
+.why-item p {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  max-width: 320px;
+  font-weight: 300;
+  margin: 0;
+}
+
+/* Constrain paragraph width identically on both sides */
+.why-left .why-item p,
+.why-right .why-item p {
+  max-width: 320px;
+}
+
+.why-center {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+}
+
+.css-comet-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+
+
+
+
+@media (max-width: 1024px) {
+  .why-grid {
+    grid-template-columns: 1fr;
+    gap: 8rem;
+  }
+
+  .why-center {
+    order: -1;
+    height: 50vh;
+    min-height: 300px;
+  }
+
+  .why-left,
+  .why-right {
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    min-height: unset;
+    gap: 6rem;
+    justify-content: flex-start;
+  }
+
+  .why-item p {
+    max-width: 400px;
+  }
+
+  .falling-object-wrapper {
+    position: relative;
+    width: 80%;
+  }
+}

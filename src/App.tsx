@@ -3,6 +3,7 @@ import RevealText from './components/RevealText/RevealText';
 import Marquee from './components/Marquee/Marquee';
 import WhatWeDo from './components/WhatWeDo/WhatWeDo';
 import Showreel from './components/Showreel/Showreel';
+import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
 import './index.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <RevealText />
       <Showreel />
       <WhatWeDo />
+      <WhyChooseUs />
     </>
   );
 }
