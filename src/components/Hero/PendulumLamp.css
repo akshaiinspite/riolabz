@@ -66,8 +66,8 @@
 .pendulum-rays {
   position: absolute;
   top: calc(15vh + 60px); /* Starts right from the bulb */
-  width: 250vw; /* Massively wide to ensure the glow reaches the character on the right */
-  height: 120vh;
+  width: 80vw; /* Massively wide to ensure the glow reaches the character on the right */
+  height: 300vh;
   
   /* Ultra-soft, realistic volumetric light spreading naturally from the bulb */
   background: radial-gradient(
