@@ -6,17 +6,16 @@
 
 .sticky-scroll-wrapper {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 15vh; /* Safely sticks the card in the center of the viewport without breaking sticky positioning */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Perfectly centers the images in the screen */
   overflow: hidden;
-  padding: 0 4rem; /* Side padding only */
+  padding: 0 4rem 4rem 4rem; /* Bottom padding ensures card shadows aren't cut off by overflow: hidden */
 }
 
 .section-title-wrapper {
-  /* Margin and padding handled inline in TSX now */
+  /* Margin and padding handled inline in TSX */
+  flex-shrink: 0;
 }
 
 .section-title {

@@ -31,21 +31,21 @@ const WhatWeDo = () => {
   const targetRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
-    offset: ["start start", "end end"]
+    offset: ["start 15%", "end end"]
   });
 
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-66.66%"]);
 
   return (
     <section className="what-we-do-wrapper" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-      <div className="section-title-wrapper" style={{ paddingTop: '8rem', paddingLeft: '4rem', paddingRight: '4rem', marginBottom: '5rem' }}>
+      
+      <div className="section-title-wrapper" style={{ paddingTop: '8rem', paddingLeft: '4rem', paddingRight: '4rem', marginBottom: '4rem' }}>
         <h2 className="section-title">What We Do</h2>
       </div>
 
       <div ref={targetRef} className="horizontal-scroll-container">
-
-      <div className="sticky-scroll-wrapper">
-        <motion.div style={{ x }} className="horizontal-scroll-track">
+        <div className="sticky-scroll-wrapper">
+          <motion.div style={{ x }} className="horizontal-scroll-track">
           {services.map((service) => (
             <div key={service.id} className="scroll-card">
               <h3 className="scroll-card-title">{service.title}</h3>
@@ -60,8 +60,8 @@ const WhatWeDo = () => {
               </div>
             </div>
           ))}
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
