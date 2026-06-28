@@ -4,6 +4,7 @@ import Marquee from './components/Marquee/Marquee';
 import WhatWeDo from './components/WhatWeDo/WhatWeDo';
 import Showreel from './components/Showreel/Showreel';
 import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
+import CTASection from './components/CTASection/CTASection';
 import './index.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Showreel />
       <WhatWeDo />
       <WhyChooseUs />
+      <CTASection />
     </>
   );
 }
