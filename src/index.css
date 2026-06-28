@@ -1,5 +1,11 @@
 @import url('./font/css/panchang.css');
 
+:root {
+  --color-bg-primary: #0F0B0A;
+  --color-bg-secondary: #100f0f; /* Slightly lighter shade of the primary black */
+  --color-text-main: #ffffff;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -8,8 +14,8 @@
 
 body {
   font-family: 'Panchang-Variable', sans-serif;
-  background-color: #0F0B0A;
-  color: #fff;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-main);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
