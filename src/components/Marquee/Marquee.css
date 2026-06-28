@@ -1,0 +1,44 @@
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-bg-secondary); /* Blend seamlessly with background */
+  padding: 6rem 0;
+  display: flex;
+  white-space: nowrap;
+  position: relative;
+}
+
+.marquee-content {
+  display: flex;
+  align-items: center;
+  /* We have 4 sets of the text. To make it seamless, we scroll exactly by half its width, then snap back */
+  animation: scroll-left 25s linear infinite;
+  width: max-content;
+}
+
+.marquee-item {
+  font-family: 'Panchang-Variable', sans-serif;
+  font-size: clamp(3rem, 6vw, 6rem);
+  color: var(--color-text-main);
+  text-transform: uppercase;
+  margin: 0 1.5rem;
+  font-weight: 300; /* Light weight to match the screenshot */
+  display: flex;
+  align-items: center;
+}
+
+.marquee-plus {
+  font-family: 'Inter', sans-serif; /* Standard cross for the plus */
+  font-weight: 200; /* Extra thin plus */
+  color: rgba(255, 255, 255, 0.4); /* Slightly faded plus to match reference */
+  font-size: clamp(2rem, 4vw, 4rem);
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

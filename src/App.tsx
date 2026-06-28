@@ -1,13 +1,13 @@
 import Hero from './components/Hero/Hero';
-import CurvedScrollText from './components/CurvedScrollText/CurvedScrollText';
 import RevealText from './components/RevealText/RevealText';
+import Marquee from './components/Marquee/Marquee';
 import './index.css';
 
 function App() {
   return (
     <>
       <Hero />
-      <CurvedScrollText />
+      <Marquee />
       <RevealText />
     </>
   );
