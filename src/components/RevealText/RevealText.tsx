@@ -70,11 +70,14 @@ const RevealWord = ({
 
 const RevealText = () => {
   const [activeAudioId, setActiveAudioId] = useState<string | null>(null);
+  const trackerRef = useRef<HTMLDivElement>(null);
+  const opacityTrackerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { amount: 0 });
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
+  
+  // Track opacity using a dedicated 100vh tracker to perfectly restore the original animation timing
+  const { scrollYProgress: opacityProgress } = useScroll({
+    target: opacityTrackerRef,
     offset: ["start 70%", "center center"] 
   });
 
@@ -107,16 +110,19 @@ const RevealText = () => {
   ];
 
   return (
-    <section className="reveal-text-container" ref={sectionRef}>
-      <div className="reveal-text-wrapper">
+    <div ref={trackerRef} style={{ position: "relative", height: "300vh", marginBottom: "-100vh" }}>
+      <div ref={opacityTrackerRef} style={{ position: "absolute", top: 0, width: "100%", height: "100vh", pointerEvents: "none", visibility: "hidden" }} />
+      <section className="reveal-text-container" ref={sectionRef}>
+        <div className="reveal-text-wrapper">
         <h2 className="inline-video-heading">
           {contentArray.map((item, i) => {
+            // Restore original opacity math
             const start = i / contentArray.length;
             const end = start + (1 / contentArray.length);
             
             return (
               <React.Fragment key={i}>
-                <RevealWord progress={scrollYProgress} start={start} end={end}>
+                <RevealWord progress={opacityProgress} start={start} end={end}>
                   {item.type === 'text' ? (
                     item.val
                   ) : (
@@ -133,8 +139,9 @@ const RevealText = () => {
             );
           })}
         </h2>
-      </div>
-    </section>
+        </div>
+      </section>
+    </div>
   );
 };
 

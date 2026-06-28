@@ -1,11 +1,14 @@
 .reveal-text-container {
   width: 100%;
-  min-height: 80vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #0a0a0a;
-  padding: 8rem 2rem;
+  padding: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .reveal-text-wrapper {
