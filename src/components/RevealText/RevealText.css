@@ -1,0 +1,34 @@
+.reveal-text-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-bg-primary);
+  padding: 8rem 4rem;
+}
+
+.reveal-text-wrapper {
+  max-width: 1400px;
+  width: 100%;
+}
+
+.reveal-text-paragraph {
+  font-size: clamp(1.5rem, 4vw, 4.5rem);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--color-text-main);
+  text-wrap: balance;
+  margin: 0;
+}
+
+.word-wrapper {
+  display: inline-block;
+  margin-right: 0.25em;
+  margin-bottom: 0.1em;
+}
+
+.reveal-word {
+  display: inline-block;
+}

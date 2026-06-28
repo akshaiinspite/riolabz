@@ -1,5 +1,6 @@
 import Hero from './components/Hero/Hero';
 import CurvedScrollText from './components/CurvedScrollText/CurvedScrollText';
+import RevealText from './components/RevealText/RevealText';
 import './index.css';
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <>
       <Hero />
       <CurvedScrollText />
+      <RevealText />
     </>
   );
 }
