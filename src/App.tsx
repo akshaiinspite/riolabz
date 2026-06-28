@@ -6,11 +6,13 @@ import Showreel from './components/Showreel/Showreel';
 import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
 import CTASection from './components/CTASection/CTASection';
 import Footer from './components/Footer/Footer';
+import Loader from './components/Loader/Loader';
 import './index.css';
 
 function App() {
   return (
     <>
+      <Loader />
       <Hero />
       <Marquee />
       <RevealText />
