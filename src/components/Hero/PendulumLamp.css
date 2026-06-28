@@ -42,6 +42,8 @@
   align-items: center;
   margin-top: -10px; /* Embed the wire into the top of the SVG dome */
   z-index: 3;
+  transform: scale(0.65); /* Slightly reduce the overall size of the lamp pot */
+  transform-origin: top center; /* Keeps it perfectly attached to the wire */
 }
 
 .pendulum-bulb {
@@ -65,7 +67,7 @@
 
 .pendulum-rays {
   position: absolute;
-  top: calc(15vh + 60px); /* Starts right from the bulb */
+  top: calc(15vh + 55px); /* Adjusted slightly up to match the newly scaled lamp head */
   width: 80vw; /* Massively wide to ensure the glow reaches the character on the right */
   height: 300vh;
   
