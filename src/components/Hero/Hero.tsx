@@ -1,11 +1,15 @@
 import './Hero.css';
 import Header from '../Header/Header';
 import HeroText from '../HeroText/HeroText';
+import PendulumLamp from './PendulumLamp';
 import heroCharacter from '../../assets/images/hero/hero-img.png';
 
 const Hero = () => {
   return (
     <div className="hero-container">
+      {/* Swinging Pendulum Lamp in top center */}
+      <PendulumLamp />
+      
       {/* Animated gradient background */}
       <div className="hero-gradient-bg"></div>
       
