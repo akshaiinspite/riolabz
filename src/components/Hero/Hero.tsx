@@ -20,6 +20,14 @@ const Hero = () => {
       <div className="hero-content">
         <Header />
         <HeroText />
+        
+        {/* Scroll Down Indicator */}
+        <div className="scroll-down-indicator">
+          <span className="scroll-text">SCROLL DOWN</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="scroll-arrow">
+            <path d="M12 4V20M12 20L5 13M12 20L19 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
       </div>
     </div>
   );

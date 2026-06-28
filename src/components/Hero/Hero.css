@@ -51,3 +51,32 @@
   justify-content: space-between;
   flex: 1;
 }
+
+.scroll-down-indicator {
+  position: absolute;
+  bottom: 3rem;
+  right: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #ff1a1a;
+  z-index: 10;
+}
+
+.scroll-text {
+  font-family: 'Panchang-Variable', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  writing-mode: vertical-rl;
+}
+
+.scroll-arrow {
+  animation: bounceArrow 2s infinite cubic-bezier(0.45, 0, 0.15, 1);
+}
+
+@keyframes bounceArrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
