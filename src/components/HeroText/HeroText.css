@@ -13,30 +13,18 @@
 }
 
 .bottom-content {
-  text-align: center;
+  text-align: left;
   width: 100%;
 }
 
 .hero-title {
   /* Using a serif font like the image */
-  font-family: 'Times New Roman', Times, serif;
   font-size: clamp(4rem, 9vw, 12rem); /* Increased size */
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.125rem;
   margin-bottom: 1.5rem;
   color: #f8f6f0; /* Slightly off-white like image */
-  white-space: nowrap; /* Forces one line */
-}
-
-.hero-subtitle {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.3rem; /* Increased size */
-  color: #fff;
-  line-height: 1.6;
-  max-width: 30rem;
-  margin: 0 auto;
-  font-weight: 400;
 }
 
 .text-red-solid {

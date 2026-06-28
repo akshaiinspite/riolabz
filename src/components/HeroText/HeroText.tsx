@@ -7,9 +7,6 @@ const HeroText = () => {
         <h1 className="hero-title">
           Crafting digital realities
         </h1>
-        <p className="hero-subtitle">
-          Transforming wild imagination into breathtaking cinematic reality.
-        </p>
       </div>
     </main>
   );
