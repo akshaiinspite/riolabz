@@ -10,13 +10,13 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Guarantees the top starts exactly where we tell it to */
+  justify-content: center; /* Perfectly centers the images in the screen */
   overflow: hidden;
-  padding: 8rem 4rem 0 4rem; /* Exactly 8rem padding top as requested */
+  padding: 0 4rem; /* Side padding only */
 }
 
 .section-title-wrapper {
-  margin-bottom: 5rem; /* Solid gap to strictly separate it from the cards below */
+  /* Margin and padding handled inline in TSX now */
 }
 
 .section-title {
@@ -41,7 +41,7 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 2vh; /* Responsive spacing */
+  gap: 3rem; /* Solid gap so the card title never touches the content below it */
 }
 
 .scroll-card-title {
