@@ -19,7 +19,7 @@
 .marquee-item {
   font-family: 'Panchang-Variable', sans-serif;
   font-size: clamp(3rem, 6vw, 6rem);
-  color: var(--color-text-main);
+  color: #ff1a1a;
   text-transform: uppercase;
   margin: 0 1.5rem;
   font-weight: 300; /* Light weight to match the screenshot */
