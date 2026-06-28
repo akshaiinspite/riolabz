@@ -5,6 +5,7 @@ import WhatWeDo from './components/WhatWeDo/WhatWeDo';
 import Showreel from './components/Showreel/Showreel';
 import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
 import CTASection from './components/CTASection/CTASection';
+import Footer from './components/Footer/Footer';
 import './index.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <WhatWeDo />
       <WhyChooseUs />
       <CTASection />
+      <Footer />
     </>
   );
 }
