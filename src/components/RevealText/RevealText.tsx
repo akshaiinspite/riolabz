@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useInView } from 'framer-motion';
+import { useInView, motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import './RevealText.css';
 
 // Import the videos
@@ -17,7 +17,6 @@ interface HoverVideoProps {
 
 const HoverVideo = ({ src, id, activeAudioId, onToggleAudio }: HoverVideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  
   const isPlayingAudio = activeAudioId === id;
 
   useEffect(() => {
@@ -60,28 +59,79 @@ const HoverVideo = ({ src, id, activeAudioId, onToggleAudio }: HoverVideoProps) 
   );
 };
 
+const RevealWord = ({ 
+  children, progress, start, end 
+}: { 
+  children: React.ReactNode, progress: MotionValue<number>, start: number, end: number 
+}) => {
+  const opacity = useTransform(progress, [start, end], [0.2, 1]);
+  return <motion.span style={{ opacity }} className="reveal-word">{children}</motion.span>;
+};
+
 const RevealText = () => {
   const [activeAudioId, setActiveAudioId] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { amount: 0 }); // Triggers when element is completely out of view
+  const isInView = useInView(sectionRef, { amount: 0 });
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start 70%", "center center"] 
+  });
 
   useEffect(() => {
-    // If the user scrolls past this section, force mute any playing video
-    if (!isInView) {
-      setActiveAudioId(null);
-    }
+    if (!isInView) setActiveAudioId(null);
   }, [isInView]);
 
   const handleToggleAudio = (id: string) => {
-    // If clicking the video already playing, mute it. Otherwise, set it as active (muting all others).
     setActiveAudioId(prev => prev === id ? null : id);
   };
+
+  const contentArray = [
+    { type: 'text', val: "Your" },
+    { type: 'video', src: vid1, id: 'vid1' },
+    { type: 'text', val: "ultimate" },
+    { type: 'text', val: "creative" },
+    { type: 'text', val: "team" },
+    { type: 'text', val: "extension" },
+    { type: 'video', src: vid2, id: 'vid2' },
+    { type: 'text', val: "to" },
+    { type: 'text', val: "execute" },
+    { type: 'text', val: "ambitious" },
+    { type: 'text', val: "ideas" },
+    { type: 'video', src: vid3, id: 'vid3' },
+    { type: 'text', val: "faster" },
+    { type: 'text', val: "and" },
+    { type: 'text', val: "radically" },
+    { type: 'video', src: vid4, id: 'vid4' },
+    { type: 'text', val: "smarter." }
+  ];
 
   return (
     <section className="reveal-text-container" ref={sectionRef}>
       <div className="reveal-text-wrapper">
         <h2 className="inline-video-heading">
-          Your <HoverVideo src={vid1} id="vid1" activeAudioId={activeAudioId} onToggleAudio={handleToggleAudio} /> ultimate creative team extension <HoverVideo src={vid2} id="vid2" activeAudioId={activeAudioId} onToggleAudio={handleToggleAudio} /> to execute ambitious ideas <HoverVideo src={vid3} id="vid3" activeAudioId={activeAudioId} onToggleAudio={handleToggleAudio} /> faster and radically <HoverVideo src={vid4} id="vid4" activeAudioId={activeAudioId} onToggleAudio={handleToggleAudio} /> smarter.
+          {contentArray.map((item, i) => {
+            const start = i / contentArray.length;
+            const end = start + (1 / contentArray.length);
+            
+            return (
+              <React.Fragment key={i}>
+                <RevealWord progress={scrollYProgress} start={start} end={end}>
+                  {item.type === 'text' ? (
+                    item.val
+                  ) : (
+                    <HoverVideo 
+                      src={item.src!} 
+                      id={item.id!} 
+                      activeAudioId={activeAudioId} 
+                      onToggleAudio={handleToggleAudio} 
+                    />
+                  )}
+                </RevealWord>
+                {i < contentArray.length - 1 && " "}
+              </React.Fragment>
+            );
+          })}
         </h2>
       </div>
     </section>

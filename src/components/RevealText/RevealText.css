@@ -81,3 +81,8 @@
   transform: scale(1.1);
   border-color: rgba(255, 26, 26, 1);
 }
+
+.reveal-word {
+  display: inline-block;
+  will-change: opacity;
+}
