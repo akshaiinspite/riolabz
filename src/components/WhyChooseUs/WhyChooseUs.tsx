@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ScrollRevealText } from '../ScrollRevealText/ScrollRevealText';
 import './WhyChooseUs.css';
 
 const features = [
@@ -60,41 +61,58 @@ const features = [
 ];
 
 const PremiumCard = ({ feature, index }: { feature: typeof features[0], index: number }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start 90%", "center center"]
+  });
+
+  const rotateY = useTransform(scrollYProgress, [0, 1], [360, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const y = useTransform(scrollYProgress, [0, 1], [100, 0]);
+
   return (
     <motion.div 
+      ref={cardRef}
       className="premium-card"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
+      style={{ 
+        opacity, 
+        y, 
+        rotateY,
+        transformPerspective: 1200
+      }}
     >
       <div className="premium-card-border" />
       <div className="premium-card-content">
         <div className="premium-icon-wrapper">
           {feature.icon}
         </div>
-        <h3 className="premium-title">{feature.title}</h3>
-        <p className="premium-desc">{feature.desc}</p>
+        <ScrollRevealText 
+          text={feature.title}
+          className="premium-title"
+          elementType="h3"
+          globalProgress={scrollYProgress}
+          globalRange={[0.6, 0.85]}
+          splitBy="character"
+        />
+        <ScrollRevealText 
+          text={feature.desc}
+          className="premium-desc"
+          elementType="p"
+          globalProgress={scrollYProgress}
+          globalRange={[0.75, 1.0]}
+          splitBy="word"
+        />
       </div>
     </motion.div>
   );
 };
 
 const WhyChooseUs = () => {
-  const containerRef = useRef<HTMLElement>(null);
-  const isInView = useInView(containerRef, { once: true, amount: 0.1 });
-
   return (
-    <section ref={containerRef} className="why-choose-us-section">
+    <section className="why-choose-us-section">
       <div className="why-title-wrapper">
-        <motion.h2 
-          className="why-title"
-          initial={{ opacity: 0, x: -30 }}
-          animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          Why Choose Us
-        </motion.h2>
+        <ScrollRevealText text="Why Choose Us" />
       </div>
 
       <div className="premium-grid">
