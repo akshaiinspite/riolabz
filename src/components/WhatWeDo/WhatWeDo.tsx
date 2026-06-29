@@ -37,10 +37,10 @@ const AnimatedScrollCard = ({ service, index, scrollYProgress }: { service: any,
   let start = 0;
   let end = 0.2;
   if (index === 1) {
-    start = 0.4;
+    start = 0.2;
     end = 0.6;
   } else if (index === 2) {
-    start = 0.8;
+    start = 0.6;
     end = 1.0;
   }
 
@@ -48,12 +48,11 @@ const AnimatedScrollCard = ({ service, index, scrollYProgress }: { service: any,
   const scale = useTransform(scrollYProgress, [start, end], [isFirst ? 1 : 0.8, 1]);
   const y = useTransform(scrollYProgress, [start, end], [isFirst ? 0 : 150, 0]);
   const rotate = useTransform(scrollYProgress, [start, end], [isFirst ? 0 : 8, 0]);
-  const opacity = useTransform(scrollYProgress, [start, end], [isFirst ? 1 : 0, 1]);
 
   return (
     <motion.div 
       className="scroll-card"
-      style={{ scale, y, rotate, opacity }}
+      style={{ scale, y, rotate }}
     >
       <ScrollRevealText 
         text={service.title} 
@@ -87,7 +86,7 @@ const WhatWeDo = () => {
   const targetRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
-    offset: ["start 15%", "end end"]
+    offset: ["start 80%", "end end"]
   });
 
   const x = useTransform(scrollYProgress, [0.2, 1], ["0%", "-66.66%"]);
