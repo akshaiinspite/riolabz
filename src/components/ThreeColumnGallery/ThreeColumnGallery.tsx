@@ -34,10 +34,6 @@ const ThreeColumnGallery = () => {
   const titleOpacity = useTransform(smoothProgress, [0.45, 0.75], [0, 1]);
   const titleY = useTransform(smoothProgress, [0.45, 0.75], [20, 0]);
 
-  // Fade out main title when scrolling starts (animates downwards)
-  const headerOpacity = useTransform(smoothProgress, [0.1, 0.3], [1, 0]);
-  const headerY = useTransform(smoothProgress, [0.1, 0.35], [0, 40]);
-
   return (
     <>
       {/* Paragraph Section - Scrolls naturally! */}
