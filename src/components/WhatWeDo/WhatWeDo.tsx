@@ -2,9 +2,9 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import './WhatWeDo.css';
 
-import imgCommercial from '../../assets/images/services/commercial_right.png';
-import imgFilms from '../../assets/images/services/films_right.png';
-import imgArvr from '../../assets/images/services/arvr_right.png';
+import imgCommercial from '../../assets/images/services/commercial_landscape.png';
+import imgFilms from '../../assets/images/services/films_landscape.png';
+import imgArvr from '../../assets/images/services/arvr_landscape.png';
 
 const services = [
   {
