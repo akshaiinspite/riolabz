@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { ScrollRevealText } from '../ScrollRevealText/ScrollRevealText';
 import './ThreeColumnGallery.css';
 
 import img1 from '../../assets/images/img/img-1.jpg';
@@ -41,8 +42,13 @@ const ThreeColumnGallery = () => {
     <>
       {/* Paragraph Section - Scrolls naturally! */}
       <section className="gallery-intro-section">
-        <div className="three-column-paragraph-top">
-          <p>Immerse yourself in our meticulously crafted digital environments, where every detail is designed to captivate and inspire.</p>
+        <div className="three-column-intro-wrapper">
+          <ScrollRevealText 
+            text="Immerse yourself in our meticulously crafted digital environments, where every detail is designed to captivate and inspire." 
+            elementType="p" 
+            splitBy="word" 
+            className="three-column-paragraph-top" 
+          />
         </div>
       </section>
 

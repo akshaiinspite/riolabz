@@ -23,15 +23,15 @@
   background-color: var(--color-bg-primary);
 }
 
-.three-column-paragraph-top {
+.three-column-intro-wrapper {
   width: 100%;
   max-width: 1400px;
-  text-align: center;
-  padding: 0 2rem;
-  z-index: 10;
+  display: flex;
+  justify-content: center;
 }
 
-.three-column-paragraph-top p {
+.three-column-paragraph-top {
+  text-align: center;
   font-size: clamp(2rem, 3.5vw, 3rem);
   font-weight: 300;
   color: var(--color-text-main, #ffffff);
@@ -39,6 +39,7 @@
   letter-spacing: -0.02em;
   line-height: 1.3;
 }
+
 .gallery-cards-container {
   position: relative;
   width: 100%;
