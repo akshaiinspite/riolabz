@@ -1,4 +1,4 @@
-import React from 'react';
+
 import './Showreel.css';
 import showreelVideo from '../../assets/video/show-reel/showreel.mp4';
 

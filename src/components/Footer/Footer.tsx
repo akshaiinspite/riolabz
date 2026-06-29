@@ -1,4 +1,4 @@
-import React from 'react';
+
 import xaltLogo from '../../assets/images/logo/xalt-studios-logo.webp';
 import './Footer.css';
 

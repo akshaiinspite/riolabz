@@ -60,7 +60,7 @@ const features = [
   }
 ];
 
-const PremiumCard = ({ feature, index }: { feature: typeof features[0], index: number }) => {
+const PremiumCard = ({ feature }: { feature: typeof features[0] }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: cardRef,
@@ -117,7 +117,7 @@ const WhyChooseUs = () => {
 
       <div className="premium-grid">
         {features.map((feature, idx) => (
-          <PremiumCard key={idx} feature={feature} index={idx} />
+          <PremiumCard key={idx} feature={feature} />
         ))}
       </div>
     </section>
