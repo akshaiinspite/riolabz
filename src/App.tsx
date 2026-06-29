@@ -10,6 +10,7 @@ import Showreel from './components/Showreel/Showreel';
 import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
 import CTASection from './components/CTASection/CTASection';
 import VideoGallery from './components/VideoGallery/VideoGallery';
+import ImageGallery from './components/ImageGallery/ImageGallery';
 import Footer from './components/Footer/Footer';
 import Loader from './components/Loader/Loader';
 import CustomCursor from './components/CustomCursor/CustomCursor';
@@ -39,6 +40,7 @@ function App() {
       <WhatWeDo />
       <WhyChooseUs />
       <VideoGallery />
+      <ImageGallery />
       <CTASection />
       <Footer />
     </>
