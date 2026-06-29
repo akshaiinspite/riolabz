@@ -97,7 +97,7 @@ const VideoPlayer = ({
 const VideoGallery = () => {
   const [activeAudioId, setActiveAudioId] = useState<string | null>(null);
 
-  const introText = "Immerse yourself in our cutting-edge pre-visualization sequences. We blend boundless imagination with technical precision.";
+  const introText = "Explore our cinematic world. We blend pure imagination with precision to push boundaries.";
 
   return (
     <section className="video-gallery-section">
