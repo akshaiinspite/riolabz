@@ -32,23 +32,47 @@ const services = [
 
 
 const AnimatedScrollCard = ({ service, index, scrollYProgress }: { service: any, index: number, scrollYProgress: any }) => {
-  const isFirst = index === 0;
-  
-  // Calculate precise entry windows for the horizontally scrolling cards
-  let start = 0;
-  let end = 0.2;
-  if (index === 1) {
-    start = 0.2;
-    end = 0.6;
-  } else if (index === 2) {
-    start = 0.6;
-    end = 1.0;
+  // Define perfectly mapped entry and exit windows for each card.
+  // This allows cards to smoothly scale down and drop away as they exit, matching the entry animation.
+  let inputRange: number[];
+  let scaleRange: number[];
+  let yRange: number[];
+  let rotateRange: number[];
+
+  if (index === 0) {
+    // Card 1 starts fully visible, then exits between 0.15 and 0.45
+    inputRange = [0, 0.15, 0.45, 1];
+    scaleRange = [1, 1, 0.8, 0.8];
+    yRange = [0, 0, 150, 150];
+    rotateRange = [0, 0, -8, -8];
+  } else if (index === 1) {
+    // Card 2 enters 0.15->0.45, stays stuck 0.45->0.60, exits 0.60->0.90
+    inputRange = [0, 0.15, 0.45, 0.60, 0.90, 1];
+    scaleRange = [0.8, 0.8, 1, 1, 0.8, 0.8];
+    yRange = [150, 150, 0, 0, 150, 150];
+    rotateRange = [8, 8, 0, 0, -8, -8];
+  } else {
+    // Card 3 enters 0.60->0.90, never exits
+    inputRange = [0, 0.60, 0.90, 1];
+    scaleRange = [0.8, 0.8, 1, 1];
+    yRange = [150, 150, 0, 0];
+    rotateRange = [8, 8, 0, 0];
   }
 
-  // The first card is already in view, so it doesn't need the drastic bottom-right entry.
-  const scale = useTransform(scrollYProgress, [start, end], [isFirst ? 1 : 0.8, 1]);
-  const y = useTransform(scrollYProgress, [start, end], [isFirst ? 0 : 150, 0]);
-  const rotate = useTransform(scrollYProgress, [start, end], [isFirst ? 0 : 8, 0]);
+  const scale = useTransform(scrollYProgress, inputRange, scaleRange);
+  const y = useTransform(scrollYProgress, inputRange, yRange);
+  const rotate = useTransform(scrollYProgress, inputRange, rotateRange);
+
+  // Extract the entry phase timings for the text reveal animation
+  let start = 0;
+  let end = 0.15;
+  if (index === 1) {
+    start = 0.15;
+    end = 0.45;
+  } else if (index === 2) {
+    start = 0.60;
+    end = 0.90;
+  }
 
   return (
     <motion.div 
@@ -87,10 +111,15 @@ const WhatWeDo = () => {
   const targetRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
-    offset: ["start 80%", "end end"]
+    offset: ["start 15vh", "end end"] // Starts strictly when the container hits the sticky top position
   });
 
-  const x = useTransform(scrollYProgress, [0.2, 1], ["0%", "-66.66%"]);
+  // Maps the scroll progress into perfectly balanced stepped 'sticky' zones.
+  const x = useTransform(
+    scrollYProgress,
+    [0, 0.15, 0.45, 0.60, 0.90, 1],
+    ["0%", "0%", "-33.33%", "-33.33%", "-66.66%", "-66.66%"]
+  );
 
   return (
     <section className="what-we-do-wrapper" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>

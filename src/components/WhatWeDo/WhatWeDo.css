@@ -1,7 +1,6 @@
 .horizontal-scroll-container {
   height: 400vh; /* Creates the scrollable space for the horizontal movement */
   position: relative;
-  background-color: var(--color-bg-primary);
 }
 
 .sticky-scroll-wrapper {
