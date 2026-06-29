@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
@@ -15,6 +15,8 @@ import CustomCursor from './components/CustomCursor/CustomCursor';
 import './index.css';
 
 function App() {
+  const [isLoaderFinished, setIsLoaderFinished] = useState(false);
+
   useEffect(() => {
     const lenis = new Lenis({
       autoRaf: true,
@@ -28,8 +30,8 @@ function App() {
   return (
     <>
       <CustomCursor />
-      <Loader />
-      <Hero />
+      <Loader onFinish={() => setIsLoaderFinished(true)} />
+      <Hero isLoaderFinished={isLoaderFinished} />
       <Marquee />
       <RevealText />
       <Showreel />

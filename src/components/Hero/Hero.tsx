@@ -4,7 +4,7 @@ import HeroText from '../HeroText/HeroText';
 import PendulumLamp from './PendulumLamp';
 import heroCharacter from '../../assets/images/hero/hero-img.png';
 
-const Hero = () => {
+const Hero = ({ isLoaderFinished = true }: { isLoaderFinished?: boolean }) => {
   return (
     <div className="hero-container">
       {/* Swinging Pendulum Lamp in top center */}
@@ -19,7 +19,7 @@ const Hero = () => {
       {/* Foreground content */}
       <div className="hero-content">
         <Header />
-        <HeroText />
+        <HeroText isLoaderFinished={isLoaderFinished} />
         
         {/* Scroll Down Indicator */}
         <div className="scroll-down-indicator">

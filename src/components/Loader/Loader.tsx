@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Loader.css';
 
-const Loader = () => {
+const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   const [fps, setFps] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -20,6 +20,9 @@ const Loader = () => {
         // Wait a short moment at 144, then fade out the loader
         setTimeout(() => {
           setLoading(false);
+          if (onFinish) {
+            setTimeout(onFinish, 400); // Trigger hero animation slightly before fade completes
+          }
         }, 600);
       }
       
