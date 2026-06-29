@@ -23,8 +23,8 @@ body, * {
 
 /* Pointer Hover State (when over links/buttons) */
 .custom-cursor-dot.pointer {
-  width: 8px;
-  height: 8px;
+  width: 40px;
+  height: 40px;
 }
 
 /* Regular Text Hover State (covers the text) */
