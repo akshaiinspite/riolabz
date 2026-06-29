@@ -7,6 +7,7 @@ import RevealText from './components/RevealText/RevealText';
 import Marquee from './components/Marquee/Marquee';
 import WhatWeDo from './components/WhatWeDo/WhatWeDo';
 import Showreel from './components/Showreel/Showreel';
+import ThreeColumnGallery from './components/ThreeColumnGallery/ThreeColumnGallery';
 import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
 import CTASection from './components/CTASection/CTASection';
 import VideoGallery from './components/VideoGallery/VideoGallery';
@@ -37,6 +38,7 @@ function App() {
       <Marquee />
       <RevealText />
       <Showreel />
+      <ThreeColumnGallery />
       <WhatWeDo />
       <WhyChooseUs />
       <VideoGallery />
