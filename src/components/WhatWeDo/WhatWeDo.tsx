@@ -92,7 +92,7 @@ const WhatWeDo = () => {
   const x = useTransform(scrollYProgress, [0.2, 1], ["0%", "-66.66%"]);
 
   return (
-    <section className="what-we-do-wrapper" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+    <section className="what-we-do-wrapper" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
       
       <div className="section-title-wrapper" style={{ paddingTop: '8rem', paddingLeft: '4rem', paddingRight: '4rem', marginBottom: '4rem' }}>
         <ScrollRevealText text="What We Do" />
