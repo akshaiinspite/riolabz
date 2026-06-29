@@ -7,11 +7,13 @@ import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
 import CTASection from './components/CTASection/CTASection';
 import Footer from './components/Footer/Footer';
 import Loader from './components/Loader/Loader';
+import CustomCursor from './components/CustomCursor/CustomCursor';
 import './index.css';
 
 function App() {
   return (
     <>
+      <CustomCursor />
       <Loader />
       <Hero />
       <Marquee />
