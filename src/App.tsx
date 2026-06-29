@@ -1,3 +1,7 @@
+import { useEffect } from 'react';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
+
 import Hero from './components/Hero/Hero';
 import RevealText from './components/RevealText/RevealText';
 import Marquee from './components/Marquee/Marquee';
@@ -11,6 +15,16 @@ import CustomCursor from './components/CustomCursor/CustomCursor';
 import './index.css';
 
 function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      autoRaf: true,
+    });
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <>
       <CustomCursor />
