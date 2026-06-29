@@ -29,11 +29,7 @@ const CustomCursor = () => {
     
     animate();
 
-    const onMouseMove = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-
-      const target = e.target as HTMLElement;
+    const checkCursorState = (clientX: number, clientY: number, target: HTMLElement) => {
       let state: 'default' | 'pointer' | 'text' | 'large-text' = 'default';
       
       // Check interactive elements first (walking up DOM)
@@ -81,10 +77,10 @@ const CustomCursor = () => {
                 const hInset = isHorizontal ? 0 : rect.width * 0.2;
                 
                 if (
-                  e.clientX >= (rect.left + hInset) && 
-                  e.clientX <= (rect.right - hInset) &&
-                  e.clientY >= (rect.top + vInset) && 
-                  e.clientY <= (rect.bottom - vInset)
+                  clientX >= (rect.left + hInset) && 
+                  clientX <= (rect.right - hInset) &&
+                  clientY >= (rect.top + vInset) && 
+                  clientY <= (rect.bottom - vInset)
                 ) {
                   isExactlyOverText = true;
                   if (textNode.parentElement) {
@@ -103,11 +99,26 @@ const CustomCursor = () => {
         }
       }
 
-      // ONLY trigger a React state update if the cursor state actually changed!
-      // This massively improves performance and eliminates jitter.
       if (state !== lastState) {
         lastState = state;
         setHoverState(state);
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (e.target) {
+        checkCursorState(e.clientX, e.clientY, e.target as HTMLElement);
+      }
+    };
+
+    const onScroll = () => {
+      // Re-evaluate cursor state based on new elements under the static mouse position
+      if (targetX < 0 || targetY < 0) return;
+      const target = document.elementFromPoint(targetX, targetY);
+      if (target) {
+        checkCursorState(targetX, targetY, target as HTMLElement);
       }
     };
 
@@ -117,12 +128,15 @@ const CustomCursor = () => {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mouseup', onMouseUp);
+    // Use capture phase to catch all scroll events, even on containers
+    window.addEventListener('scroll', onScroll, true);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('scroll', onScroll, true);
     };
   }, []);
 
