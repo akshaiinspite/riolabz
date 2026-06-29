@@ -71,6 +71,9 @@ const PremiumCard = ({ feature }: { feature: typeof features[0] }) => {
   const rotateY = useTransform(scrollYProgress, [0, 1], [360, 0]);
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [100, 0]);
+  
+  // Sweeps a specular shiny light across the card surface as it rotates
+  const shineLeft = useTransform(scrollYProgress, [0, 1], ["-150%", "150%"]);
 
   return (
     <motion.div 
@@ -83,6 +86,20 @@ const PremiumCard = ({ feature }: { feature: typeof features[0] }) => {
         transformPerspective: 1200
       }}
     >
+      {/* Shiny Light Reflection Layer */}
+      <motion.div 
+        style={{
+          position: 'absolute',
+          top: '-10%',
+          left: shineLeft,
+          width: '50%',
+          height: '120%',
+          background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%)',
+          transform: 'skewX(-25deg)',
+          zIndex: 10,
+          pointerEvents: 'none'
+        }}
+      />
       <div className="premium-card-border" />
       <div className="premium-card-content">
         <div className="premium-icon-wrapper">
