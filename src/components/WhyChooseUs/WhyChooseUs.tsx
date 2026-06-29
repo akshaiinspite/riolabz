@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ScrollRevealText } from '../ScrollRevealText/ScrollRevealText';
+import { AnimatedUnderline } from '../AnimatedUnderline/AnimatedUnderline';
 import './WhyChooseUs.css';
 
 const features = [
@@ -112,7 +113,10 @@ const WhyChooseUs = () => {
   return (
     <section className="why-choose-us-section">
       <div className="why-title-wrapper">
-        <ScrollRevealText text="Why Choose Us" />
+        <div style={{ display: 'inline-block' }}>
+          <ScrollRevealText text="Why Choose Us" />
+          <AnimatedUnderline color="#ff1a1a" />
+        </div>
       </div>
 
       <div className="premium-grid">

@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ScrollRevealText } from '../ScrollRevealText/ScrollRevealText';
+import { AnimatedUnderline } from '../AnimatedUnderline/AnimatedUnderline';
 import './WhatWeDo.css';
 
 import imgCommercial from '../../assets/images/services/commercial_landscape.png';
@@ -95,7 +96,10 @@ const WhatWeDo = () => {
     <section className="what-we-do-wrapper" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
       
       <div className="section-title-wrapper" style={{ paddingTop: '8rem', paddingLeft: '4rem', paddingRight: '4rem', marginBottom: '4rem' }}>
-        <ScrollRevealText text="What We Do" />
+        <div style={{ display: 'inline-block' }}>
+          <ScrollRevealText text="What We Do" />
+          <AnimatedUnderline color="#ff1a1a" />
+        </div>
       </div>
 
       <div ref={targetRef} className="horizontal-scroll-container">
