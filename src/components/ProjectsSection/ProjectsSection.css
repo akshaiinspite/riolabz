@@ -11,11 +11,10 @@
   max-width: 1200px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
 .projects-header {
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 }
 
 .projects-header h2 {
@@ -29,16 +28,13 @@
 .project-card {
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
-  background-color: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 3rem 4rem;
-  transition: background-color 0.3s ease;
+  align-items: center;
+  padding: 3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.project-card:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+.project-card:first-of-type {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .project-content {
@@ -89,7 +85,7 @@
 @media (max-width: 900px) {
   .project-card {
     flex-direction: column;
-    padding: 2.5rem;
+    padding: 3rem 0;
     gap: 3rem;
   }
   
