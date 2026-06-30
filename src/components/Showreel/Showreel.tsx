@@ -28,6 +28,13 @@ const Showreel = () => {
 
   return (
     <section className="showreel-section" ref={containerRef}>
+      <div className="showreel-header">
+        <h2 className="showreel-title">Our Craft</h2>
+        <p className="showreel-intro">
+          Discover a collection of our most defining moments. From commercial campaigns to immersive digital worlds, experience the art of visual storytelling.
+        </p>
+      </div>
+      
       <div className="showreel-video-container">
         <video 
           ref={videoRef}

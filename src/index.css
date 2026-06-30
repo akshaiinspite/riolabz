@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-@import url('./font/css/panchang.css');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap');
 
 :root {
   --color-bg-primary: #000000;
@@ -16,7 +16,7 @@
 }
 
 body {
-  font-family: 'Panchang-Variable', sans-serif;
+  font-family: 'Nunito', Tahoma, sans-serif;
   background-color: var(--color-bg-primary);
   color: var(--color-text-main);
   overflow-x: hidden;
@@ -26,6 +26,7 @@ body {
 /* --- Global Custom Scrollbar --- */
 /* Firefox */
 html {
+  font-size: 115%; /* Scales up all rem values to compensate for the smaller Nunito font */
   scrollbar-width: thin;
   scrollbar-color: #333333 #0a0a0a;
 }

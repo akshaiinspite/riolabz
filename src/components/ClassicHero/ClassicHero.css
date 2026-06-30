@@ -1,11 +1,31 @@
 .classic-hero {
   position: relative;
   width: 100vw;
-  height: 100vh; /* strictly 100vh */
+  height: 100vh;
   background-color: #000;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* strictly no overflow */
+  overflow: hidden;
+}
+
+.hero-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1;
 }
 
 .classic-hero-grid {
@@ -14,7 +34,9 @@
   grid-template-columns: 65% 35%;
   grid-template-rows: 1fr auto;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  min-height: 0; /* important for flex items to shrink below content size */
+  min-height: 0;
+  position: relative;
+  z-index: 2;
 }
 
 /* Grid Cell Styles */
