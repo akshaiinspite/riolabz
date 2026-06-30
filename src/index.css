@@ -2,9 +2,11 @@
 @import url('./font/css/panchang.css');
 
 :root {
-  --color-bg-primary: #0F0B0A;
-  --color-bg-secondary: #100f0f; /* Slightly lighter shade of the primary black */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-accent-primary: #e60000;
   --color-text-main: #ffffff;
+  --color-text-secondary: #a3a3a3;
 }
 
 * {
