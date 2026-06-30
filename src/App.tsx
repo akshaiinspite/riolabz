@@ -6,6 +6,7 @@ import 'lenis/dist/lenis.css';
 import ClassicHero from './components/ClassicHero/ClassicHero';
 import OurStory from './components/OurStory/OurStory';
 import ProjectsSection from './components/ProjectsSection/ProjectsSection';
+import WhyChooseUs from './components/WhyChooseUs/WhyChooseUs';
 import Marquee from './components/Marquee/Marquee';
 import Showreel from './components/Showreel/Showreel';
 import CTASection from './components/CTASection/CTASection';
@@ -34,10 +35,13 @@ function App() {
       {/* 3. Projects Section */}
       <ProjectsSection />
       
-      {/* 4. Marquee */}
+      {/* 4. Why Choose Us Section */}
+      <WhyChooseUs />
+      
+      {/* 5. Marquee */}
       <Marquee />
       
-      {/* 5. Showreel */}
+      {/* 6. Showreel */}
       <Showreel />
 
       {/* 6. CTA Section */}
