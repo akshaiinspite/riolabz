@@ -16,12 +16,14 @@ import AboutPage from './components/AboutPage/AboutPage';
 import CustomCursor from './components/CustomCursor/CustomCursor';
 import ContactPage from './components/ContactPage/ContactPage';
 import ProjectsPage from './components/ProjectsPage/ProjectsPage';
+import Loader from './components/Loader/Loader';
 import './index.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'projects' | 'contact'>('home');
+  const [isLoaderFinished, setIsLoaderFinished] = useState(false);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -91,6 +93,9 @@ function App() {
     <>
       {/* Custom interactive red hover halo cursor */}
       <CustomCursor />
+
+      {/* Intro system loader preloader */}
+      {!isLoaderFinished && <Loader onFinish={() => setIsLoaderFinished(true)} />}
 
       {/* Navigation Header */}
       <Header />
