@@ -177,6 +177,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s ease;
 }
 
 /* HUD Frame corners */
@@ -510,4 +512,87 @@
   .info-card-link {
     font-size: 1.15rem;
   }
+}
+
+/* Submission Terminal Log style */
+.submission-terminal-log {
+  margin-top: 15px;
+  background-color: #000000;
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  border-radius: 4px;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', monospace;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.terminal-header {
+  background-color: #0b0b0d;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.terminal-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.terminal-dot.red { background-color: #ff3b30; }
+.terminal-dot.yellow { background-color: #ffcc00; }
+.terminal-dot.green { background-color: #34c759; }
+
+.terminal-title {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 8px;
+  letter-spacing: 0.1em;
+}
+
+.terminal-body {
+  padding: 12px;
+  max-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.terminal-line {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.3;
+}
+
+.terminal-prompt {
+  color: #ff1e1e;
+  animation: pulsePrompt 0.8s infinite alternate;
+}
+
+@keyframes pulsePrompt {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* Glowing scanning focus line for form inputs */
+.form-group::after {
+  content: '';
+  position: absolute;
+  bottom: -1.5px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #ff1e1e, transparent);
+  transition: width 0.4s ease;
+}
+
+.form-group.focused::after {
+  width: 100%;
+  animation: scanlineFocusSweep 2s infinite linear;
+}
+
+@keyframes scanlineFocusSweep {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
 }

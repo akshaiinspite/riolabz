@@ -3,7 +3,58 @@ import * as THREE from 'three';
 import './ContactPage.css';
 
 // ----------------------------------------------------
-// SPECIALIZED WEBGL THREE.JS PLEXUS BACKGROUND
+// SCRAMBLE / DECRYPT TEXT COMPONENT
+// ----------------------------------------------------
+const DecryptText = ({ text, delay = 0, duration = 800 }: { text: string; delay?: number; duration?: number }) => {
+  const [displayText, setDisplayText] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*_+?';
+    const totalSteps = 12;
+    const stepDuration = duration / totalSteps;
+
+    const timeout = setTimeout(() => {
+      let step = 0;
+      const interval = setInterval(() => {
+        if (!isMounted) return;
+
+        if (step >= totalSteps) {
+          setDisplayText(text);
+          clearInterval(interval);
+          return;
+        }
+
+        const progress = step / totalSteps;
+        const revealCount = Math.floor(text.length * progress);
+
+        let newText = text.substring(0, revealCount);
+        for (let i = revealCount; i < text.length; i++) {
+          if (text[i] === ' ') {
+            newText += ' ';
+          } else {
+            newText += chars[Math.floor(Math.random() * chars.length)];
+          }
+        }
+
+        setDisplayText(newText);
+        step++;
+      }, stepDuration);
+
+      return () => clearInterval(interval);
+    }, delay);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeout);
+    };
+  }, [text, delay, duration]);
+
+  return <span>{displayText}</span>;
+};
+
+// ----------------------------------------------------
+// SPECIALIZED WEBGL THREE.JS PLEXUS BACKGROUND (INTERACTIVE ATTRACTOR)
 // ----------------------------------------------------
 const ContactThreeBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,7 +77,7 @@ const ContactThreeBackground = () => {
     containerRef.current.appendChild(renderer.domElement);
 
     // Interactive plexus nodes
-    const particleCount = 100;
+    const particleCount = 120;
     const positions = new Float32Array(particleCount * 3);
     const velocities: { x: number; y: number; z: number }[] = [];
 
@@ -34,13 +85,13 @@ const ContactThreeBackground = () => {
       // Position
       positions[i * 3] = (Math.random() - 0.5) * 12;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
 
       // Velocity
       velocities.push({
-        x: (Math.random() - 0.5) * 0.012,
-        y: (Math.random() - 0.5) * 0.012,
-        z: (Math.random() - 0.5) * 0.012,
+        x: (Math.random() - 0.5) * 0.008,
+        y: (Math.random() - 0.5) * 0.008,
+        z: (Math.random() - 0.5) * 0.008,
       });
     }
 
@@ -51,7 +102,7 @@ const ContactThreeBackground = () => {
       size: 0.06,
       color: 0xe10600,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.85,
       blending: THREE.AdditiveBlending,
     });
 
@@ -98,12 +149,29 @@ const ContactThreeBackground = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      // Slow drift particles
+      // Parallax camera easing
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+
+      camera.position.x = targetX * 2.5;
+      camera.position.y = targetY * 2.5;
+      camera.lookAt(scene.position);
+
+      // Slow drift particles with mouse attractor field
       const posArray = geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < particleCount; i++) {
         posArray[i * 3] += velocities[i].x;
         posArray[i * 3 + 1] += velocities[i].y;
         posArray[i * 3 + 2] += velocities[i].z;
+
+        // Attract particles dynamically towards mouse coords in 3D
+        const dx = targetX * 5 - posArray[i * 3];
+        const dy = targetY * 5 - posArray[i * 3 + 1];
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 3.5) {
+          posArray[i * 3] += dx * 0.006;
+          posArray[i * 3 + 1] += dy * 0.006;
+        }
 
         // Bounce off boundaries
         if (Math.abs(posArray[i * 3]) > 6) velocities[i].x *= -1;
@@ -116,14 +184,6 @@ const ContactThreeBackground = () => {
       centerMesh.rotation.y = elapsed * 0.05;
       centerMesh.rotation.x = elapsed * 0.02;
       particleSystem.rotation.y = elapsed * 0.01;
-
-      // Parallax camera easing
-      targetX += (mouseX - targetX) * 0.05;
-      targetY += (mouseY - targetY) * 0.05;
-
-      camera.position.x = targetX * 2;
-      camera.position.y = targetY * 2;
-      camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
     };
@@ -162,6 +222,27 @@ const ContactPage = () => {
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submissionLogs, setSubmissionLogs] = useState<string[]>([]);
+  
+  const formRef = useRef<HTMLDivElement>(null);
+
+  // 3D Card Tilt Mouse Tracker
+  const handleFormMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!formRef.current) return;
+    const rect = formRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    const normX = x / (rect.width / 2);
+    const normY = y / (rect.height / 2);
+
+    formRef.current.style.transform = `perspective(1200px) rotateY(${normX * 6}deg) rotateX(${-normY * 6}deg) translateZ(10px)`;
+  };
+
+  const handleFormMouseLeave = () => {
+    if (!formRef.current) return;
+    formRef.current.style.transform = 'perspective(1200px) rotateY(0deg) rotateX(0deg) translateZ(0deg)';
+  };
 
   const handleFocus = (fieldName: string) => {
     setActiveField(fieldName);
@@ -187,13 +268,30 @@ const ContactPage = () => {
     }
 
     setIsSubmitting(true);
-    // Simulate premium system submission & decryption scramble
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({ name: '', contactNumber: '', email: '', message: '' });
-      setTimeout(() => setSubmitStatus('idle'), 4000);
-    }, 2000);
+    setSubmissionLogs([]);
+
+    const logSteps = [
+      'BOOTING END-TO-END TLS CHANNELS...',
+      'CONNECTING CLIENT SECURE PORTAL...',
+      'WRAPPING DATA PACKETS IN AES_256...',
+      'UPLINK TRANSCEIVING TO STAGING APIS...',
+      'TRANSMISSION SECURED SUCCESSFULLY.'
+    ];
+
+    logSteps.forEach((log, index) => {
+      setTimeout(() => {
+        setSubmissionLogs(prev => [...prev, log]);
+        if (index === logSteps.length - 1) {
+          setIsSubmitting(false);
+          setSubmitStatus('success');
+          setFormData({ name: '', contactNumber: '', email: '', message: '' });
+          setTimeout(() => {
+            setSubmitStatus('idle');
+            setSubmissionLogs([]);
+          }, 5000);
+        }
+      }, (index + 1) * 600);
+    });
   };
 
   return (
@@ -221,12 +319,18 @@ const ContactPage = () => {
           <div className="contact-info-panel">
             <div className="brand-accent-chevron-group">
               <span className="accent-chevron-red">&gt;&gt;</span>
-              <span className="accent-badge-text">CONNECT WITH X.ALT</span>
+              <span className="accent-badge-text">
+                <DecryptText text="CONNECT WITH X.ALT" delay={150} />
+              </span>
             </div>
 
             <div className="cinematic-heading-group" style={{ marginBottom: '1.5rem' }}>
-              <div className="about-hero-backdrop-text">GET IN TOUCH</div>
-              <h1 className="about-hero-fore-title">GET IN TOUCH</h1>
+              <div className="about-hero-backdrop-text">
+                <DecryptText text="GET IN TOUCH" delay={300} duration={1000} />
+              </div>
+              <h1 className="about-hero-fore-title">
+                <DecryptText text="GET IN TOUCH" delay={300} duration={1000} />
+              </h1>
             </div>
 
             <p className="contact-subtitle-text">
@@ -239,7 +343,9 @@ const ContactPage = () => {
               <div className="info-card-item">
                 <div className="info-card-header">
                   <span className="info-card-idx">[01]</span>
-                  <span className="info-card-label">HEADQUARTERS LOCATION</span>
+                  <span className="info-card-label">
+                    <DecryptText text="HEADQUARTERS LOCATION" delay={500} />
+                  </span>
                 </div>
                 <div className="info-card-body">
                   <h4 className="info-card-title">X Alt Studios Pvt. Ltd</h4>
@@ -255,7 +361,9 @@ const ContactPage = () => {
               <div className="info-card-item">
                 <div className="info-card-header">
                   <span className="info-card-idx">[02]</span>
-                  <span className="info-card-label">TELECOMMUNICATION</span>
+                  <span className="info-card-label">
+                    <DecryptText text="TELECOMMUNICATION" delay={700} />
+                  </span>
                 </div>
                 <div className="info-card-body">
                   <a href="tel:+919633322321" className="info-card-link">
@@ -269,7 +377,9 @@ const ContactPage = () => {
               <div className="info-card-item">
                 <div className="info-card-header">
                   <span className="info-card-idx">[03]</span>
-                  <span className="info-card-label">SECURE DATA CHANNELS</span>
+                  <span className="info-card-label">
+                    <DecryptText text="SECURE DATA CHANNELS" delay={900} />
+                  </span>
                 </div>
                 <div className="info-card-body">
                   <a href="mailto:infos@xaltstudios.com" className="info-card-link">
@@ -284,7 +394,12 @@ const ContactPage = () => {
 
           {/* Right Column: Cyber-HUD Contact Form */}
           <div className="contact-form-panel">
-            <div className="cyber-form-wrapper">
+            <div 
+              ref={formRef}
+              className="cyber-form-wrapper"
+              onMouseMove={handleFormMouseMove}
+              onMouseLeave={handleFormMouseLeave}
+            >
               
               {/* HUD Frame Elements */}
               <div className="form-frame-corner tl"></div>
@@ -384,6 +499,25 @@ const ContactPage = () => {
                   </div>
                 </div>
 
+                {/* Submission Log console terminal */}
+                {submissionLogs.length > 0 && (
+                  <div className="submission-terminal-log">
+                    <div className="terminal-header">
+                      <span className="terminal-dot red"></span>
+                      <span className="terminal-dot yellow"></span>
+                      <span className="terminal-dot green"></span>
+                      <span className="terminal-title">SYS_TRANSMISSION_LOG</span>
+                    </div>
+                    <div className="terminal-body">
+                      {submissionLogs.map((log, idx) => (
+                        <div key={idx} className="terminal-line">
+                          <span className="terminal-prompt">&gt;</span> {log}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Submit Feedback Bar */}
                 {submitStatus === 'success' && (
                   <div className="submit-message success">
@@ -397,7 +531,7 @@ const ContactPage = () => {
                   </div>
                 )}
 
-                {/* Submit button with GSAP magnetic-style custom feedback */}
+                {/* Submit button with magnetic hover transitions */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -405,7 +539,7 @@ const ContactPage = () => {
                 >
                   <span className="submit-btn-bg"></span>
                   <span className="submit-btn-text">
-                    {isSubmitting ? 'ENCRYPTING & SENDING...' : 'INITIATE SECURE TRANSMISSION'}
+                    {isSubmitting ? 'ENCRYPTING & TRANSCEIVING...' : 'INITIATE SECURE TRANSMISSION'}
                   </span>
                   <span className="submit-btn-arrow">&gt;&gt;</span>
                 </button>
