@@ -4,6 +4,7 @@ import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isProjectsPage, setIsProjectsPage] = useState(window.location.hash === '#projects');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,8 +15,21 @@ const Header = () => {
       }
     };
 
+    const handleHash = () => {
+      setIsProjectsPage(window.location.hash === '#projects');
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('hashchange', handleHash);
+    
+    // Check initial scroll/hash state
+    handleScroll();
+    handleHash();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('hashchange', handleHash);
+    };
   }, []);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
@@ -41,7 +55,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
+    <header className={`header ${isScrolled || isProjectsPage ? 'scrolled' : ''}`}>
       <div className="header-logo" style={{ cursor: 'pointer' }} onClick={handleLogoClick}>
         <img src={logoImg} alt="Xalt Studio" className="logo" />
       </div>

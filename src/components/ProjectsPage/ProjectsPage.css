@@ -197,6 +197,8 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  perspective: 1200px;
+  transform-style: preserve-3d;
 }
 
 .projects-hero-image-wrapper {
@@ -207,6 +209,11 @@
   overflow: hidden;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
   background-color: #111;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.projects-hero-image-wrapper:hover {
+  transform: scale(1.03) translateZ(10px);
 }
 
 .projects-main-hero-img {
@@ -255,6 +262,8 @@
   border-radius: 6px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+  will-change: transform;
 }
 
 .projects-floating-img img {
@@ -269,7 +278,13 @@
   width: 180px;
   height: 120px;
   z-index: 5;
-  transform: rotate(-3deg);
+  transform: rotate(-3deg) translateZ(0);
+}
+
+.projects-floating-img.img-float-1:hover {
+  transform: rotate(-1deg) scale(1.15) translateZ(40px) translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.65);
+  z-index: 12;
 }
 
 .projects-floating-img.img-float-2 {
@@ -278,7 +293,13 @@
   width: 150px;
   height: 180px;
   z-index: 5;
-  transform: rotate(4deg);
+  transform: rotate(4deg) translateZ(0);
+}
+
+.projects-floating-img.img-float-2:hover {
+  transform: rotate(2deg) scale(1.15) translateZ(40px) translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.65);
+  z-index: 12;
 }
 
 /* ----------------------------------------------------
@@ -319,7 +340,8 @@
   margin-left: -50vw;
   margin-right: -50vw;
   overflow: hidden;
-  padding: 10px 0;
+  padding: 40px 0; /* Add padding to prevent 3D scaled cards from clipping */
+  perspective: 1200px;
 }
 
 .projects-marquee-track {
@@ -327,6 +349,7 @@
   gap: 30px;
   width: max-content;
   animation: marqueeAnimation 38s linear infinite;
+  transform-style: preserve-3d;
 }
 
 /* Pause scroll animation on hover so details are readable */
@@ -355,15 +378,17 @@
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s ease, box-shadow 0.6s ease;
   display: flex;
   flex-direction: column;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .projects-subcard:hover {
-  transform: translateY(-8px) scale(1.01);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+  transform: translateY(-20px) scale(1.08) translateZ(50px) rotateX(3deg);
+  border-color: rgba(255, 30, 30, 0.45);
+  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.75);
 }
 
 .projects-subcard-img-wrapper {
@@ -371,6 +396,8 @@
   width: 100%;
   height: 180px;
   overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .projects-subcard-img {
@@ -382,6 +409,10 @@
 
 .projects-subcard:hover .projects-subcard-img {
   transform: scale(1.08);
+}
+
+.projects-subcard:hover .projects-subcard-img-wrapper {
+  transform: translateZ(20px);
 }
 
 .projects-subcard-overlay {
@@ -398,6 +429,12 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.projects-subcard:hover .projects-subcard-info {
+  transform: translateZ(30px);
 }
 
 .projects-subcard-title {
