@@ -356,32 +356,32 @@ const AboutPage = () => {
 
   const teamMembers: TeamMember[] = [
     {
-      name: 'Mohammed Arfan Nujoom',
+      name: 'Alex Mercer',
       role: 'Founder / CEO',
       gradient: 'linear-gradient(135deg, #050505 0%, #300006 100%)',
     },
     {
-      name: 'Yamini Vidyasagar',
+      name: 'Sarah Connor',
       role: 'Manager',
       gradient: 'linear-gradient(135deg, #101012 0%, #440d16 100%)',
     },
     {
-      name: 'Shijith M S',
+      name: 'David Miller',
       role: 'Senior 3D Environment Artist',
       gradient: 'linear-gradient(135deg, #1b0206 0%, #520510 100%)',
     },
     {
-      name: 'Yadhukrishnan',
+      name: 'Michael Chen',
       role: 'Senior 3D Environment Artist',
       gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
     },
     {
-      name: 'Mahesh M',
+      name: 'Marcus Vance',
       role: 'Creative Director',
       gradient: 'linear-gradient(135deg, #120318 0%, #4a030a 100%)',
     },
     {
-      name: 'Ligo John',
+      name: 'Liam Vance',
       role: 'Partner',
       gradient: 'linear-gradient(135deg, #040108 0%, #350218 100%)',
     },
