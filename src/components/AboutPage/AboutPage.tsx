@@ -590,16 +590,15 @@ const AboutPage = () => {
           },
         });
 
-        // Studio Floor Cards Reveal
+        // Studio Floor Reveal
         gsap.fromTo(
-          '.floor-card',
-          { opacity: 0, y: 60, scale: 0.96 },
+          '.floor-intro-text-block, .floor-img-frame',
+          { opacity: 0, y: 40 },
           {
             opacity: 1,
             y: 0,
-            scale: 1,
             duration: 1,
-            stagger: 0.2,
+            stagger: 0.15,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: '.studio-floor-section',
@@ -832,7 +831,7 @@ const AboutPage = () => {
         <div className="surveillance-hud-overlay tr">
           <span className="hud-mono-gray">FLOOR_PLAN: V4.01</span>
           <span className="hud-divider">//</span>
-          <span className="hud-mono-red-blink">INTEL: ONLINE</span>
+          <span className="hud-mono-red-blink">ONLINE</span>
         </div>
 
         <div className="studio-floor-container">
@@ -847,73 +846,32 @@ const AboutPage = () => {
             <h2 className="floor-fore-title">STUDIO FLOOR</h2>
           </div>
 
-          <div className="floor-grid-modern">
-            {/* Zone 1: VFX & Render Bay */}
-            <div className="floor-card glass-card-new zone-1-card">
-              <div className="floor-card-image-wrapper">
-                <img src={studioFloorVfxImg} alt="VFX Synthesis Bay" className="floor-card-img" />
-                <div className="floor-image-hud">
-                  <span className="hud-tag">ZONE_01 // SYNTHESIS</span>
-                  <span className="hud-coord">X: 47.92 Y: -12.44</span>
-                </div>
-                <div className="img-glass-overlay-new"></div>
-                <div className="floor-scanlines"></div>
+          {/* New General Content about Studio Floor */}
+          <div className="floor-intro-text-block">
+            <p>
+              Spanning across two custom-designed levels, the X.Alt Studio space is architected for peak creative synergy and technological horsepower. We integrate high-speed computing pipelines with acoustic optimization to bridge the gap between imagination and execution.
+            </p>
+            <p>
+              From raw environment synthesis to post-production color mastering and multi-channel sound staging, our floor plan is designed to streamline workflow collaboration between digital artists and directors.
+            </p>
+          </div>
+
+          {/* Sleek, Smaller Image Presentation */}
+          <div className="floor-images-row-modern">
+            <div className="floor-img-frame frame-1">
+              <img src={studioFloorVfxImg} alt="VFX Synthesis Bay" className="floor-display-img" />
+              <div className="floor-frame-overlay">
+                <span className="frame-label">// ZONE_01: VFX SYNTHESIS BAY</span>
               </div>
-              <div className="floor-card-info">
-                <div className="floor-zone-header">
-                  <h3 className="floor-zone-title">VFX & 3D RENDERING BAY</h3>
-                  <span className="floor-zone-status">[ ACTIVE ]</span>
-                </div>
-                <p className="floor-zone-desc">
-                  Equipped with multi-GPU render nodes and liquid-cooled workstations, Zone 01 is where raw 3D environments, particle physics, and high-fidelity CGI are synthesized and brought to life.
-                </p>
-                <div className="floor-telemetry-mini">
-                  <div className="telemetry-bar-row">
-                    <span className="tel-lbl">RENDER_POWER</span>
-                    <div className="tel-progress-bg"><div className="tel-progress-fill" style={{ width: '92%' }}></div></div>
-                    <span className="tel-val">92%</span>
-                  </div>
-                  <div className="telemetry-bar-row">
-                    <span className="tel-lbl">THERMAL_LOAD</span>
-                    <div className="tel-progress-bg"><div className="tel-progress-fill warning" style={{ width: '64%' }}></div></div>
-                    <span className="tel-val">64°C</span>
-                  </div>
-                </div>
-              </div>
+              <div className="floor-scanlines"></div>
             </div>
 
-            {/* Zone 2: Sonic Resonance Lab */}
-            <div className="floor-card glass-card-new zone-2-card">
-              <div className="floor-card-image-wrapper">
-                <img src={studioFloorAudioImg} alt="Sonic Resonance Lab" className="floor-card-img" />
-                <div className="floor-image-hud">
-                  <span className="hud-tag">ZONE_02 // ACOUSTICS</span>
-                  <span className="hud-coord">X: 18.05 Y: +88.31</span>
-                </div>
-                <div className="img-glass-overlay-new"></div>
-                <div className="floor-scanlines"></div>
+            <div className="floor-img-frame frame-2">
+              <img src={studioFloorAudioImg} alt="Sonic Resonance Lab" className="floor-display-img" />
+              <div className="floor-frame-overlay">
+                <span className="frame-label">// ZONE_02: SONIC MIXING SUITE</span>
               </div>
-              <div className="floor-card-info">
-                <div className="floor-zone-header">
-                  <h3 className="floor-zone-title">SONIC RESONANCE LAB</h3>
-                  <span className="floor-zone-status">[ ONLINE ]</span>
-                </div>
-                <p className="floor-zone-desc">
-                  An acoustically isolated chamber housing state-of-the-art Dolby Atmos mixing desks and sound synthesis gear, dedicated to crafting immersive auditory experiences that match our visual scale.
-                </p>
-                <div className="floor-telemetry-mini">
-                  <div className="telemetry-bar-row">
-                    <span className="tel-lbl">DECIBEL_PEAK</span>
-                    <div className="tel-progress-bg"><div className="tel-progress-fill" style={{ width: '78%' }}></div></div>
-                    <span className="tel-val">78 dB</span>
-                  </div>
-                  <div className="telemetry-bar-row">
-                    <span className="tel-lbl">FREQ_RESPONSE</span>
-                    <div className="tel-progress-bg"><div className="tel-progress-fill" style={{ width: '85%' }}></div></div>
-                    <span className="tel-val">FLAT</span>
-                  </div>
-                </div>
-              </div>
+              <div className="floor-scanlines"></div>
             </div>
           </div>
 
