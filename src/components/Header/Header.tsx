@@ -33,9 +33,15 @@ const Header = () => {
   }, []);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
+    // Instantly reset scroll offset on any link click
+    const lenisInstance = (window as any).lenis;
+    if (lenisInstance) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    }
+    window.scrollTo(0, 0);
+
     if (window.location.hash === targetHash) {
       e.preventDefault();
-      const lenisInstance = (window as any).lenis;
       if (lenisInstance) {
         lenisInstance.scrollTo(0, { duration: 1.2 });
       } else {

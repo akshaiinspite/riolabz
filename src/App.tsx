@@ -75,11 +75,13 @@ function App() {
     gsap.ticker.add(updateRaf);
     gsap.ticker.lagSmoothing(0);
 
-    // Refresh layout after transition/render delay
+    // Refresh layout and reset scroll coordinates after transition/render delay
     const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+      lenis.scrollTo(0, { immediate: true });
       lenis.resize();
       ScrollTrigger.refresh();
-    }, 250);
+    }, 50);
 
     return () => {
       lenis.destroy();
