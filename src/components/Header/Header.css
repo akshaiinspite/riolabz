@@ -77,8 +77,10 @@
 }
 
 .header-menu-btn {
-  display: flex;
+  display: none;
   align-items: center;
+  position: relative;
+  z-index: 1000;
 }
 
 .hamburger-btn {
@@ -181,5 +183,104 @@
   .nav-links {
     display: none;
   }
+  .header-menu-btn {
+    display: flex;
+  }
+}
+
+/* ----------------------------------------------------
+   MOBILE DRAWER OVERLAY
+   ---------------------------------------------------- */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(5, 5, 7, 0.98);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  z-index: 990;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(-20px);
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.2rem;
+  width: 85%;
+  max-width: 400px;
+}
+
+.mobile-nav-link {
+  font-family: var(--font-oswald);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+  color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+.mobile-projects-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.mobile-projects-label {
+  font-family: var(--font-oswald);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.4rem;
+  width: 100%;
+  text-align: center;
+}
+
+.mobile-projects-sublinks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.mobile-sub-link {
+  font-family: var(--font-inter);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.3s ease;
+}
+
+.mobile-sub-link:hover {
+  color: var(--color-primary);
 }
 

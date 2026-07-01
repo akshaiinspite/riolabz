@@ -5,6 +5,7 @@ import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectsPage, setIsProjectsPage] = useState(window.location.hash.startsWith('#projects'));
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,8 +33,21 @@ const Header = () => {
     };
   }, []);
 
+  // Prevent scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
     e.preventDefault();
+    setIsMobileMenuOpen(false);
     const lenisInstance = (window as any).lenis;
 
     if (window.location.hash === targetHash) {
@@ -55,6 +69,7 @@ const Header = () => {
 
   const handleDropdownClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
     e.preventDefault();
+    setIsMobileMenuOpen(false);
     const lenisInstance = (window as any).lenis;
     if (lenisInstance) {
       lenisInstance.scrollTo(0, { immediate: true });
@@ -64,6 +79,7 @@ const Header = () => {
   };
 
   const handleLogoClick = () => {
+    setIsMobileMenuOpen(false);
     window.location.hash = '#home';
     const lenisInstance = (window as any).lenis;
     if (lenisInstance) {
@@ -74,7 +90,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`header ${isScrolled || isProjectsPage ? 'scrolled' : ''}`}>
+    <header className={`header ${isScrolled || isProjectsPage || isMobileMenuOpen ? 'scrolled' : ''}`}>
       <div className="header-logo" style={{ cursor: 'pointer' }} onClick={handleLogoClick}>
         <img src={logoImg} alt="Xalt Studio" className="logo" />
       </div>
@@ -115,12 +131,52 @@ const Header = () => {
       </nav>
       
       <div className="header-menu-btn">
-        <button className="hamburger-btn">
+        <button className={`hamburger-btn ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
-            <line x1="4" y1="8" x2="20" y2="8"></line>
-            <line x1="4" y1="16" x2="20" y2="16"></line>
+            {isMobileMenuOpen ? (
+              <>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </>
+            ) : (
+              <>
+                <line x1="4" y1="8" x2="20" y2="8"></line>
+                <line x1="4" y1="16" x2="20" y2="16"></line>
+              </>
+            )}
           </svg>
         </button>
+      </div>
+
+      {/* MOBILE DRAWER OVERLAY */}
+      <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`}>
+        <nav className="mobile-nav-links">
+          <a href="#home" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#home')}>
+            Home
+          </a>
+          <a href="#about" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#about')}>
+            About
+          </a>
+          
+          <div className="mobile-projects-wrapper">
+            <span className="mobile-projects-label">Projects</span>
+            <div className="mobile-projects-sublinks">
+              <a href="#projects/commercial" className="mobile-sub-link" onClick={(e) => handleDropdownClick(e, '#projects/commercial')}>
+                Commercial Projects
+              </a>
+              <a href="#projects/films" className="mobile-sub-link" onClick={(e) => handleDropdownClick(e, '#projects/films')}>
+                Films & Entertainment
+              </a>
+              <a href="#projects/immersive" className="mobile-sub-link" onClick={(e) => handleDropdownClick(e, '#projects/immersive')}>
+                AR & VR Experiences
+              </a>
+            </div>
+          </div>
+
+          <a href="#contact" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#contact')}>
+            Contact Us
+          </a>
+        </nav>
       </div>
     </header>
   );
