@@ -7,6 +7,9 @@ import './AboutPage.css';
 // Import images
 import studioWorkspaceImg from '../../assets/images/about/studio_workspace.png';
 import designArtistsImg from '../../assets/images/about/design_artists.png';
+import creativeBrainstormImg from '../../assets/images/about/creative_brainstorm.png';
+import studioFloorVfxImg from '../../assets/images/about/studio_floor_vfx.png';
+import studioFloorAudioImg from '../../assets/images/about/studio_floor_audio.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -587,6 +590,35 @@ const AboutPage = () => {
             scrub: true,
           },
         });
+
+        gsap.to('.story-offset-wrapper.wrap-3', {
+          y: -25,
+          scrollTrigger: {
+            trigger: aboutSectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+
+        // Studio Floor Cards Reveal
+        gsap.fromTo(
+          '.floor-card',
+          { opacity: 0, y: 60, scale: 0.96 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            stagger: 0.2,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: '.studio-floor-section',
+              start: 'top 75%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
       }
     });
 
@@ -791,10 +823,121 @@ const AboutPage = () => {
               />
               <div className="img-glass-overlay-new"></div>
             </div>
+
+            <div className="story-offset-wrapper wrap-3">
+              <img
+                src={creativeBrainstormImg}
+                alt="X.Alt Creative Collaborations"
+                className="story-parallax-img"
+              />
+              <div className="img-glass-overlay-new"></div>
+            </div>
           </div>
 
         </div>
 
+      </section>
+
+      {/* SECTION 1.5: STUDIO FLOOR */}
+      <section className="studio-floor-section" id="about-floor">
+        
+        {/* Surveillance Corner HUD Indicators */}
+        <div className="surveillance-hud-overlay tl">
+          <span className="rec-dot-pulse"></span>
+          <span className="hud-mono-red">CAM_07 [SECURE]</span>
+          <span className="hud-divider">//</span>
+          <span className="hud-mono-green">FACILITY_MONITOR</span>
+        </div>
+
+        <div className="surveillance-hud-overlay tr">
+          <span className="hud-mono-gray">FLOOR_PLAN: V4.01</span>
+          <span className="hud-divider">//</span>
+          <span className="hud-mono-red-blink">INTEL: ONLINE</span>
+        </div>
+
+        <div className="studio-floor-container">
+          
+          <div className="floor-badge-group">
+            <span className="accent-chevron-red">&gt;&gt;</span>
+            <span className="accent-badge-text">PHYSICAL ARCHITECTURE</span>
+          </div>
+
+          <div className="cinematic-heading-group">
+            <div className="floor-backdrop-text">FACILITY</div>
+            <h2 className="floor-fore-title">STUDIO FLOOR</h2>
+          </div>
+
+          <div className="floor-grid-modern">
+            {/* Zone 1: VFX & Render Bay */}
+            <div className="floor-card glass-card-new zone-1-card">
+              <div className="floor-card-image-wrapper">
+                <img src={studioFloorVfxImg} alt="VFX Synthesis Bay" className="floor-card-img" />
+                <div className="floor-image-hud">
+                  <span className="hud-tag">ZONE_01 // SYNTHESIS</span>
+                  <span className="hud-coord">X: 47.92 Y: -12.44</span>
+                </div>
+                <div className="img-glass-overlay-new"></div>
+                <div className="floor-scanlines"></div>
+              </div>
+              <div className="floor-card-info">
+                <div className="floor-zone-header">
+                  <h3 className="floor-zone-title">VFX & 3D RENDERING BAY</h3>
+                  <span className="floor-zone-status">[ ACTIVE ]</span>
+                </div>
+                <p className="floor-zone-desc">
+                  Equipped with multi-GPU render nodes and liquid-cooled workstations, Zone 01 is where raw 3D environments, particle physics, and high-fidelity CGI are synthesized and brought to life.
+                </p>
+                <div className="floor-telemetry-mini">
+                  <div className="telemetry-bar-row">
+                    <span className="tel-lbl">RENDER_POWER</span>
+                    <div className="tel-progress-bg"><div className="tel-progress-fill" style={{ width: '92%' }}></div></div>
+                    <span className="tel-val">92%</span>
+                  </div>
+                  <div className="telemetry-bar-row">
+                    <span className="tel-lbl">THERMAL_LOAD</span>
+                    <div className="tel-progress-bg"><div className="tel-progress-fill warning" style={{ width: '64%' }}></div></div>
+                    <span className="tel-val">64°C</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Zone 2: Sonic Resonance Lab */}
+            <div className="floor-card glass-card-new zone-2-card">
+              <div className="floor-card-image-wrapper">
+                <img src={studioFloorAudioImg} alt="Sonic Resonance Lab" className="floor-card-img" />
+                <div className="floor-image-hud">
+                  <span className="hud-tag">ZONE_02 // ACOUSTICS</span>
+                  <span className="hud-coord">X: 18.05 Y: +88.31</span>
+                </div>
+                <div className="img-glass-overlay-new"></div>
+                <div className="floor-scanlines"></div>
+              </div>
+              <div className="floor-card-info">
+                <div className="floor-zone-header">
+                  <h3 className="floor-zone-title">SONIC RESONANCE LAB</h3>
+                  <span className="floor-zone-status">[ ONLINE ]</span>
+                </div>
+                <p className="floor-zone-desc">
+                  An acoustically isolated chamber housing state-of-the-art Dolby Atmos mixing desks and sound synthesis gear, dedicated to crafting immersive auditory experiences that match our visual scale.
+                </p>
+                <div className="floor-telemetry-mini">
+                  <div className="telemetry-bar-row">
+                    <span className="tel-lbl">DECIBEL_PEAK</span>
+                    <div className="tel-progress-bg"><div className="tel-progress-fill" style={{ width: '78%' }}></div></div>
+                    <span className="tel-val">78 dB</span>
+                  </div>
+                  <div className="telemetry-bar-row">
+                    <span className="tel-lbl">FREQ_RESPONSE</span>
+                    <div className="tel-progress-bg"><div className="tel-progress-fill" style={{ width: '85%' }}></div></div>
+                    <span className="tel-val">FLAT</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </section>
 
       {/* SECTION 2: TEAM (OUR TEAM) */}
