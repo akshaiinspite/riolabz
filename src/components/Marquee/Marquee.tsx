@@ -1,20 +1,23 @@
 import './Marquee.css';
 
-const Marquee = () => {
+interface MarqueeProps {
+  variant?: 'default' | 'small';
+}
+
+const Marquee = ({ variant = 'default' }: MarqueeProps) => {
   // We repeat the text enough times to ensure it fills the screen and allows for a seamless loop.
-  // The structure is word + plus sign.
   const words = ['INSPIRE', '+', 'INNOVATE', '+', 'IMPACT', '+'];
   
-  // We duplicate the array to create the seamless loop (scroll to -50%)
+  // We duplicate the array to create the seamless loop
   const content = [...words, ...words, ...words, ...words];
 
   return (
-    <section className="marquee-container">
+    <section className={`marquee-container variant-${variant}`}>
       <div className="marquee-content">
         {content.map((item, index) => (
           <span 
             key={index} 
-            className={`marquee-item ${item === '+' ? 'marquee-plus' : 'marquee-word'}`}
+            className={`marquee-item variant-${variant} ${item === '+' ? 'marquee-plus' : 'marquee-word'}`}
           >
             {item}
           </span>
@@ -25,3 +28,4 @@ const Marquee = () => {
 };
 
 export default Marquee;
+

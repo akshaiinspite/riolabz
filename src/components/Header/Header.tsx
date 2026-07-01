@@ -1,21 +1,69 @@
+import { useState, useEffect } from 'react';
 import './Header.css';
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 
 const Header = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
+    if (window.location.hash === targetHash) {
+      e.preventDefault();
+      const lenisInstance = (window as any).lenis;
+      if (lenisInstance) {
+        lenisInstance.scrollTo(0, { duration: 1.2 });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handleLogoClick = () => {
+    window.location.hash = '#home';
+    const lenisInstance = (window as any).lenis;
+    if (lenisInstance) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+  };
+
   return (
-    <header className="header">
-      <div className="header-logo">
+    <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
+      <div className="header-logo" style={{ cursor: 'pointer' }} onClick={handleLogoClick}>
         <img src={logoImg} alt="Xalt Studio" className="logo" />
       </div>
       
-      <div className="header-nav-pill">
-        <nav className="nav-links">
-          <a href="#">Home</a>
-          <a href="#">About Us</a>
-          <a href="#">Service</a>
-          <a href="#">Pricing</a>
-        </nav>
-      </div>
+      <nav className="nav-links">
+        <a href="#home" className="nav-link" onClick={(e) => handleLinkClick(e, '#home')}>
+          Home
+          <span className="underline-indicator"></span>
+        </a>
+        <a href="#about" className="nav-link" onClick={(e) => handleLinkClick(e, '#about')}>
+          About
+          <span className="underline-indicator"></span>
+        </a>
+        <a href="#projects" className="nav-link" onClick={(e) => handleLinkClick(e, '#projects')}>
+          Projects
+          <span className="underline-indicator"></span>
+        </a>
+        <a href="#contact" className="nav-link" onClick={(e) => handleLinkClick(e, '#contact')}>
+          Contact Us
+          <span className="underline-indicator"></span>
+        </a>
+      </nav>
       
       <div className="header-menu-btn">
         <button className="hamburger-btn">

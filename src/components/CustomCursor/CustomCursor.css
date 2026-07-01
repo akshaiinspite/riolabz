@@ -8,39 +8,98 @@ body, * {
   position: fixed;
   top: 0;
   left: 0;
-  width: 16px;
-  height: 16px;
-  background-color: white; /* With difference, white on light = black dot */
+  width: 8px;
+  height: 8px;
+  background-color: #ffffff;
   border-radius: 50%;
   pointer-events: none;
   z-index: 999999;
-  mix-blend-mode: difference; /* Inverts whatever is behind it */
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  mix-blend-mode: difference;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, width, height;
 }
 
-/* The liquid glass halo has been removed per user request */
+/* The lagging neon red trailing ring */
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-primary, #e10600);
+  background: radial-gradient(circle, rgba(225, 6, 0, 0.15) 0%, transparent 80%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999998;
+  box-shadow: 0 0 12px rgba(225, 6, 0, 0.4), inset 0 0 6px rgba(225, 6, 0, 0.2);
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.4s ease, 
+              background 0.4s ease, 
+              box-shadow 0.4s ease;
+  will-change: transform, width, height;
+}
 
-/* Pointer Hover State (when over links/buttons) */
+/* Pointer Hover State (links/buttons/interactive elements) */
 .custom-cursor-dot.pointer {
-  width: 40px;
-  height: 40px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-primary, #e10600);
+  mix-blend-mode: normal;
 }
 
-/* Regular Text Hover State (covers the text) */
+.custom-cursor-ring.pointer {
+  width: 46px;
+  height: 46px;
+  border-width: 1.5px;
+  border-style: dashed;
+  background: radial-gradient(circle, rgba(225, 6, 0, 0.22) 0%, transparent 80%);
+  box-shadow: 0 0 20px rgba(225, 6, 0, 0.7), inset 0 0 10px rgba(225, 6, 0, 0.3);
+  border-color: #ff3344;
+}
+
+/* Text Hover State */
 .custom-cursor-dot.text {
-  width: 45px;
-  height: 45px;
-}
-
-/* Large Text Hover State (moderate growth so it doesn't get ridiculously huge) */
-.custom-cursor-dot.large-text {
-  width: 65px;
-  height: 65px;
-}
-
-/* Click States */
-.custom-cursor-dot.click {
   width: 4px;
   height: 4px;
+}
+
+.custom-cursor-ring.text {
+  width: 36px;
+  height: 36px;
+  border-color: #ff3344;
+  background: rgba(225, 6, 0, 0.05);
+  box-shadow: 0 0 15px rgba(225, 6, 0, 0.4);
+}
+
+/* Large Text Hover State */
+.custom-cursor-dot.large-text {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-cursor-ring.large-text {
+  width: 56px;
+  height: 56px;
+  border-color: #ff3344;
+  background: rgba(225, 6, 0, 0.08);
+  box-shadow: 0 0 22px rgba(225, 6, 0, 0.5);
+}
+
+/* Click/Active States - Ring shockwave effect */
+.custom-cursor-dot.click {
+  width: 3px;
+  height: 3px;
+}
+
+.custom-cursor-ring.click {
+  width: 65px;
+  height: 65px;
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.4);
+  opacity: 0.3;
+  transition: width 0.2s cubic-bezier(0.1, 0.8, 0.2, 1), 
+              height 0.2s cubic-bezier(0.1, 0.8, 0.2, 1), 
+              opacity 0.2s ease-out;
 }

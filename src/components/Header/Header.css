@@ -3,9 +3,23 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 1.5rem 4rem 1.5rem 4rem;
-  position: relative;
-  z-index: 10;
+  padding: 1.8rem 4rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.header.scrolled {
+  background: rgba(5, 5, 5, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.2rem 4rem;
+  border-bottom: 1px solid var(--color-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .header-logo {
@@ -17,33 +31,44 @@
   height: 2.2rem;
   width: auto;
   object-fit: contain;
-}
-
-.header-nav-pill {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 50px;
-  padding: 0.6rem 2.5rem;
+  filter: drop-shadow(0 0 8px rgba(225, 6, 0, 0.3));
 }
 
 .nav-links {
   display: flex;
-  gap: 2.5rem;
+  gap: 2.8rem;
   align-items: center;
 }
 
-.nav-links a {
-  color: rgba(255, 255, 255, 0.7);
+.nav-link {
+  color: var(--color-text-white);
   text-decoration: none;
+  font-family: var(--font-oswald);
   font-size: 0.85rem;
   font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  position: relative;
+  padding: 0.5rem 0;
   transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-  color: rgba(255, 255, 255, 1);
+.nav-link:hover {
+  color: var(--color-primary);
+}
+
+.underline-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.nav-link:hover .underline-indicator {
+  width: 100%;
 }
 
 .header-menu-btn {
@@ -62,27 +87,30 @@
   align-items: center;
   color: #fff;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .hamburger-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 15px rgba(225, 6, 0, 0.4);
 }
 
 @media (max-width: 900px) {
   .header {
     padding: 1.5rem 2rem;
   }
-  .header-nav-pill {
-    padding: 0.6rem 1.5rem;
+  .header.scrolled {
+    padding: 1rem 2rem;
   }
   .nav-links {
-    gap: 1.5rem;
+    gap: 1.8rem;
   }
 }
 
 @media (max-width: 768px) {
-  .header-nav-pill {
+  .nav-links {
     display: none;
   }
 }
+

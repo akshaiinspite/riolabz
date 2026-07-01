@@ -1,37 +1,40 @@
 .marquee-container {
   width: 100%;
   overflow: hidden;
-  background-color: var(--color-bg-secondary); /* Blend seamlessly with background */
-  padding: 6rem 0;
+  background-color: var(--color-primary); /* Premium red background */
+  padding: 1.5rem 0; /* Tight, professional ticker padding */
   display: flex;
   white-space: nowrap;
   position: relative;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 5;
 }
 
 .marquee-content {
   display: flex;
   align-items: center;
-  /* We have 4 sets of the text. To make it seamless, we scroll exactly by half its width, then snap back */
-  animation: scroll-left 25s linear infinite;
+  animation: scroll-left 20s linear infinite;
   width: max-content;
 }
 
 .marquee-item {
-  font-family: 'Panchang-Variable', sans-serif;
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  color: #fff;
+  font-family: var(--font-anton);
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  color: #000000; /* High contrast black text on red banner */
   text-transform: uppercase;
-  margin: 0 1.5rem;
-  font-weight: 300; /* Light weight to match the screenshot */
+  margin: 0 2rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
   display: flex;
   align-items: center;
 }
 
 .marquee-plus {
-  font-family: 'Inter', sans-serif; /* Standard cross for the plus */
-  font-weight: 200; /* Extra thin plus */
-  color: rgba(255, 255, 255, 0.4); /* Slightly faded plus to match reference */
-  font-size: clamp(2rem, 4vw, 4rem);
+  font-family: var(--font-inter);
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.5); /* Semi-transparent black plus sign */
+  font-size: clamp(1.6rem, 3.5vw, 2.3rem);
 }
 
 @keyframes scroll-left {
@@ -42,3 +45,27 @@
     transform: translateX(-50%);
   }
 }
+
+/* Small Variant */
+.marquee-container.variant-small {
+  padding: 0.6rem 0;
+  background-color: var(--color-primary);
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(225, 6, 0, 0.15);
+}
+
+.marquee-item.variant-small {
+  font-size: clamp(0.85rem, 1.6vw, 1.15rem);
+  margin: 0 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #000000;
+}
+
+.marquee-plus.variant-small {
+  font-size: clamp(0.75rem, 1.6vw, 1.05rem);
+  color: rgba(0, 0, 0, 0.5);
+}
+
+

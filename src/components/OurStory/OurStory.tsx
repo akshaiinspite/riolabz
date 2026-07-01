@@ -1,52 +1,139 @@
+import { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
 import './OurStory.css';
+
+interface CounterProps {
+  target: number;
+  duration?: number;
+  suffix?: string;
+}
+
+const AnimatedCounter = ({ target, duration = 1500, suffix = '' }: CounterProps) => {
+  const [count, setCount] = useState(0);
+  const counterRef = useRef<HTMLSpanElement>(null);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (counterRef.current) {
+      observer.observe(counterRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    const end = target;
+    const totalFrames = Math.round(duration / 16);
+    let frame = 0;
+
+    const animate = () => {
+      frame++;
+      const progress = frame / totalFrames;
+      // Ease out quad
+      const currentCount = Math.round(end * (progress * (2 - progress)));
+      
+      if (frame < totalFrames) {
+        setCount(currentCount);
+        requestAnimationFrame(animate);
+      } else {
+        setCount(end);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [hasStarted, target, duration]);
+
+  return <span ref={counterRef}>{count}{suffix}</span>;
+};
 
 const OurStory = () => {
   return (
-    <section className="our-story-section">
+    <section className="our-story-section" id="about">
+      {/* Huge faded typography behind content */}
+      <div className="about-backdrop-text">X.ALT STUDIO</div>
+      
       <div className="our-story-container">
-        
-        {/* Left Column */}
-        <div className="our-story-left">
-          <div className="story-top">
-            <div className="story-badge">Our Story</div>
-            <h2 className="story-title">
-              Our Existence<br />
-              <span className="title-highlight">Explained</span>
-            </h2>
-          </div>
+        <div className="our-story-split-grid">
           
-          {/* Decorative glowing element imitating the globe */}
-          <div className="story-glow-sphere"></div>
+          {/* Left Column: Badge, Title & Descriptions */}
+          <motion.div 
+            className="our-story-left-col"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="story-badge">STUDIO PROFILE</div>
+            <h2 className="story-title">
+              WHO <span className="title-highlight">WE ARE</span>
+            </h2>
+            
+            <div className="about-description-box">
+              <span className="about-accent-line"></span>
+              <p className="about-intro-text">
+                We are a team of visionary creators, tech innovators, and visual artists pushing the boundaries of what is possible in the digital realm.
+              </p>
+              <p>
+                X.ALT Studio bridges the gap between raw imagination and technical execution. We craft high-end visual effects, interactive 3D assets, and immersive XR experiences that do not just tell a story—they transport audiences entirely.
+              </p>
+            </div>
+          </motion.div>
+          
+          {/* Right Column: Stats Cards Grid */}
+          <motion.div 
+            className="our-story-right-col"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
+          >
+            <div className="story-stats-grid">
+              <div className="stat-card">
+                <div className="stat-glow"></div>
+                <h3 className="stat-number">
+                  <AnimatedCounter target={15} suffix="+" />
+                </h3>
+                <p className="stat-label">Years Experience</p>
+              </div>
+              
+              <div className="stat-card">
+                <div className="stat-glow"></div>
+                <h3 className="stat-number">
+                  <AnimatedCounter target={250} suffix="+" />
+                </h3>
+                <p className="stat-label">Projects Completed</p>
+              </div>
 
-          <div className="story-stats">
-            <div className="stat-item">
-              <h3>2023</h3>
-              <p>Founded</p>
+              <div className="stat-card">
+                <div className="stat-glow"></div>
+                <h3 className="stat-number">
+                  <AnimatedCounter target={120} suffix="+" />
+                </h3>
+                <p className="stat-label">Happy Clients</p>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-glow"></div>
+                <h3 className="stat-number">
+                  <AnimatedCounter target={18} suffix="+" />
+                </h3>
+                <p className="stat-label">Industry Awards</p>
+              </div>
             </div>
-            <div className="stat-item">
-              <h3>Kochi</h3>
-              <p>Headquarters</p>
-            </div>
-            <div className="stat-item">
-              <h3>XR & VFX</h3>
-              <p>Specialty</p>
-            </div>
-          </div>
+          </motion.div>
+          
         </div>
-
-        {/* Right Column */}
-        <div className="our-story-right">
-          <p>
-            Founded in <strong>Kochi</strong>, X.ALT Studio emerged from a desire to push the boundaries of visual storytelling. We saw a demand for high-end visual effects and immersive digital experiences that truly captivate.
-          </p>
-          <p>
-            Looking at the industry, we recognized a gap between traditional production and cutting-edge tech. Creators needed faster, more innovative tools to bring their visions to life without compromise.
-          </p>
-          <p>
-            With a <strong>clear vision</strong>, we've built a studio defined by exceptional artistry and technical precision. We are here to <strong>liberate storytellers</strong>, enabling them to craft beyond ordinary realities.
-          </p>
-        </div>
-
       </div>
     </section>
   );

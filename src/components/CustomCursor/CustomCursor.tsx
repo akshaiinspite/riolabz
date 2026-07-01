@@ -3,6 +3,7 @@ import './CustomCursor.css';
 
 const CustomCursor = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
   const [hoverState, setHoverState] = useState<'default' | 'pointer' | 'text' | 'large-text'>('default');
   const [isClicking, setIsClicking] = useState(false);
 
@@ -13,15 +14,30 @@ const CustomCursor = () => {
     let targetY = -100;
     let currentX = -100;
     let currentY = -100;
+    let trailX = -100;
+    let trailY = -100;
+    let angle = 0;
     let lastState: 'default' | 'pointer' | 'text' | 'large-text' = 'default';
 
     // Physics loop for butter smooth gliding
     const animate = () => {
-      currentX += (targetX - currentX) * 0.25; // Lower number = more glide/delay. 0.25 is perfect snappy smoothness.
-      currentY += (targetY - currentY) * 0.25;
+      // Snappy center dot
+      currentX += (targetX - currentX) * 0.28;
+      currentY += (targetY - currentY) * 0.28;
+      
+      // Lagging trailing ring (lower number = smoother delay)
+      trailX += (targetX - trailX) * 0.12;
+      trailY += (targetY - trailY) * 0.12;
+      
+      // Continual rotation of HUD dash arrays
+      angle = (angle + 1.5) % 360;
       
       if (cursorRef.current) {
         cursorRef.current.style.transform = `translate3d(calc(${currentX}px - 50%), calc(${currentY}px - 50%), 0)`;
+      }
+      
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate3d(calc(${trailX}px - 50%), calc(${trailY}px - 50%), 0) rotate(${angle}deg)`;
       }
       
       animationFrameId = requestAnimationFrame(animate);
@@ -43,7 +59,11 @@ const CustomCursor = () => {
           style.cursor === 'pointer' ||
           tag === 'a' ||
           tag === 'button' ||
-          currentElement.classList.contains('inline-video-wrapper')
+          currentElement.classList.contains('inline-video-wrapper') ||
+          currentElement.classList.contains('team-nav-arrow-btn') ||
+          currentElement.classList.contains('team-card-new') ||
+          currentElement.classList.contains('team-progress-slider-container') ||
+          currentElement.classList.contains('evidence-action-btn')
         ) {
           isPointer = true;
           break;
@@ -114,7 +134,6 @@ const CustomCursor = () => {
     };
 
     const onScroll = () => {
-      // Re-evaluate cursor state based on new elements under the static mouse position
       if (targetX < 0 || targetY < 0) return;
       const target = document.elementFromPoint(targetX, targetY);
       if (target) {
@@ -128,7 +147,6 @@ const CustomCursor = () => {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mouseup', onMouseUp);
-    // Use capture phase to catch all scroll events, even on containers
     window.addEventListener('scroll', onScroll, true);
 
     return () => {
@@ -145,7 +163,10 @@ const CustomCursor = () => {
       <div 
         ref={cursorRef}
         className={`custom-cursor-dot ${hoverState} ${isClicking ? 'click' : ''}`}
-        // Inline style transform is now handled directly by the physics loop!
+      />
+      <div 
+        ref={ringRef}
+        className={`custom-cursor-ring ${hoverState} ${isClicking ? 'click' : ''}`}
       />
     </>
   );
