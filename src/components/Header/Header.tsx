@@ -33,20 +33,23 @@ const Header = () => {
   }, []);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
-    // Instantly reset scroll offset on any link click
+    e.preventDefault();
     const lenisInstance = (window as any).lenis;
-    if (lenisInstance) {
-      lenisInstance.scrollTo(0, { immediate: true });
-    }
-    window.scrollTo(0, 0);
 
     if (window.location.hash === targetHash) {
-      e.preventDefault();
+      // Smooth scroll to top if already on this tab
       if (lenisInstance) {
         lenisInstance.scrollTo(0, { duration: 1.2 });
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+    } else {
+      // Instantly reset scroll offsets before updating tab hash
+      if (lenisInstance) {
+        lenisInstance.scrollTo(0, { immediate: true });
+      }
+      window.scrollTo(0, 0);
+      window.location.hash = targetHash;
     }
   };
 
