@@ -1,174 +1,156 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import './CustomCursor.css';
 
 const CustomCursor = () => {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  const [hoverState, setHoverState] = useState<'default' | 'pointer' | 'text' | 'large-text'>('default');
-  const [isClicking, setIsClicking] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let animationFrameId: number;
-    // Start off screen
     let targetX = -100;
     let targetY = -100;
     let currentX = -100;
     let currentY = -100;
-    let trailX = -100;
-    let trailY = -100;
-    let angle = 0;
-    let lastState: 'default' | 'pointer' | 'text' | 'large-text' = 'default';
+    let isHoveringPointer = false;
+    let isHoveringText = false;
+    let currentLabelText = '';
+    let animId: number;
 
-    // Physics loop for butter smooth gliding
-    const animate = () => {
-      // Snappy center dot
-      currentX += (targetX - currentX) * 0.28;
-      currentY += (targetY - currentY) * 0.28;
-      
-      // Lagging trailing ring (lower number = smoother delay)
-      trailX += (targetX - trailX) * 0.12;
-      trailY += (targetY - trailY) * 0.12;
-      
-      // Continual rotation of HUD dash arrays
-      angle = (angle + 1.5) % 360;
-      
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(calc(${currentX}px - 50%), calc(${currentY}px - 50%), 0)`;
-      }
-      
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate3d(calc(${trailX}px - 50%), calc(${trailY}px - 50%), 0) rotate(${angle}deg)`;
-      }
-      
-      animationFrameId = requestAnimationFrame(animate);
-    };
-    
-    animate();
+    const onMouseMove = (e: MouseEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
 
-    const checkCursorState = (clientX: number, clientY: number, target: HTMLElement) => {
-      let state: 'default' | 'pointer' | 'text' | 'large-text' = 'default';
-      
-      // Check interactive elements first (walking up DOM)
-      let currentElement: HTMLElement | null = target;
-      let isPointer = false;
-      while (currentElement) {
-        const style = window.getComputedStyle(currentElement);
-        const tag = currentElement.tagName.toLowerCase();
+      const target = e.target as HTMLElement;
+      if (!target) return;
+
+      // Walk up DOM to find links/buttons/interactive elements
+      let el: HTMLElement | null = target;
+      let pointerFound = false;
+      let hoverLabel = '>> ACCESS';
+
+      while (el) {
+        const tag = el.tagName.toLowerCase();
+        const style = window.getComputedStyle(el);
         
         if (
           style.cursor === 'pointer' ||
           tag === 'a' ||
           tag === 'button' ||
-          currentElement.classList.contains('inline-video-wrapper') ||
-          currentElement.classList.contains('team-nav-arrow-btn') ||
-          currentElement.classList.contains('team-card-new') ||
-          currentElement.classList.contains('team-progress-slider-container') ||
-          currentElement.classList.contains('evidence-action-btn')
+          el.classList.contains('team-nav-arrow-btn') ||
+          el.classList.contains('team-card-new') ||
+          el.classList.contains('form-submit-btn') ||
+          el.classList.contains('nav-link') ||
+          el.classList.contains('hamburger-btn')
         ) {
-          isPointer = true;
+          pointerFound = true;
+          if (el.classList.contains('team-card-new')) {
+            hoverLabel = '>> DECRYPT DOSSIER';
+          } else if (el.classList.contains('nav-link') || tag === 'a') {
+            hoverLabel = '>> NAVIGATE';
+          } else if (el.classList.contains('form-submit-btn')) {
+            hoverLabel = '>> TRANSMIT';
+          } else if (el.classList.contains('inline-video-wrapper') || el.classList.contains('play-btn')) {
+            hoverLabel = '>> PLAY REEL';
+          } else {
+            hoverLabel = '>> ACCESS';
+          }
           break;
         }
-        currentElement = currentElement.parentElement;
+        el = el.parentElement;
       }
 
-      if (isPointer) {
-        state = 'pointer';
-      } else {
-        const tag = target.tagName.toLowerCase();
-        const textTags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'li', 'strong', 'em', 'div'];
-        
-        if (textTags.includes(tag)) {
-          let isExactlyOverText = false;
-          let textFontSize = 0;
-          
-          const walk = document.createTreeWalker(target, NodeFilter.SHOW_TEXT, null);
-          let textNode: Node | null;
-          
-          while ((textNode = walk.nextNode())) {
-            if (textNode.textContent && textNode.textContent.trim().length > 0) {
-              const range = document.createRange();
-              range.selectNodeContents(textNode);
-              const rects = range.getClientRects();
-              
-              for (let i = 0; i < rects.length; i++) {
-                const rect = rects[i];
-                const isHorizontal = rect.width >= rect.height;
-                const vInset = isHorizontal ? rect.height * 0.2 : 0;
-                const hInset = isHorizontal ? 0 : rect.width * 0.2;
-                
-                if (
-                  clientX >= (rect.left + hInset) && 
-                  clientX <= (rect.right - hInset) &&
-                  clientY >= (rect.top + vInset) && 
-                  clientY <= (rect.bottom - vInset)
-                ) {
-                  isExactlyOverText = true;
-                  if (textNode.parentElement) {
-                    textFontSize = parseFloat(window.getComputedStyle(textNode.parentElement).fontSize);
-                  }
-                  break;
-                }
-              }
-            }
-            if (isExactlyOverText) break;
-          }
+      isHoveringPointer = pointerFound;
 
-          if (isExactlyOverText) {
-            state = textFontSize > 40 ? 'large-text' : 'text';
-          }
+      if (!pointerFound) {
+        const tag = target.tagName.toLowerCase();
+        const textTags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'li', 'label', 'textarea', 'input'];
+        isHoveringText = textTags.includes(tag) || target.closest('p') !== null;
+      } else {
+        isHoveringText = false;
+      }
+
+      // Prepare coordinate template
+      if (isHoveringPointer) {
+        currentLabelText = hoverLabel;
+      } else if (isHoveringText) {
+        currentLabelText = 'TXT_SELECT';
+      } else {
+        currentLabelText = `X: ${Math.round(targetX)} Y: ${Math.round(targetY)}`;
+      }
+    };
+
+    const animate = () => {
+      // 0.35 easing factor matches the snappy tracking on Killian Herzer's site
+      currentX += (targetX - currentX) * 0.35;
+      currentY += (targetY - currentY) * 0.35;
+
+      if (containerRef.current) {
+        containerRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      }
+
+      if (dotRef.current) {
+        if (isHoveringPointer) {
+          dotRef.current.className = 'custom-cursor-dot pointer';
+        } else if (isHoveringText) {
+          dotRef.current.className = 'custom-cursor-dot text';
+        } else {
+          dotRef.current.className = 'custom-cursor-dot';
         }
       }
 
-      if (state !== lastState) {
-        lastState = state;
-        setHoverState(state);
+      if (labelRef.current) {
+        labelRef.current.textContent = currentLabelText;
+        if (isHoveringPointer) {
+          labelRef.current.className = 'custom-cursor-label pointer';
+        } else if (isHoveringText) {
+          labelRef.current.className = 'custom-cursor-label text';
+        } else {
+          labelRef.current.className = 'custom-cursor-label';
+        }
       }
+
+      animId = requestAnimationFrame(animate);
     };
 
-    const onMouseMove = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      if (e.target) {
-        checkCursorState(e.clientX, e.clientY, e.target as HTMLElement);
-      }
+    const handleMouseDown = () => {
+      if (dotRef.current) dotRef.current.classList.add('clicking');
     };
 
-    const onScroll = () => {
-      if (targetX < 0 || targetY < 0) return;
-      const target = document.elementFromPoint(targetX, targetY);
-      if (target) {
-        checkCursorState(targetX, targetY, target as HTMLElement);
-      }
+    const handleMouseUp = () => {
+      if (dotRef.current) dotRef.current.classList.remove('clicking');
     };
 
-    const onMouseDown = () => setIsClicking(true);
-    const onMouseUp = () => setIsClicking(false);
+    const handleMouseLeave = () => {
+      if (containerRef.current) containerRef.current.style.opacity = '0';
+    };
+
+    const handleMouseEnter = () => {
+      if (containerRef.current) containerRef.current.style.opacity = '1';
+    };
 
     window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    
+    animId = requestAnimationFrame(animate);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      cancelAnimationFrame(animId);
     };
   }, []);
 
   return (
-    <>
-      <div 
-        ref={cursorRef}
-        className={`custom-cursor-dot ${hoverState} ${isClicking ? 'click' : ''}`}
-      />
-      <div 
-        ref={ringRef}
-        className={`custom-cursor-ring ${hoverState} ${isClicking ? 'click' : ''}`}
-      />
-    </>
+    <div ref={containerRef} className="custom-cursor-container">
+      <div ref={dotRef} className="custom-cursor-dot" />
+      <div ref={labelRef} className="custom-cursor-label" />
+    </div>
   );
 };
 
