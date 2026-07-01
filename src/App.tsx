@@ -14,17 +14,20 @@ import CTASection from './components/CTASection/CTASection';
 import Footer from './components/Footer/Footer';
 import AboutPage from './components/AboutPage/AboutPage';
 import CustomCursor from './components/CustomCursor/CustomCursor';
+import ContactPage from './components/ContactPage/ContactPage';
 import './index.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
-  const [currentTab, setCurrentTab] = useState<'home' | 'about'>('home');
+  const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'contact'>('home');
 
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash === '#about') {
         setCurrentTab('about');
+      } else if (window.location.hash === '#contact') {
+        setCurrentTab('contact');
       } else {
         setCurrentTab('home');
       }
@@ -90,9 +93,9 @@ function App() {
       <Header />
 
       {/* Conditional Rendering of Pages */}
-      {currentTab === 'about' ? (
-        <AboutPage />
-      ) : (
+      {currentTab === 'about' && <AboutPage />}
+      {currentTab === 'contact' && <ContactPage />}
+      {currentTab === 'home' && (
         <>
           {/* Brand Video Section (spafax-style reference video) */}
           <BrandVideoSection />
