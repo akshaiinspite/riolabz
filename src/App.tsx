@@ -29,7 +29,7 @@ function App() {
     const handleHashChange = () => {
       if (window.location.hash === '#about') {
         setCurrentTab('about');
-      } else if (window.location.hash === '#projects') {
+      } else if (window.location.hash.startsWith('#projects')) {
         setCurrentTab('projects');
       } else if (window.location.hash === '#contact') {
         setCurrentTab('contact');
