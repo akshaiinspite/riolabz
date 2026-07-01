@@ -247,8 +247,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
   transition: border-color 0.4s ease;
 }
 
@@ -257,18 +258,21 @@
 }
 
 .form-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.45);
-  margin-bottom: 8px;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 6px;
+  text-transform: uppercase;
 }
 
 .label-index {
   color: var(--color-primary, #e10600);
+  font-weight: 800;
 }
 
 .form-label .req {
@@ -279,15 +283,18 @@
   background: transparent;
   border: none;
   outline: none;
-  font-family: var(--font-inter, 'Montserrat', sans-serif);
-  font-size: 1rem;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
   color: #ffffff;
-  padding: 6px 0;
+  padding: 8px 0;
   width: 100%;
+  letter-spacing: 0.02em;
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
 }
 
 .form-textarea {
@@ -298,13 +305,15 @@
 .input-hud-status {
   position: absolute;
   right: 0;
-  bottom: 8px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.2);
-  letter-spacing: 0.05em;
+  bottom: 10px;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.06em;
   pointer-events: none;
   transition: color 0.3s ease;
+  text-transform: uppercase;
 }
 
 .form-group.focused .input-hud-status {
