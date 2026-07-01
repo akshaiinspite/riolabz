@@ -1,0 +1,504 @@
+.projects-page {
+  position: relative;
+  width: 100%;
+  background-color: #050507;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------------
+   FULL-SCREEN CATEGORY SECTIONS
+   ---------------------------------------------------- */
+.projects-category-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ff1e1e; /* Vivid red background matching user screenshot */
+  padding: 160px 0 100px 0;
+  border-bottom: 2px solid #000000;
+  overflow: hidden;
+}
+
+/* Alternative category blocks can have slightly different geometric angles or colors */
+.projects-category-section:nth-child(even) {
+  background-color: #d60500;
+}
+
+/* ----------------------------------------------------
+   RED GEOMETRIC BACKGROUND ACCENTS
+   ---------------------------------------------------- */
+.red-geometric-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.geom-line {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.geom-line.line-1 {
+  top: 0;
+  left: 20%;
+  width: 2px;
+  height: 100%;
+  transform: skewX(-15deg);
+}
+
+.geom-line.line-2 {
+  top: 0;
+  left: 60%;
+  width: 1.5px;
+  height: 100%;
+  transform: skewX(15deg);
+}
+
+/* Semi-transparent dark geometric overlay shapes */
+.geom-shape.shape-polygon {
+  position: absolute;
+  top: 15%;
+  right: -5%;
+  width: 45vw;
+  height: 45vw;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0%, transparent 80%);
+  clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+  animation: rotateShape 60s infinite linear;
+}
+
+@keyframes rotateShape {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ----------------------------------------------------
+   LAYOUT GRID CONTAINER
+   ---------------------------------------------------- */
+.projects-category-container {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 1360px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.projects-hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 70px;
+  align-items: center;
+}
+
+/* ----------------------------------------------------
+   LEFT SIDE INFO (Typography)
+   ---------------------------------------------------- */
+.projects-hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #ffffff;
+}
+
+.projects-accent-chevron-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.accent-chevron-black {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  color: #000000;
+}
+
+.accent-badge-text-black {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: #000000;
+  letter-spacing: 0.15em;
+  font-weight: bold;
+}
+
+.projects-category-heading {
+  font-family: var(--font-anton, 'Montserrat', sans-serif);
+  font-size: clamp(3rem, 5.5vw, 6rem);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0 0 24px 0;
+  color: #ffffff;
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.projects-category-desc {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 35px;
+  max-width: 580px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Bold CTA Button */
+.projects-cta-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 30px;
+  font-family: var(--font-oswald, sans-serif);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.projects-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.projects-cta-arrow {
+  font-family: 'Share Tech Mono', monospace;
+  color: #ff1e1e;
+  transition: transform 0.3s ease;
+}
+
+.projects-cta-btn:hover .projects-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* ----------------------------------------------------
+   RIGHT SIDE COMPOSITION (Floating Images)
+   ---------------------------------------------------- */
+.projects-hero-right {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.projects-hero-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  background-color: #111;
+}
+
+.projects-main-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.projects-hero-image-wrapper:hover .projects-main-hero-img {
+  transform: scale(1.03);
+}
+
+/* Glass HUD overlay on main hero */
+.glass-hud-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 10px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hud-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hud-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #ff1e1e;
+  font-weight: bold;
+}
+
+/* Floating Overlapping Images */
+.projects-floating-img {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.projects-floating-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.projects-floating-img.img-float-1 {
+  bottom: -40px;
+  left: -50px;
+  width: 180px;
+  height: 120px;
+  z-index: 5;
+  transform: rotate(-3deg);
+}
+
+.projects-floating-img.img-float-2 {
+  top: -30px;
+  right: -30px;
+  width: 150px;
+  height: 180px;
+  z-index: 5;
+  transform: rotate(4deg);
+}
+
+/* ----------------------------------------------------
+   SUB CATEGORY HORIZONTAL CONTINUOUS MARQUEE
+   ---------------------------------------------------- */
+.projects-marquee-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.projects-marquee-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.marquee-header-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: #000000;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.marquee-header-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35) 0%, transparent 100%);
+}
+
+.projects-marquee-track-wrapper {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden;
+  padding: 10px 0;
+}
+
+.projects-marquee-track {
+  display: flex;
+  gap: 30px;
+  width: max-content;
+  animation: marqueeAnimation 38s linear infinite;
+}
+
+/* Pause scroll animation on hover so details are readable */
+.projects-marquee-track-wrapper:hover .projects-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeAnimation {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(calc(-50% - 15px), 0, 0); /* Perfect seamless loop offset */
+  }
+}
+
+/* ----------------------------------------------------
+   SUB-CATEGORY CARD STYLING
+   ---------------------------------------------------- */
+.projects-subcard {
+  position: relative;
+  width: 320px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.projects-subcard:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+}
+
+.projects-subcard-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.projects-subcard-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.projects-subcard:hover .projects-subcard-img {
+  transform: scale(1.08);
+}
+
+.projects-subcard-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+.projects-subcard-info {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.projects-subcard-title {
+  font-family: var(--font-oswald, 'Montserrat', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.02em;
+}
+
+.projects-subcard-desc {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 20px 0;
+  flex-grow: 1;
+}
+
+/* Thin red accent line inside card */
+.projects-subcard-accent-line {
+  display: block;
+  width: 30px;
+  height: 2px;
+  background-color: var(--color-primary, #e10600);
+  margin-bottom: 20px;
+  transition: width 0.35s ease;
+}
+
+.projects-subcard:hover .projects-subcard-accent-line {
+  width: 100%;
+}
+
+.projects-subcard-learn-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  padding: 0;
+  cursor: pointer;
+  width: max-content;
+}
+
+.projects-subcard-learn-btn .btn-arrow {
+  color: var(--color-primary, #e10600);
+  transition: transform 0.3s ease;
+}
+
+.projects-subcard-learn-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* ----------------------------------------------------
+   RESPONSIVE DESIGN (Media Queries)
+   ---------------------------------------------------- */
+@media (max-width: 1100px) {
+  .projects-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+  .projects-category-section {
+    padding-top: 120px;
+    padding-bottom: 80px;
+  }
+
+  .projects-floating-img.img-float-1 {
+    left: -20px;
+    width: 150px;
+    height: 100px;
+  }
+
+  .projects-floating-img.img-float-2 {
+    right: -10px;
+    width: 120px;
+    height: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-category-heading {
+    font-size: 2.8rem;
+  }
+
+  .projects-floating-img {
+    display: none; /* Hide floating images on mobile to keep layout clean */
+  }
+
+  .projects-subcard {
+    width: 280px;
+  }
+
+  .projects-marquee-track {
+    gap: 20px;
+  }
+}
