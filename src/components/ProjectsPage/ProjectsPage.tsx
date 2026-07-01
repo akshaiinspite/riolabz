@@ -210,6 +210,28 @@ const ProjectsPage = () => {
     }
   }, [selectedSubcategoryIdx]);
 
+  const renderHighlightedTitle = (title: string) => {
+    const words = title.split(' ');
+    if (words.length <= 1) return title;
+    
+    if (title.includes('&')) {
+      const parts = title.split('&');
+      return (
+        <>
+          {parts[0]} & <span className="board-title-highlight">{parts[1].trim()}</span>
+        </>
+      );
+    }
+    
+    const lastWord = words[words.length - 1];
+    const firstPart = words.slice(0, -1).join(' ');
+    return (
+      <>
+        {firstPart} <span className="board-title-highlight">{lastWord}</span>
+      </>
+    );
+  };
+
   const activeCategory = CATEGORIES_DATA[selectedCategoryIdx];
 
   return (
@@ -263,8 +285,13 @@ const ProjectsPage = () => {
             <span className="board-tag">// SYSTEM: EVIDENCE_BOARD</span>
             <span className="board-status">SECTOR: ACTIVE</span>
           </div>
-          <h2 className="board-category-title">{activeCategory.title}</h2>
-          <p className="board-category-desc">{activeCategory.description}</p>
+          <h2 className="board-category-title">
+            {renderHighlightedTitle(activeCategory.title)}
+          </h2>
+          <div className="board-desc-box">
+            <span className="board-desc-line"></span>
+            <p className="board-category-desc">{activeCategory.description}</p>
+          </div>
         </div>
 
         {/* SUBCATEGORY CARDS BOARD (White vertical cards with desaturated images) */}

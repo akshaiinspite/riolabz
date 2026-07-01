@@ -199,13 +199,35 @@
 
 .board-category-title {
   font-family: var(--font-anton, sans-serif);
-  font-size: clamp(2rem, 5.5vw, 4.5rem);
+  font-size: clamp(3rem, 5.5vw, 5.2rem);
   font-weight: 900;
-  line-height: 1;
-  letter-spacing: 0.02em;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
   color: #ffffff;
-  margin: 0 0 1.2rem 0;
+  margin: 0 0 1rem 0;
   text-transform: uppercase;
+}
+
+.board-title-highlight {
+  color: var(--color-primary, #e10600);
+  text-shadow: 0 0 35px rgba(225, 6, 0, 0.35);
+}
+
+.board-desc-box {
+  position: relative;
+  padding-left: 2rem;
+  margin-top: 1.8rem;
+  margin-bottom: 2.2rem;
+}
+
+.board-desc-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--color-primary, #e10600);
+  box-shadow: 0 0 10px rgba(225, 6, 0, 0.5);
 }
 
 .board-category-desc {
@@ -214,7 +236,7 @@
   font-size: 1.05rem;
   font-weight: 300;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.55);
   margin: 0;
 }
 
