@@ -162,6 +162,29 @@ const ProjectsPage = () => {
     setActiveDropdown(null);
   };
 
+  // Synchronize selected category with URL hash
+  useEffect(() => {
+    const handleHashCheck = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#projects/commercial')) {
+        setSelectedCategoryIdx(0);
+        setSelectedSubcategoryIdx(0);
+      } else if (hash.startsWith('#projects/films')) {
+        setSelectedCategoryIdx(1);
+        setSelectedSubcategoryIdx(2); // default to CGI & VFX
+      } else if (hash.startsWith('#projects/immersive')) {
+        setSelectedCategoryIdx(2);
+        setSelectedSubcategoryIdx(0);
+      }
+    };
+
+    handleHashCheck();
+    window.addEventListener('hashchange', handleHashCheck);
+    return () => {
+      window.removeEventListener('hashchange', handleHashCheck);
+    };
+  }, []);
+
   useEffect(() => {
     // Initial GSAP reveal animations for content board
     gsap.fromTo(

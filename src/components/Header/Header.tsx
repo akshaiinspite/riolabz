@@ -4,7 +4,7 @@ import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isProjectsPage, setIsProjectsPage] = useState(window.location.hash === '#projects');
+  const [isProjectsPage, setIsProjectsPage] = useState(window.location.hash.startsWith('#projects'));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,7 +16,7 @@ const Header = () => {
     };
 
     const handleHash = () => {
-      setIsProjectsPage(window.location.hash === '#projects');
+      setIsProjectsPage(window.location.hash.startsWith('#projects'));
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -53,6 +53,16 @@ const Header = () => {
     }
   };
 
+  const handleDropdownClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
+    e.preventDefault();
+    const lenisInstance = (window as any).lenis;
+    if (lenisInstance) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    }
+    window.scrollTo(0, 0);
+    window.location.hash = targetHash;
+  };
+
   const handleLogoClick = () => {
     window.location.hash = '#home';
     const lenisInstance = (window as any).lenis;
@@ -78,10 +88,26 @@ const Header = () => {
           About
           <span className="underline-indicator"></span>
         </a>
-        <a href="#projects" className="nav-link" onClick={(e) => handleLinkClick(e, '#projects')}>
-          Projects
-          <span className="underline-indicator"></span>
-        </a>
+        
+        {/* Projects Nav Link with Category Dropdown */}
+        <div className="nav-dropdown-wrapper">
+          <a href="#projects" className="nav-link" onClick={(e) => handleLinkClick(e, '#projects')}>
+            Projects <span className="caret">▼</span>
+            <span className="underline-indicator"></span>
+          </a>
+          <div className="header-dropdown-menu">
+            <a href="#projects/commercial" className="header-dropdown-item" onClick={(e) => handleDropdownClick(e, '#projects/commercial')}>
+              Commercial Projects
+            </a>
+            <a href="#projects/films" className="header-dropdown-item" onClick={(e) => handleDropdownClick(e, '#projects/films')}>
+              Films & Entertainment
+            </a>
+            <a href="#projects/immersive" className="header-dropdown-item" onClick={(e) => handleDropdownClick(e, '#projects/immersive')}>
+              AR & VR Experiences
+            </a>
+          </div>
+        </div>
+
         <a href="#contact" className="nav-link" onClick={(e) => handleLinkClick(e, '#contact')}>
           Contact Us
           <span className="underline-indicator"></span>
