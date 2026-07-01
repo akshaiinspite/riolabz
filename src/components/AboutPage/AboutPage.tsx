@@ -836,43 +836,49 @@ const AboutPage = () => {
 
         <div className="studio-floor-container">
           
-          <div className="floor-badge-group">
-            <span className="accent-chevron-red">&gt;&gt;</span>
-            <span className="accent-badge-text">PHYSICAL ARCHITECTURE</span>
-          </div>
-
-          <div className="cinematic-heading-group">
-            <div className="floor-backdrop-text">FACILITY</div>
-            <h2 className="floor-fore-title">STUDIO FLOOR</h2>
-          </div>
-
-          {/* New General Content about Studio Floor */}
-          <div className="floor-intro-text-block">
-            <p>
-              Spanning across two custom-designed levels, the X.Alt Studio space is architected for peak creative synergy and technological horsepower. We integrate high-speed computing pipelines with acoustic optimization to bridge the gap between imagination and execution.
-            </p>
-            <p>
-              From raw environment synthesis to post-production color mastering and multi-channel sound staging, our floor plan is designed to streamline workflow collaboration between digital artists and directors.
-            </p>
-          </div>
-
-          {/* Sleek, Smaller Image Presentation */}
-          <div className="floor-images-row-modern">
-            <div className="floor-img-frame frame-1">
-              <img src={studioFloorVfxImg} alt="VFX Synthesis Bay" className="floor-display-img" />
-              <div className="floor-frame-overlay">
-                <span className="frame-label">// ZONE_01: VFX SYNTHESIS BAY</span>
+          <div className="floor-grid-split">
+            
+            {/* Left Column: Title & Text Content */}
+            <div className="floor-text-column">
+              <div className="floor-badge-group">
+                <span className="accent-chevron-red">&gt;&gt;</span>
+                <span className="accent-badge-text">PHYSICAL ARCHITECTURE</span>
               </div>
-              <div className="floor-scanlines"></div>
+
+              <div className="cinematic-heading-group">
+                <div className="floor-backdrop-text">FACILITY</div>
+                <h2 className="floor-fore-title">STUDIO FLOOR</h2>
+              </div>
+
+              <div className="floor-intro-text-block">
+                <p>
+                  Spanning across two custom-designed levels, the X.Alt Studio space is architected for peak creative synergy and technological horsepower. We integrate high-speed computing pipelines with acoustic optimization to bridge the gap between imagination and execution.
+                </p>
+                <p>
+                  From raw environment synthesis to post-production color mastering and multi-channel sound staging, our floor plan is designed to streamline workflow collaboration between digital artists and directors.
+                </p>
+              </div>
             </div>
 
-            <div className="floor-img-frame frame-2">
-              <img src={studioFloorAudioImg} alt="Sonic Resonance Lab" className="floor-display-img" />
-              <div className="floor-frame-overlay">
-                <span className="frame-label">// ZONE_02: SONIC MIXING SUITE</span>
+            {/* Right Column: Stacked / Offset Images */}
+            <div className="floor-images-column">
+              <div className="floor-img-frame frame-1">
+                <img src={studioFloorVfxImg} alt="VFX Synthesis Bay" className="floor-display-img" />
+                <div className="floor-frame-overlay">
+                  <span className="frame-label">// ZONE_01: VFX SYNTHESIS BAY</span>
+                </div>
+                <div className="floor-scanlines"></div>
               </div>
-              <div className="floor-scanlines"></div>
+
+              <div className="floor-img-frame frame-2">
+                <img src={studioFloorAudioImg} alt="Sonic Resonance Lab" className="floor-display-img" />
+                <div className="floor-frame-overlay">
+                  <span className="frame-label">// ZONE_02: SONIC MIXING SUITE</span>
+                </div>
+                <div className="floor-scanlines"></div>
+              </div>
             </div>
+
           </div>
 
         </div>
