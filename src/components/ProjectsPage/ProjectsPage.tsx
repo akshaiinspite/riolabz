@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import './ProjectsPage.css';
 
@@ -18,6 +18,8 @@ import workstationVfx from '../../assets/images/img/workstation_vfx_studio.png';
 import img1 from '../../assets/images/img/img-1.jpg';
 import img2 from '../../assets/images/img/img-2.jpg';
 import img3 from '../../assets/images/img/img-3.jpg';
+
+import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 
 interface SubCategory {
   title: string;
@@ -80,29 +82,29 @@ const CATEGORIES_DATA: CategorySection[] = [
     floatImage2: designArtists,
     subCategories: [
       {
-        title: 'Film Production',
-        description: 'Short films, documentaries, and cinematic storytelling.',
+        title: 'Movie Previz',
+        description: 'Pre-visualization and structural blockouts.',
+        image: img1,
+      },
+      {
+        title: 'Motion Poster',
+        description: 'Dynamic animated poster designs.',
         image: img2,
       },
       {
-        title: 'Music Videos',
-        description: 'High-end artistic videos and artist brand visuals.',
-        image: img3,
-      },
-      {
-        title: 'VFX & CGI',
+        title: 'CGI & VFX',
         description: 'Immersive visual effects and realistic 3D environments.',
         image: commercialVfx,
       },
       {
-        title: 'Post Production',
-        description: 'Professional color grading, sound design and editing.',
-        image: workstationVfx,
+        title: 'Lyrical Video',
+        description: 'Aesthetic wordplay and audio-reactive animations.',
+        image: img3,
       },
       {
-        title: 'Content Creation',
-        description: 'YouTube shows, OTT releases and visual podcasts.',
-        image: img1,
+        title: 'Title Animation',
+        description: 'High-impact title cards and credits sequencings.',
+        image: filmsHero,
       },
     ],
   },
@@ -144,134 +146,171 @@ const CATEGORIES_DATA: CategorySection[] = [
 ];
 
 const ProjectsPage = () => {
+  const [selectedCategoryIdx, setSelectedCategoryIdx] = useState<number>(1); // Default: Films & Entertainment
+  const [selectedSubcategoryIdx, setSelectedSubcategoryIdx] = useState<number>(2); // Default: CGI & VFX
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+
+  const handleSelect = (categoryIdx: number, subcategoryIdx: number) => {
+    setSelectedCategoryIdx(categoryIdx);
+    setSelectedSubcategoryIdx(subcategoryIdx);
+    setActiveDropdown(null);
+  };
+
+  const handleCategorySelect = (categoryIdx: number) => {
+    setSelectedCategoryIdx(categoryIdx);
+    setSelectedSubcategoryIdx(0); // Default to the first subcategory
+    setActiveDropdown(null);
+  };
+
   useEffect(() => {
-    // Reveal animations using GSAP
-    const sections = gsap.utils.toArray('.projects-category-section');
-    sections.forEach((sec: any) => {
-      gsap.fromTo(
-        sec.querySelector('.projects-hero-left'),
-        { opacity: 0, x: -60 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 1.2,
-          scrollTrigger: {
-            trigger: sec,
-            start: 'top 80%',
-            toggleActions: 'play none none none',
-          },
-        }
-      );
+    // Initial GSAP reveal animations for content board
+    gsap.fromTo(
+      '.board-header',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+    );
+    gsap.fromTo(
+      '.board-subcard',
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out', delay: 0.1 }
+    );
+  }, [selectedCategoryIdx]);
 
+  useEffect(() => {
+    // Trigger slide-up animation for the gallery when subcategory changes
+    if (selectedSubcategoryIdx !== null) {
       gsap.fromTo(
-        sec.querySelector('.projects-hero-right'),
-        { opacity: 0, scale: 0.95, y: 40 },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 1.4,
-          scrollTrigger: {
-            trigger: sec,
-            start: 'top 80%',
-            toggleActions: 'play none none none',
-          },
-        }
+        '.board-gallery-container',
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
       );
-    });
+    }
+  }, [selectedSubcategoryIdx]);
 
-    return () => {
-      // Clean up scroll triggers
-    };
-  }, []);
+  const activeCategory = CATEGORIES_DATA[selectedCategoryIdx];
 
   return (
-    <div className="projects-page">
-      {CATEGORIES_DATA.map((cat, idx) => (
-        <section key={cat.id} className="projects-category-section">
-          {/* Symmetrical Red background geometric decoration panels */}
-          <div className="red-geometric-bg">
-            <div className="geom-line line-1"></div>
-            <div className="geom-line line-2"></div>
-            <div className="geom-shape shape-polygon"></div>
-          </div>
+    <div className="projects-page-new">
+      
+      {/* TOP DROPDOWN NAVIGATION BAR */}
+      <div className="projects-nav-bar">
+        <div className="nav-logo-area" onClick={() => window.location.hash = '#home'}>
+          <img src={logoImg} alt="Xalt Studio" className="projects-nav-logo" />
+        </div>
 
-          <div className="projects-category-container">
-            {/* Category Hero Block */}
-            <div className="projects-hero-grid">
-              
-              {/* Left Side Info */}
-              <div className="projects-hero-left">
-                <div className="projects-accent-chevron-group">
-                  <span className="accent-chevron-black">&gt;&gt;</span>
-                  <span className="accent-badge-text-black">CATEGORY {idx + 1}</span>
-                </div>
-                
-                <h1 className="projects-category-heading">{cat.title}</h1>
-                <p className="projects-category-desc">{cat.description}</p>
-                
-                <button className="projects-cta-btn">
-                  <span>INITIATE OVERVIEW</span>
-                  <span className="projects-cta-arrow">&gt;&gt;</span>
-                </button>
-              </div>
-
-              {/* Right Side Floating Image Composition */}
-              <div className="projects-hero-right">
-                <div className="projects-hero-image-wrapper">
-                  <img src={cat.heroImage} alt={cat.title} className="projects-main-hero-img" />
-                  <div className="glass-hud-panel">
-                    <span className="hud-label">[FEATURED COMPOSITION]</span>
-                    <span className="hud-value">REF_SEC_0{idx + 1}</span>
+        <div className="projects-dropdowns-group">
+          {CATEGORIES_DATA.map((cat, idx) => (
+            <div 
+              key={cat.id}
+              className={`proj-dropdown-wrapper ${activeDropdown === idx ? 'expanded' : ''}`}
+              onMouseEnter={() => setActiveDropdown(idx)}
+              onMouseLeave={() => setActiveDropdown(null)}
+            >
+              <button 
+                className={`proj-dropdown-trigger ${selectedCategoryIdx === idx ? 'active' : ''}`}
+                onClick={() => handleCategorySelect(idx)}
+              >
+                <span>{cat.title}</span>
+                <span className="dropdown-caret">▼</span>
+              </button>
+              <div className="proj-dropdown-menu">
+                {cat.subCategories.map((sub, sIdx) => (
+                  <div 
+                    key={sIdx} 
+                    className={`proj-dropdown-item ${selectedCategoryIdx === idx && selectedSubcategoryIdx === sIdx ? 'selected' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(idx, sIdx);
+                    }}
+                  >
+                    {sub.title}
                   </div>
-                </div>
-
-                {/* Overlapping Floating Images */}
-                <div className="projects-floating-img img-float-1">
-                  <img src={cat.floatImage1} alt="Floating angle 1" />
-                </div>
-                <div className="projects-floating-img img-float-2">
-                  <img src={cat.floatImage2} alt="Floating angle 2" />
-                </div>
-              </div>
-
-            </div>
-
-            {/* Sub-categories horizontal continuous marquee row */}
-            <div className="projects-marquee-container">
-              <div className="projects-marquee-header">
-                <span className="marquee-header-label">SUB-SERVICES // DECRYPTED_NODES</span>
-                <span className="marquee-header-line"></span>
-              </div>
-
-              <div className="projects-marquee-track-wrapper">
-                <div className="projects-marquee-track">
-                  {/* Render the sub-categories list twice to support continuous looping marquee */}
-                  {[...cat.subCategories, ...cat.subCategories].map((sub, sIdx) => (
-                    <div key={sIdx} className="projects-subcard">
-                      <div className="projects-subcard-img-wrapper">
-                        <img src={sub.image} alt={sub.title} className="projects-subcard-img" />
-                        <div className="projects-subcard-overlay"></div>
-                      </div>
-
-                      <div className="projects-subcard-info">
-                        <h4 className="projects-subcard-title">{sub.title}</h4>
-                        <p className="projects-subcard-desc">{sub.description}</p>
-                        <span className="projects-subcard-accent-line"></span>
-                        <button className="projects-subcard-learn-btn">
-                          <span>LEARN MORE</span>
-                          <span className="btn-arrow">&gt;&gt;</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
+          ))}
+        </div>
+      </div>
 
+      {/* MAIN CONTENT AREA */}
+      <div className="projects-board-section">
+        <div className="board-header">
+          <div className="board-meta">
+            <span className="rec-blink-dot"></span>
+            <span className="board-tag">// SYSTEM: EVIDENCE_BOARD</span>
+            <span className="board-status">SECTOR: ACTIVE</span>
           </div>
-        </section>
-      ))}
+          <h2 className="board-category-title">{activeCategory.title}</h2>
+          <p className="board-category-desc">{activeCategory.description}</p>
+        </div>
+
+        {/* SUBCATEGORY CARDS BOARD (White vertical cards with desaturated images) */}
+        <div className="board-cards-grid">
+          {activeCategory.subCategories.map((sub, sIdx) => {
+            const isSelected = selectedSubcategoryIdx === sIdx;
+            return (
+              <div 
+                key={sIdx} 
+                className={`board-subcard ${isSelected ? 'active-card' : ''}`}
+                onClick={() => setSelectedSubcategoryIdx(sIdx)}
+              >
+                <div className="board-subcard-header">
+                  <span className="board-subcard-title">{sub.title}</span>
+                </div>
+                
+                <div className="board-subcard-img-container">
+                  <img src={sub.image} alt={sub.title} className="board-subcard-img" />
+                  <div className="board-subcard-filter"></div>
+                </div>
+
+                <div className="board-subcard-indicator">
+                  <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO DECRYPT'}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* DETAILED SUB-CATEGORY GALLERY SECTION */}
+      {selectedSubcategoryIdx !== null && activeCategory.subCategories[selectedSubcategoryIdx] && (
+        <div 
+          className="board-gallery-panel"
+          style={{ backgroundImage: `url(${activeCategory.subCategories[selectedSubcategoryIdx].image})` }}
+        >
+          <div className="board-gallery-backdrop-blur"></div>
+          <div className="board-gallery-vignette"></div>
+
+          <div className="board-gallery-container">
+            <div className="gallery-header">
+              <div className="gallery-logo-tag">
+                <span className="accent-chevron-red">&gt;&gt;</span>
+                <span className="gallery-mono-text">DECRYPTED_NODE // {activeCategory.subCategories[selectedSubcategoryIdx].title.toUpperCase()}</span>
+              </div>
+              <h3 className="gallery-title">{activeCategory.subCategories[selectedSubcategoryIdx].title}</h3>
+              <p className="gallery-desc">
+                {activeCategory.subCategories[selectedSubcategoryIdx].description || 'High-end cinema blockout and environmental rendering processes tailored for standard and creative production demands.'}
+              </p>
+            </div>
+
+            {/* Grid of Empty Red Rounded Rectangles */}
+            <div className="gallery-empty-grid">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="gallery-empty-slot">
+                  <div className="slot-corner tl"></div>
+                  <div className="slot-corner tr"></div>
+                  <div className="slot-corner bl"></div>
+                  <div className="slot-corner br"></div>
+                  <div className="slot-radar-sweep"></div>
+                  <div className="slot-label">INDEX_SLOT_0{i + 1}</div>
+                  <div className="slot-coordinate">GRID_COORD_{12 + i * 8}_X</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
