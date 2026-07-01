@@ -7,7 +7,6 @@ import './AboutPage.css';
 // Import images
 import studioWorkspaceImg from '../../assets/images/about/studio_workspace.png';
 import designArtistsImg from '../../assets/images/about/design_artists.png';
-import creativeBrainstormImg from '../../assets/images/about/creative_brainstorm.png';
 import studioFloorVfxImg from '../../assets/images/about/studio_floor_vfx.png';
 import studioFloorAudioImg from '../../assets/images/about/studio_floor_audio.png';
 
@@ -591,16 +590,6 @@ const AboutPage = () => {
           },
         });
 
-        gsap.to('.story-offset-wrapper.wrap-3', {
-          y: -25,
-          scrollTrigger: {
-            trigger: aboutSectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        });
-
         // Studio Floor Cards Reveal
         gsap.fromTo(
           '.floor-card',
@@ -819,15 +808,6 @@ const AboutPage = () => {
               <img
                 src={designArtistsImg}
                 alt="X.Alt Design Artists at Workstations"
-                className="story-parallax-img"
-              />
-              <div className="img-glass-overlay-new"></div>
-            </div>
-
-            <div className="story-offset-wrapper wrap-3">
-              <img
-                src={creativeBrainstormImg}
-                alt="X.Alt Creative Collaborations"
                 className="story-parallax-img"
               />
               <div className="img-glass-overlay-new"></div>
