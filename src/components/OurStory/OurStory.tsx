@@ -66,7 +66,7 @@ const OurStory = () => {
       <div className="our-story-container">
         <div className="our-story-split-grid">
           
-          {/* Left Column: Badge, Title & Descriptions */}
+          {/* Left Column: Badge & Title */}
           <motion.div 
             className="our-story-left-col"
             initial={{ opacity: 0, y: 40 }}
@@ -78,7 +78,16 @@ const OurStory = () => {
             <h2 className="story-title">
               WHO <span className="title-highlight">WE ARE</span>
             </h2>
-            
+          </motion.div>
+          
+          {/* Right Column: Descriptions & Stats Layout */}
+          <motion.div 
+            className="our-story-right-col"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
+          >
             <div className="about-description-box">
               <span className="about-accent-line"></span>
               <p className="about-intro-text">
@@ -88,47 +97,20 @@ const OurStory = () => {
                 X.ALT Studio bridges the gap between raw imagination and technical execution. We craft high-end visual effects, interactive 3D assets, and immersive XR experiences that do not just tell a story—they transport audiences entirely.
               </p>
             </div>
-          </motion.div>
-          
-          {/* Right Column: Stats Cards Grid */}
-          <motion.div 
-            className="our-story-right-col"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
-          >
-            <div className="story-stats-grid">
-              <div className="stat-card">
-                <div className="stat-glow"></div>
-                <h3 className="stat-number">
-                  <AnimatedCounter target={15} suffix="+" />
-                </h3>
-                <p className="stat-label">Years Experience</p>
-              </div>
-              
-              <div className="stat-card">
-                <div className="stat-glow"></div>
+
+            <div className="story-stats-layout">
+              <div className="stat-item">
                 <h3 className="stat-number">
                   <AnimatedCounter target={250} suffix="+" />
                 </h3>
                 <p className="stat-label">Projects Completed</p>
               </div>
 
-              <div className="stat-card">
-                <div className="stat-glow"></div>
+              <div className="stat-item">
                 <h3 className="stat-number">
                   <AnimatedCounter target={120} suffix="+" />
                 </h3>
                 <p className="stat-label">Happy Clients</p>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-glow"></div>
-                <h3 className="stat-number">
-                  <AnimatedCounter target={18} suffix="+" />
-                </h3>
-                <p className="stat-label">Industry Awards</p>
               </div>
             </div>
           </motion.div>

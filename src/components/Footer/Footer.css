@@ -34,17 +34,6 @@
   pointer-events: none;
 }
 
-.footer-glow-line {
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 2px;
-  background: linear-gradient(to right, transparent 0%, var(--color-primary) 50%, transparent 100%);
-  box-shadow: 0 0 20px var(--color-primary);
-  z-index: 3;
-}
-
 .footer-content {
   width: 100%;
   max-width: 1200px;
@@ -149,7 +138,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--color-border);
+  border-top: none;
   padding-top: 2.5rem;
   font-size: 0.85rem;
   color: var(--color-accent-gray);

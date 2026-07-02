@@ -6,6 +6,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectsPage, setIsProjectsPage] = useState(window.location.hash.startsWith('#projects'));
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'home' | 'about' | 'projects' | 'contact'>('home');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,7 +18,17 @@ const Header = () => {
     };
 
     const handleHash = () => {
-      setIsProjectsPage(window.location.hash.startsWith('#projects'));
+      const hash = window.location.hash;
+      setIsProjectsPage(hash.startsWith('#projects'));
+      if (hash === '#about') {
+        setActiveTab('about');
+      } else if (hash.startsWith('#projects')) {
+        setActiveTab('projects');
+      } else if (hash === '#contact') {
+        setActiveTab('contact');
+      } else {
+        setActiveTab('home');
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -96,20 +107,20 @@ const Header = () => {
       </div>
       
       <nav className="nav-links">
-        <a href="#home" className="nav-link" onClick={(e) => handleLinkClick(e, '#home')}>
+        <a href="#home" className={`nav-link ${activeTab === 'home' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#home')}>
+          {activeTab === 'home' && <span className="active-dot"></span>}
           Home
-          <span className="underline-indicator"></span>
         </a>
-        <a href="#about" className="nav-link" onClick={(e) => handleLinkClick(e, '#about')}>
+        <span className="nav-separator">/</span>
+        <a href="#about" className={`nav-link ${activeTab === 'about' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#about')}>
+          {activeTab === 'about' && <span className="active-dot"></span>}
           About
-          <span className="underline-indicator"></span>
         </a>
-        
-        {/* Projects Nav Link with Category Dropdown */}
+        <span className="nav-separator">/</span>
         <div className="nav-dropdown-wrapper">
-          <a href="#projects" className="nav-link" onClick={(e) => handleLinkClick(e, '#projects')}>
+          <a href="#projects" className={`nav-link ${activeTab === 'projects' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#projects')}>
+            {activeTab === 'projects' && <span className="active-dot"></span>}
             Projects <span className="caret">▼</span>
-            <span className="underline-indicator"></span>
           </a>
           <div className="header-dropdown-menu">
             <a href="#projects/commercial" className="header-dropdown-item" onClick={(e) => handleDropdownClick(e, '#projects/commercial')}>
@@ -123,10 +134,10 @@ const Header = () => {
             </a>
           </div>
         </div>
-
-        <a href="#contact" className="nav-link" onClick={(e) => handleLinkClick(e, '#contact')}>
+        <span className="nav-separator">/</span>
+        <a href="#contact" className={`nav-link ${activeTab === 'contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#contact')}>
+          {activeTab === 'contact' && <span className="active-dot"></span>}
           Contact Us
-          <span className="underline-indicator"></span>
         </a>
       </nav>
       

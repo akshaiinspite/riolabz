@@ -1,7 +1,7 @@
 .services-section {
   width: 100%;
   background-color: var(--color-bg);
-  padding: 6rem 4rem; /* Reduced section padding */
+  padding: 7rem 4rem; /* Balanced section padding */
   display: flex;
   justify-content: center;
   position: relative;
@@ -55,21 +55,21 @@
 
 /* Service Card Styles */
 .service-card {
+  position: relative;
   background-color: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  border-radius: 12px; /* Slightly tighter border-radius for small look */
+  border-radius: 0; /* Straight square edges */
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  height: 460px; /* Fixed height for clean grid alignment */
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  position: relative;
 }
 
 .service-card-img-box {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding-top: 66.67%; /* 3:2 aspect ratio - significantly reduces height from 120% */
+  height: 100%;
   overflow: hidden;
   background-color: #050505;
 }
@@ -80,8 +80,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Fits cleanly without side bars */
-  object-position: center 18%; /* Aligns the crop to prioritize the faces in the upper portion */
+  object-fit: cover;
+  object-position: center;
   z-index: 1;
   transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -92,7 +92,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(5, 5, 5, 0) 50%, rgba(5, 5, 5, 0.4) 100%);
+  background: linear-gradient(to bottom, rgba(5, 5, 5, 0) 40%, rgba(5, 5, 5, 0.6) 100%);
   z-index: 2;
   pointer-events: none;
 }
@@ -110,23 +110,29 @@
   transition: opacity 0.4s ease;
 }
 
-/* Text Section with rich professional red background */
+/* Text Section with rich professional red background (hidden by default) */
 .service-card-content {
-  padding: 1.6rem 1.8rem; /* More compact inner padding */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2.5rem 2rem;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  justify-content: flex-end;
   z-index: 4;
-  position: relative;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
   /* Premium deep red background */
-  background: linear-gradient(135deg, #800200 0%, #3A0000 100%);
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  background: linear-gradient(135deg, rgba(128, 2, 0, 0.95) 0%, rgba(58, 0, 0, 0.98) 100%);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none;
 }
 
 .service-card-category {
   font-family: var(--font-oswald);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.6);
@@ -136,7 +142,7 @@
 
 .service-card-title {
   font-family: var(--font-oswald);
-  font-size: 1.25rem; /* Reduced from 1.5rem for a cleaner header size */
+  font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -146,12 +152,11 @@
 
 .service-card-desc {
   font-family: var(--font-inter);
-  font-size: 0.88rem; /* Slightly smaller for tighter layout alignment */
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 300;
-  margin-bottom: 1.6rem;
-  flex-grow: 1;
+  margin-bottom: 2rem;
 }
 
 .service-card-btn {
@@ -159,7 +164,7 @@
   border: none;
   color: #FFFFFF;
   font-family: var(--font-oswald);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
@@ -185,15 +190,15 @@
 
 /* Card Hover Effects */
 .service-card:hover {
-  transform: translateY(-6px); /* Subtle translation */
   border-color: var(--color-primary);
-  box-shadow: 0 15px 30px rgba(225, 6, 0, 0.2);
+  box-shadow: 0 15px 30px rgba(225, 6, 0, 0.15);
 }
 
-/* Brighten and expand the red text background on hover */
+/* Brighten and show the text background on hover */
 .service-card:hover .service-card-content {
-  background: linear-gradient(135deg, #9C0200 0%, #4D0000 100%);
-  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.15);
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .service-card:hover .service-card-category {
@@ -201,7 +206,7 @@
 }
 
 .service-card:hover .service-card-img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .service-card:hover .service-card-glow-red {
@@ -217,7 +222,7 @@
 
 @media (max-width: 768px) {
   .services-section {
-    padding: 5rem 2rem;
+    padding: 4rem 2rem;
   }
   .services-grid-layout {
     grid-template-columns: 1fr;

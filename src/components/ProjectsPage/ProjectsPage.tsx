@@ -21,10 +21,18 @@ import img3 from '../../assets/images/img/img-3.jpg';
 
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 
+interface GalleryItem {
+  title: string;
+  tag: string;
+  code: string;
+  image: string;
+}
+
 interface SubCategory {
   title: string;
   description: string;
   image: string;
+  galleryItems: GalleryItem[];
 }
 
 interface CategorySection {
@@ -32,8 +40,6 @@ interface CategorySection {
   title: string;
   description: string;
   heroImage: string;
-  floatImage1: string;
-  floatImage2: string;
   subCategories: SubCategory[];
 }
 
@@ -43,123 +49,260 @@ const CATEGORIES_DATA: CategorySection[] = [
     title: 'COMMERCIAL PROJECTS',
     description: 'We create high-end commercial visual experiences for brands, corporations, real estate, hospitality, retail, and luxury businesses through cinematic storytelling and cutting-edge production.',
     heroImage: commercialHero,
-    floatImage1: commercialVfx,
-    floatImage2: workstationVfx,
     subCategories: [
       {
         title: 'Corporate Films',
         description: 'Brand introductions and company profile films.',
         image: img1,
+        galleryItems: [
+          { title: 'Aether Brand Anthem', tag: 'Cinematography', code: 'FILM_AE_01', image: img1 },
+          { title: 'Chronos Identity', tag: 'Visual Narrative', code: 'FILM_CH_02', image: img2 },
+          { title: 'Zenith Corp Profile', tag: 'Documentary', code: 'FILM_ZE_03', image: img3 },
+          { title: 'Apex Annual Report', tag: 'Data Motion', code: 'FILM_AP_04', image: studioWorkspace },
+          { title: 'Vortex Intro Hook', tag: 'Sound Sync', code: 'FILM_VO_05', image: designArtists },
+          { title: 'Summit Executive Shot', tag: 'Interview', code: 'FILM_SU_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Product Photography',
         description: 'High-end ecommerce and lifestyle product shoots.',
         image: img2,
+        galleryItems: [
+          { title: 'Helios Watch Shoot', tag: 'Lighting', code: 'PHOTO_HE_01', image: img2 },
+          { title: 'Lumina Cosmetics', tag: 'Macro Focus', code: 'PHOTO_LU_02', image: img3 },
+          { title: 'Nova Footwear Pack', tag: 'Studio Packshot', code: 'PHOTO_NO_03', image: img1 },
+          { title: 'Polaris Tech Deck', tag: 'Abstract', code: 'PHOTO_PO_04', image: studioWorkspace },
+          { title: 'Solace Apparel Look', tag: 'Outdoor', code: 'PHOTO_SO_05', image: designArtists },
+          { title: 'Onyx Automobile Stills', tag: 'Automotive', code: 'PHOTO_ON_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Architectural Visualization',
         description: 'Cinematic interior and exterior property renders.',
         image: studioWorkspace,
+        galleryItems: [
+          { title: 'Nexus Glass Pavilion', tag: '3D Render', code: 'ARCH_NE_01', image: studioWorkspace },
+          { title: 'Strata Desert Villa', tag: 'V-Ray Render', code: 'ARCH_ST_02', image: designArtists },
+          { title: 'Vertex Urban Loft', tag: 'Interior', code: 'ARCH_VE_03', image: workstationVfx },
+          { title: 'Apex Tower Exterior', tag: 'Daylight', code: 'ARCH_AP_04', image: img1 },
+          { title: 'Oasis Wellness Center', tag: 'Lumen Render', code: 'ARCH_OA_05', image: img2 },
+          { title: 'Canyon Minimal House', tag: 'Cinematic Arch', code: 'ARCH_CA_06', image: img3 }
+        ]
       },
       {
         title: 'Real Estate Media',
         description: 'Drone coverage, HDR visuals and virtual tours.',
         image: img3,
+        galleryItems: [
+          { title: 'Vista Ridge Aerials', tag: 'Drone 4K', code: 'REAL_VI_01', image: img3 },
+          { title: 'Marina Penthouse Tour', tag: 'Gimbal Walk', code: 'REAL_MA_02', image: img1 },
+          { title: 'Ridgeview Estates HDR', tag: 'Photography', code: 'REAL_RI_03', image: img2 },
+          { title: 'Lakeside Manor Drone', tag: 'Photogrammetry', code: 'REAL_LA_04', image: studioWorkspace },
+          { title: 'Peak Horizon Suite', tag: 'Virtual Reality', code: 'REAL_PE_05', image: designArtists },
+          { title: 'Crestwood Luxury Tour', tag: 'Intro Film', code: 'REAL_CR_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Advertising Campaigns',
         description: 'Vibrant digital ads and social media commercial films.',
         image: designArtists,
-      },
-    ],
+        galleryItems: [
+          { title: 'Ignite Beverage Spot', tag: 'Commercial CGI', code: 'AD_IG_01', image: designArtists },
+          { title: 'Revolt Fitness Campaign', tag: 'Fast Cut', code: 'AD_RE_02', image: workstationVfx },
+          { title: 'Echo Audio Launch', tag: 'Abstract Motion', code: 'AD_EC_03', image: studioWorkspace },
+          { title: 'Volt E-Bike Rollout', tag: 'Action Sequence', code: 'AD_VO_04', image: img1 },
+          { title: 'Pulse App Promo', tag: 'UX Animation', code: 'AD_PU_05', image: img2 },
+          { title: 'Nova Watch Campaign', tag: 'Cinematography', code: 'AD_NO_06', image: img3 }
+        ]
+      }
+    ]
   },
   {
     id: 'films',
     title: 'FILMS & ENTERTAINMENT',
     description: 'Bringing stories to life with cinematic production, visual effects, immersive editing, and professional filmmaking.',
     heroImage: filmsHero,
-    floatImage1: cinematicPreviz,
-    floatImage2: designArtists,
     subCategories: [
       {
         title: 'Movie Previz',
         description: 'Pre-visualization and structural blockouts.',
         image: img1,
+        galleryItems: [
+          { title: 'Ares Chase Previz', tag: 'Action Blockout', code: 'PREV_AR_01', image: img1 },
+          { title: 'Nebula Arrival Previz', tag: 'Sci-Fi Composition', code: 'PREV_NE_02', image: img2 },
+          { title: 'Subway Encounter', tag: 'Choreography', code: 'PREV_SU_03', image: img3 },
+          { title: 'Canyon Flight Run', tag: 'Camera Animation', code: 'PREV_CA_04', image: studioWorkspace },
+          { title: 'Rooftop Escape Stunt', tag: 'Blockout', code: 'PREV_RO_05', image: designArtists },
+          { title: 'Volcano Base Infiltration', tag: 'Set Design', code: 'PREV_VO_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Motion Poster',
         description: 'Dynamic animated poster designs.',
         image: img2,
+        galleryItems: [
+          { title: 'Dark Matter Poster', tag: 'Motion Design', code: 'POST_DA_01', image: img2 },
+          { title: 'Hyperion Genesis', tag: 'Loop Animation', code: 'POST_HY_02', image: img3 },
+          { title: 'Lost Signal Poster', tag: 'Glitch Effect', code: 'POST_LO_03', image: img1 },
+          { title: 'Neon Phantom Key Art', tag: '2.5D Parallax', code: 'POST_NE_04', image: studioWorkspace },
+          { title: 'Vanguard Reborn Poster', tag: 'Character Loop', code: 'POST_VA_05', image: designArtists },
+          { title: 'Outpost 09 Poster', tag: 'Atmospheric Glow', code: 'POST_OU_06', image: workstationVfx }
+        ]
       },
       {
         title: 'CGI & VFX',
         description: 'Immersive visual effects and realistic 3D environments.',
         image: commercialVfx,
+        galleryItems: [
+          { title: 'Nova City Destruction', tag: 'VFX Simulation', code: 'VFX_NO_01', image: commercialVfx },
+          { title: 'Cybernetic Mech Rig', tag: '3D CGI Asset', code: 'VFX_ME_02', image: cinematicPreviz },
+          { title: 'Cosmic Singularity Blackhole', tag: 'Particle System', code: 'VFX_CO_03', image: workstationVfx },
+          { title: 'Deep Space Nebula', tag: 'Volumetrics', code: 'VFX_DE_04', image: img1 },
+          { title: 'Ancient Ruin Matte Painting', tag: 'Matte Paint', code: 'VFX_AN_05', image: img2 },
+          { title: 'Alien Jungle Environment', tag: 'Procedural Gen', code: 'VFX_AL_06', image: img3 }
+        ]
       },
       {
         title: 'Lyrical Video',
         description: 'Aesthetic wordplay and audio-reactive animations.',
         image: img3,
+        galleryItems: [
+          { title: 'Resonance Lyric Film', tag: 'Typography', code: 'LYR_RE_01', image: img3 },
+          { title: 'Synthetix Beat Loop', tag: 'Audio Reactive', code: 'LYR_SY_02', image: img1 },
+          { title: 'Afterglow Lyrics', tag: 'Kinetic Type', code: 'LYR_AF_03', image: img2 },
+          { title: 'Phantom Echo Video', tag: 'Glitch Motion', code: 'LYR_PH_04', image: studioWorkspace },
+          { title: 'Primal Pulse Lyric Art', tag: 'Retro Glow', code: 'LYR_PR_05', image: designArtists },
+          { title: 'Void Whispers Video', tag: 'Abstract Layout', code: 'LYR_VO_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Title Animation',
         description: 'High-impact title cards and credits sequencings.',
         image: filmsHero,
-      },
-    ],
+        galleryItems: [
+          { title: 'Chronos Main Title', tag: '3D Extrusion', code: 'TITL_CH_01', image: filmsHero },
+          { title: 'Vector Glitch Intro', tag: 'Title Cards', code: 'TITL_VE_02', image: img1 },
+          { title: 'Spectrum Opener', tag: 'Lens Flare FX', code: 'TITL_SP_03', image: img2 },
+          { title: 'Ghost Protocol Credits', tag: 'Kinetic Design', code: 'TITL_GH_04', image: studioWorkspace },
+          { title: 'Rogue Nexus Sequence', tag: 'Procedural HUD', code: 'TITL_RO_05', image: designArtists },
+          { title: 'Apex Legend Opener', tag: 'Matte Texturing', code: 'TITL_AP_06', image: workstationVfx }
+        ]
+      }
+    ]
   },
   {
     id: 'immersive',
     title: 'AR & VR EXPERIENCES',
     description: 'Creating interactive digital experiences using Augmented Reality, Virtual Reality, Mixed Reality, and immersive technologies.',
     heroImage: arvrHero,
-    floatImage1: arVrFloat,
-    floatImage2: studioWorkspace,
     subCategories: [
       {
         title: 'Augmented Reality',
         description: 'Interactive AR showcases and packaging enhancements.',
         image: img3,
+        galleryItems: [
+          { title: 'HoloPack AR Filter', tag: 'WebAR Dev', code: 'AR_HO_01', image: img3 },
+          { title: 'Solace Apparel Try-On', tag: 'Body Tracking', code: 'AR_SO_02', image: img1 },
+          { title: 'Lumina Smart Guide', tag: 'SLAM Tracking', code: 'AR_LU_03', image: img2 },
+          { title: 'Quantum Game UI', tag: 'Image Target', code: 'AR_QU_04', image: studioWorkspace },
+          { title: 'Chronos Watch View', tag: 'Wrist Tracker', code: 'AR_CH_05', image: designArtists },
+          { title: 'Apex Product AR Show', tag: '3D Overlay', code: 'AR_AP_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Virtual Reality',
         description: 'Immersive VR virtual walkthroughs and simulation training.',
         image: arVrFloat,
+        galleryItems: [
+          { title: 'Aether Training Ground', tag: 'Unreal Engine', code: 'VR_AE_01', image: arVrFloat },
+          { title: 'Vista Ridge Oculus Tour', tag: '360 Stereo', code: 'VR_VI_02', image: img1 },
+          { title: 'Deep Space VR Flight', tag: 'Physics Engine', code: 'VR_DE_03', image: img2 },
+          { title: 'Zenith Facility Sim', tag: 'Interactive', code: 'VR_ZE_04', image: studioWorkspace },
+          { title: 'Vortex Synth Concert', tag: 'Audio Sync', code: 'VR_VO_05', image: designArtists },
+          { title: 'Summit Climb Experience', tag: 'VR Sandbox', code: 'VR_SU_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Mixed Reality',
         description: 'Hybrid presentations and next-gen enterprise tools.',
         image: img1,
+        galleryItems: [
+          { title: 'Strata HoloLens Layout', tag: 'MR Toolkit', code: 'MR_ST_01', image: img1 },
+          { title: 'Helios Collab Sandbox', tag: 'Spatial Anchor', code: 'MR_HE_02', image: img2 },
+          { title: 'Marina Design Room', tag: 'LiDAR Mesh', code: 'MR_MA_03', image: img3 },
+          { title: 'Lakeside Smart Board', tag: 'Gesture Recognizer', code: 'MR_LA_04', image: studioWorkspace },
+          { title: 'Outpost Factory Guide', tag: 'Dynamic HUD', code: 'MR_OU_05', image: designArtists },
+          { title: 'Canyon Flight Map', tag: 'Spatial Audio', code: 'MR_CA_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Metaverse Solutions',
         description: 'Digital avatars and real-time virtual events spaces.',
         image: img2,
+        galleryItems: [
+          { title: 'Nova Hub Auditorium', tag: 'Spatial Dev', code: 'META_NO_01', image: img2 },
+          { title: 'Horizon Meeting Suite', tag: 'Web3 Mesh', code: 'META_HO_02', image: img3 },
+          { title: 'Aether Digital Twins', tag: 'NVIDIA Omniverse', code: 'META_AE_03', image: img1 },
+          { title: 'Apex Virtual Expo', tag: 'Realtime Unity', code: 'META_AP_04', image: studioWorkspace },
+          { title: 'Pulse Avatar Gear', tag: 'ReadyPlayerMe', code: 'META_PU_05', image: designArtists },
+          { title: 'Solace Plaza Social', tag: 'Multiplayer', code: 'META_SO_06', image: workstationVfx }
+        ]
       },
       {
         title: 'Interactive Installations',
         description: 'Exhibition displays, museum panels, and event activations.',
         image: studioWorkspace,
-      },
-    ],
-  },
+        galleryItems: [
+          { title: 'Zenith Projection Room', tag: 'Mapping', code: 'INST_ZE_01', image: studioWorkspace },
+          { title: 'Nova Kinetic Wall', tag: 'Sensor Sync', code: 'INST_NO_02', image: designArtists },
+          { title: 'Lumina Mirror Feed', tag: 'Computer Vision', code: 'INST_LU_03', image: workstationVfx },
+          { title: 'Chronos Historic Map', tag: 'Touch Screen', code: 'INST_CH_04', image: img1 },
+          { title: 'Primal Beats Chamber', tag: 'Lighting Desk', code: 'INST_PR_05', image: img2 },
+          { title: 'Aether Core Helix', tag: 'Laser System', code: 'INST_AE_06', image: img3 }
+        ]
+      }
+    ]
+  }
 ];
 
 const ProjectsPage = () => {
   const [selectedCategoryIdx, setSelectedCategoryIdx] = useState<number>(1); // Default: Films & Entertainment
   const [selectedSubcategoryIdx, setSelectedSubcategoryIdx] = useState<number>(2); // Default: CGI & VFX
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  
+  // viewMode controls: 'board' (Evidence Board) vs 'gallery' (Detailed New Page)
+  const [viewMode, setViewMode] = useState<'board' | 'gallery'>('board');
+
+  // Custom Cursor state
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [cursorActive, setCursorActive] = useState(false);
+  const [isWiderCursor, setIsWiderCursor] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Scroll window to top when changing views or subcategories
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [viewMode, selectedSubcategoryIdx, selectedCategoryIdx]);
 
   const handleSelect = (categoryIdx: number, subcategoryIdx: number) => {
     setSelectedCategoryIdx(categoryIdx);
     setSelectedSubcategoryIdx(subcategoryIdx);
     setActiveDropdown(null);
+    setViewMode('gallery');
   };
 
   const handleCategorySelect = (categoryIdx: number) => {
     setSelectedCategoryIdx(categoryIdx);
-    setSelectedSubcategoryIdx(0); // Default to the first subcategory
+    setSelectedSubcategoryIdx(0);
     setActiveDropdown(null);
+    setViewMode('board');
   };
 
   // Synchronize selected category with URL hash
@@ -169,12 +312,15 @@ const ProjectsPage = () => {
       if (hash.startsWith('#projects/commercial')) {
         setSelectedCategoryIdx(0);
         setSelectedSubcategoryIdx(0);
+        setViewMode('board');
       } else if (hash.startsWith('#projects/films')) {
         setSelectedCategoryIdx(1);
         setSelectedSubcategoryIdx(2); // default to CGI & VFX
+        setViewMode('board');
       } else if (hash.startsWith('#projects/immersive')) {
         setSelectedCategoryIdx(2);
         setSelectedSubcategoryIdx(0);
+        setViewMode('board');
       }
     };
 
@@ -186,29 +332,30 @@ const ProjectsPage = () => {
   }, []);
 
   useEffect(() => {
-    // Initial GSAP reveal animations for content board
-    gsap.fromTo(
-      '.board-header',
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
-    );
-    gsap.fromTo(
-      '.board-subcard',
-      { opacity: 0, y: 40 },
-      { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out', delay: 0.1 }
-    );
-  }, [selectedCategoryIdx]);
-
-  useEffect(() => {
-    // Trigger slide-up animation for the gallery when subcategory changes
-    if (selectedSubcategoryIdx !== null) {
+    if (viewMode === 'board') {
       gsap.fromTo(
-        '.board-gallery-container',
-        { opacity: 0, y: 50 },
+        '.board-header',
+        { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
       );
+      gsap.fromTo(
+        '.board-subcard',
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out', delay: 0.1 }
+      );
+    } else if (viewMode === 'gallery') {
+      gsap.fromTo(
+        '.gallery-new-header-split',
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+      );
+      gsap.fromTo(
+        '.gallery-sharp-slot',
+        { opacity: 0, y: 35 },
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.06, ease: 'power3.out', delay: 0.15 }
+      );
     }
-  }, [selectedSubcategoryIdx]);
+  }, [viewMode, selectedCategoryIdx, selectedSubcategoryIdx]);
 
   const renderHighlightedTitle = (title: string) => {
     const words = title.split(' ');
@@ -233,10 +380,19 @@ const ProjectsPage = () => {
   };
 
   const activeCategory = CATEGORIES_DATA[selectedCategoryIdx];
+  const activeSubcategory = activeCategory.subCategories[selectedSubcategoryIdx];
 
   return (
     <div className="projects-page-new">
       
+      {/* Custom hover cursor outline */}
+      <div 
+        className={`custom-projects-cursor ${cursorActive ? 'active' : ''} ${isWiderCursor ? 'wide' : ''}`}
+        style={{ left: `${mousePos.x}px`, top: `${mousePos.y}px` }}
+      >
+        <span className="cursor-text-label">DECRYPT NODE</span>
+      </div>
+
       {/* TOP DROPDOWN NAVIGATION BAR */}
       <div className="projects-nav-bar">
         <div className="nav-logo-area" onClick={() => window.location.hash = '#home'}>
@@ -277,87 +433,190 @@ const ProjectsPage = () => {
         </div>
       </div>
 
-      {/* MAIN CONTENT AREA */}
-      <div className="projects-board-section">
-        <div className="board-header">
-          <div className="board-meta">
-            <span className="rec-blink-dot"></span>
-            <span className="board-tag">// SYSTEM: EVIDENCE_BOARD</span>
-            <span className="board-status">SECTOR: ACTIVE</span>
+      {/* VIEW STATE 1: EVIDENCE BOARD (ACCORDION SELECTION) */}
+      {viewMode === 'board' ? (
+        <div className="projects-board-section">
+          <div className="board-header">
+            <div className="board-meta">
+              <span className="rec-blink-dot"></span>
+              <span className="board-tag">// SYSTEM: EVIDENCE_BOARD</span>
+              <span className="board-status">SECTOR: SELECT_NODE</span>
+            </div>
+            <h2 className="board-category-title">
+              {renderHighlightedTitle(activeCategory.title)}
+            </h2>
+            <div className="board-desc-box">
+              <span className="board-desc-line"></span>
+              <p className="board-category-desc">{activeCategory.description}</p>
+            </div>
           </div>
-          <h2 className="board-category-title">
-            {renderHighlightedTitle(activeCategory.title)}
-          </h2>
-          <div className="board-desc-box">
-            <span className="board-desc-line"></span>
-            <p className="board-category-desc">{activeCategory.description}</p>
+
+          {/* SUBCATEGORY CARDS BOARD (Accordion layout with straight edges & cyber telemetry) */}
+          <div className="board-cards-grid">
+            {activeCategory.subCategories.map((sub, sIdx) => {
+              const isSelected = selectedSubcategoryIdx === sIdx;
+              return (
+                <div 
+                  key={sIdx} 
+                  className={`board-subcard ${isSelected ? 'active-card' : ''}`}
+                  onClick={() => handleSelect(selectedCategoryIdx, sIdx)}
+                  onMouseEnter={() => {
+                    setCursorActive(true);
+                    setIsWiderCursor(true);
+                  }}
+                  onMouseLeave={() => {
+                    setCursorActive(false);
+                    setIsWiderCursor(false);
+                  }}
+                >
+                  {/* Cyber Corner Brackets */}
+                  <div className="card-corners">
+                    <span className="corner tl"></span>
+                    <span className="corner tr"></span>
+                    <span className="corner bl"></span>
+                    <span className="corner br"></span>
+                  </div>
+
+                  <div className="board-subcard-header">
+                    <span className="board-subcard-title">{sub.title}</span>
+                  </div>
+                  
+                  <div className="board-subcard-img-container">
+                    <img src={sub.image} alt={sub.title} className="board-subcard-img" />
+                    <div className="board-subcard-filter"></div>
+                  </div>
+
+                  {/* High-tech telemetry data displayed on card */}
+                  <div className="card-telemetry-overlay">
+                    <div className="telemetry-line"><span>NODE:</span> <span>0{sIdx + 1}_VFX</span></div>
+                    <div className="telemetry-line"><span>SYS_DB:</span> <span>XALT_LOC_X</span></div>
+                    <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">DECRYPT_READY</span></div>
+                  </div>
+
+                  <div className="board-subcard-indicator">
+                    <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO DECRYPT'}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-
-        {/* SUBCATEGORY CARDS BOARD (White vertical cards with desaturated images) */}
-        <div className="board-cards-grid">
-          {activeCategory.subCategories.map((sub, sIdx) => {
-            const isSelected = selectedSubcategoryIdx === sIdx;
-            return (
-              <div 
-                key={sIdx} 
-                className={`board-subcard ${isSelected ? 'active-card' : ''}`}
-                onClick={() => setSelectedSubcategoryIdx(sIdx)}
-              >
-                <div className="board-subcard-header">
-                  <span className="board-subcard-title">{sub.title}</span>
-                </div>
+      ) : (
+        /* VIEW STATE 2: NEW GALLERY PAGE LAYOUT */
+        <div className="gallery-new-page-container">
+          
+          {/* SPLIT HERO HEADER: Left Text content, Right Category Image */}
+          <div className="gallery-new-header-split">
+            <div className="gallery-header-left">
+              <div className="gallery-breadcrumb-bar">
+                <span className="gallery-header-mono">// SECTOR: {activeCategory.title} / {activeSubcategory.title.toUpperCase()}</span>
+              </div>
+              <span className="gallery-category-badge">{activeCategory.title}</span>
+              <h1 className="gallery-sharp-title">{activeSubcategory.title}</h1>
+              <div className="gallery-desc-wrapper">
+                <span className="gallery-desc-accent-line"></span>
+                <p className="gallery-sharp-desc">{activeSubcategory.description}</p>
+              </div>
+              <div className="gallery-header-actions">
+                <button 
+                  className="gallery-back-button"
+                  onClick={() => setViewMode('board')}
+                >
+                  ← BACK TO {activeCategory.title}
+                </button>
                 
-                <div className="board-subcard-img-container">
-                  <img src={sub.image} alt={sub.title} className="board-subcard-img" />
-                  <div className="board-subcard-filter"></div>
-                </div>
-
-                <div className="board-subcard-indicator">
-                  <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO DECRYPT'}</span>
+                <div className="gallery-minimal-nav-header">
+                  <span className="nav-footer-label">// JUMP TO OTHER SECTORS:</span>
+                  <div className="nav-footer-links">
+                    {activeCategory.subCategories.map((sub, sIdx) => (
+                      <span key={sIdx} className="nav-footer-link-wrapper">
+                        <button 
+                          className={`nav-footer-text-link ${sIdx === selectedSubcategoryIdx ? 'active' : ''}`}
+                          onClick={() => setSelectedSubcategoryIdx(sIdx)}
+                        >
+                          {sub.title}
+                        </button>
+                        {sIdx < activeCategory.subCategories.length - 1 && (
+                          <span className="nav-footer-slash">/</span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* DETAILED SUB-CATEGORY GALLERY SECTION */}
-      {selectedSubcategoryIdx !== null && activeCategory.subCategories[selectedSubcategoryIdx] && (
-        <div 
-          className="board-gallery-panel"
-          style={{ backgroundImage: `url(${activeCategory.subCategories[selectedSubcategoryIdx].image})` }}
-        >
-          <div className="board-gallery-backdrop-blur"></div>
-          <div className="board-gallery-vignette"></div>
-
-          <div className="board-gallery-container">
-            <div className="gallery-header">
-              <div className="gallery-logo-tag">
-                <span className="accent-chevron-red">&gt;&gt;</span>
-                <span className="gallery-mono-text">DECRYPTED_NODE // {activeCategory.subCategories[selectedSubcategoryIdx].title.toUpperCase()}</span>
-              </div>
-              <h3 className="gallery-title">{activeCategory.subCategories[selectedSubcategoryIdx].title}</h3>
-              <p className="gallery-desc">
-                {activeCategory.subCategories[selectedSubcategoryIdx].description || 'High-end cinema blockout and environmental rendering processes tailored for standard and creative production demands.'}
-              </p>
             </div>
 
-            {/* Grid of Empty Red Rounded Rectangles */}
-            <div className="gallery-empty-grid">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="gallery-empty-slot">
-                  <div className="slot-corner tl"></div>
-                  <div className="slot-corner tr"></div>
-                  <div className="slot-corner bl"></div>
-                  <div className="slot-corner br"></div>
-                  <div className="slot-radar-sweep"></div>
-                  <div className="slot-label">INDEX_SLOT_0{i + 1}</div>
-                  <div className="slot-coordinate">GRID_COORD_{12 + i * 8}_X</div>
+            <div className="gallery-header-right">
+              <div className="gallery-hero-image-wrapper">
+                <div className="slot-corners">
+                  <span className="corner tl"></span>
+                  <span className="corner tr"></span>
+                  <span className="corner bl"></span>
+                  <span className="corner br"></span>
                 </div>
-              ))}
+                <img 
+                  src={activeSubcategory.image} 
+                  alt={activeSubcategory.title} 
+                  className="gallery-hero-image" 
+                />
+                <div className="gallery-hero-image-overlay"></div>
+              </div>
             </div>
           </div>
+
+          {/* Grid of Sharp Detailed Project Cells */}
+          <div className="gallery-sharp-grid">
+            {activeSubcategory.galleryItems.map((item, idx) => (
+              <div 
+                key={idx} 
+                className="gallery-sharp-slot"
+                onMouseEnter={() => {
+                  setCursorActive(true);
+                  setIsWiderCursor(true);
+                }}
+                onMouseLeave={() => {
+                  setCursorActive(false);
+                  setIsWiderCursor(false);
+                }}
+              >
+                {/* Cyber Corner Brackets */}
+                <div className="slot-corners">
+                  <span className="corner tl"></span>
+                  <span className="corner tr"></span>
+                  <span className="corner bl"></span>
+                  <span className="corner br"></span>
+                </div>
+
+                <div className="slot-img-wrapper">
+                  <img src={item.image} alt={item.title} className="slot-preview-img" />
+                  <div className="slot-cyber-overlay"></div>
+                </div>
+
+                <div className="slot-interactive-hud">
+                  <div className="hud-line">
+                    <span className="hud-label">PROJECT:</span>
+                    <span className="hud-val">{item.title}</span>
+                  </div>
+                  <div className="hud-line">
+                    <span className="hud-label">TYPE:</span>
+                    <span className="hud-val">{item.tag}</span>
+                  </div>
+                  <div className="hud-line">
+                    <span className="hud-label">CODE:</span>
+                    <span className="hud-val text-red">{item.code}</span>
+                  </div>
+                </div>
+
+                <div className="slot-bottom-telemetry">
+                  <span>SECURE_FILE_0{idx + 1}</span>
+                  <span>SYSTEM_LOAD_OK</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+
+
         </div>
       )}
 

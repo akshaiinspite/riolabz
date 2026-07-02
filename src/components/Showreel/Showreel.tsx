@@ -36,7 +36,7 @@ const Showreel = () => {
         <div className="showreel-text-wrapper">
           <span className="showreel-subtitle">Showcase</span>
           <h2 className="showreel-title">
-            VIDEO <span className="showreel-title-highlight">REEL</span>
+            SHOW <span className="showreel-title-highlight">REEL</span>
           </h2>
           <p className="showreel-description">
             Experience our high-fidelity virtual productions, cinematic visual effects, and groundbreaking immersive experiences.

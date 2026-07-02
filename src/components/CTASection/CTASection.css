@@ -1,6 +1,6 @@
 .cta-section {
   width: 100%;
-  padding: 10rem 4rem 2rem 4rem;
+  padding: 7.5rem 4rem 3rem 4rem; /* Balanced section padding */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,16 +15,15 @@
   max-width: 1200px;
   border-radius: 24px;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: none;
   background-color: var(--color-card-bg);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
-  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: box-shadow 0.4s ease;
   z-index: 2;
 }
 
 .cta-card-wrapper:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 30px 60px rgba(225, 6, 0, 0.06);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
 }
 
 .cta-card-bg {
@@ -171,7 +170,7 @@
 
 @media (max-width: 768px) {
   .cta-section {
-    padding: 6rem 2rem;
+    padding: 4rem 2rem;
   }
   .cta-container {
     padding: 3.5rem 2rem;

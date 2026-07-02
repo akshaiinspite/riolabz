@@ -8,7 +8,6 @@ const Footer = () => {
       {/* Background Banner with premium overlays */}
       <img src={footerBanner} alt="Footer Background Banner" className="footer-bg-image" />
       <div className="footer-overlay-dark"></div>
-      <div className="footer-glow-line"></div>
       
       <div className="footer-content">
         {/* Left Column: Brand Logo + Contact Information */}

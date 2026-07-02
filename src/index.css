@@ -155,10 +155,11 @@ body {
 }
 
 .btn-secondary:hover {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--color-text-white);
+  color: #050505;
+  border-color: var(--color-text-white);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(225, 6, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
 }
 
 /* Custom falling arrow micro-animation */
@@ -190,6 +191,27 @@ body {
     opacity: 1;
     color: var(--color-primary);
     filter: drop-shadow(0 0 5px var(--color-primary));
+  }
+}
+
+/* Wide Screen Alignment & Fluid Scaling Override */
+@media (min-width: 1440px) {
+  .our-story-container,
+  .services-container,
+  .footer-content,
+  .footer-bottom,
+  .cta-card-wrapper {
+    max-width: 1350px !important;
+  }
+}
+
+@media (min-width: 1900px) {
+  .our-story-container,
+  .services-container,
+  .footer-content,
+  .footer-bottom,
+  .cta-card-wrapper {
+    max-width: 1550px !important;
   }
 }
 

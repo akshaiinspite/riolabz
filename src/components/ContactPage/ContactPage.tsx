@@ -3,58 +3,7 @@ import * as THREE from 'three';
 import './ContactPage.css';
 
 // ----------------------------------------------------
-// SCRAMBLE / DECRYPT TEXT COMPONENT
-// ----------------------------------------------------
-const DecryptText = ({ text, delay = 0, duration = 800 }: { text: string; delay?: number; duration?: number }) => {
-  const [displayText, setDisplayText] = useState('');
-
-  useEffect(() => {
-    let isMounted = true;
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*_+?';
-    const totalSteps = 12;
-    const stepDuration = duration / totalSteps;
-
-    const timeout = setTimeout(() => {
-      let step = 0;
-      const interval = setInterval(() => {
-        if (!isMounted) return;
-
-        if (step >= totalSteps) {
-          setDisplayText(text);
-          clearInterval(interval);
-          return;
-        }
-
-        const progress = step / totalSteps;
-        const revealCount = Math.floor(text.length * progress);
-
-        let newText = text.substring(0, revealCount);
-        for (let i = revealCount; i < text.length; i++) {
-          if (text[i] === ' ') {
-            newText += ' ';
-          } else {
-            newText += chars[Math.floor(Math.random() * chars.length)];
-          }
-        }
-
-        setDisplayText(newText);
-        step++;
-      }, stepDuration);
-
-      return () => clearInterval(interval);
-    }, delay);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timeout);
-    };
-  }, [text, delay, duration]);
-
-  return <span>{displayText}</span>;
-};
-
-// ----------------------------------------------------
-// SPECIALIZED WEBGL THREE.JS PLEXUS BACKGROUND (INTERACTIVE ATTRACTOR)
+// SPECIALIZED WEBGL THREE.JS PLEXUS BACKGROUND (MINIMAL & PROFESSIONAL)
 // ----------------------------------------------------
 const ContactThreeBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -76,8 +25,8 @@ const ContactThreeBackground = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
 
-    // Interactive plexus nodes
-    const particleCount = 120;
+    // Subtle drifting dust/particles (minimal white/silver stars style)
+    const particleCount = 60;
     const positions = new Float32Array(particleCount * 3);
     const velocities: { x: number; y: number; z: number }[] = [];
 
@@ -87,11 +36,11 @@ const ContactThreeBackground = () => {
       positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
 
-      // Velocity
+      // Slow drift velocity
       velocities.push({
-        x: (Math.random() - 0.5) * 0.008,
-        y: (Math.random() - 0.5) * 0.008,
-        z: (Math.random() - 0.5) * 0.008,
+        x: (Math.random() - 0.5) * 0.003,
+        y: (Math.random() - 0.5) * 0.003,
+        z: (Math.random() - 0.5) * 0.003,
       });
     }
 
@@ -99,28 +48,17 @@ const ContactThreeBackground = () => {
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 0.06,
-      color: 0xe10600,
+      size: 0.035,
+      color: 0xffffff,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.25,
       blending: THREE.AdditiveBlending,
     });
 
     const particleSystem = new THREE.Points(geometry, material);
     scene.add(particleSystem);
 
-    // Morphing wireframe Icosahedron in the center
-    const centerGeom = new THREE.IcosahedronGeometry(2, 1);
-    const centerMat = new THREE.MeshBasicMaterial({
-      color: 0xe10600,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.06,
-    });
-    const centerMesh = new THREE.Mesh(centerGeom, centerMat);
-    scene.add(centerMesh);
-
-    // Mouse movement interaction
+    // Mouse movement parallax camera movement
     let mouseX = 0;
     let mouseY = 0;
     let targetX = 0;
@@ -149,29 +87,20 @@ const ContactThreeBackground = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      // Parallax camera easing
-      targetX += (mouseX - targetX) * 0.05;
-      targetY += (mouseY - targetY) * 0.05;
+      // Smooth parallax camera easing
+      targetX += (mouseX - targetX) * 0.03;
+      targetY += (mouseY - targetY) * 0.03;
 
-      camera.position.x = targetX * 2.5;
-      camera.position.y = targetY * 2.5;
+      camera.position.x = targetX * 1.5;
+      camera.position.y = targetY * 1.5;
       camera.lookAt(scene.position);
 
-      // Slow drift particles with mouse attractor field
+      // Slow drift particles
       const posArray = geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < particleCount; i++) {
         posArray[i * 3] += velocities[i].x;
         posArray[i * 3 + 1] += velocities[i].y;
         posArray[i * 3 + 2] += velocities[i].z;
-
-        // Attract particles dynamically towards mouse coords in 3D
-        const dx = targetX * 5 - posArray[i * 3];
-        const dy = targetY * 5 - posArray[i * 3 + 1];
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 3.5) {
-          posArray[i * 3] += dx * 0.006;
-          posArray[i * 3 + 1] += dy * 0.006;
-        }
 
         // Bounce off boundaries
         if (Math.abs(posArray[i * 3]) > 6) velocities[i].x *= -1;
@@ -180,10 +109,8 @@ const ContactThreeBackground = () => {
       }
       geometry.attributes.position.needsUpdate = true;
 
-      // Spin meshes
-      centerMesh.rotation.y = elapsed * 0.05;
-      centerMesh.rotation.x = elapsed * 0.02;
-      particleSystem.rotation.y = elapsed * 0.01;
+      // Gentle spin
+      particleSystem.rotation.y = elapsed * 0.005;
 
       renderer.render(scene, camera);
     };
@@ -199,8 +126,6 @@ const ContactThreeBackground = () => {
       }
       geometry.dispose();
       material.dispose();
-      centerGeom.dispose();
-      centerMat.dispose();
       renderer.dispose();
     };
   }, []);
@@ -222,11 +147,10 @@ const ContactPage = () => {
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [submissionLogs, setSubmissionLogs] = useState<string[]>([]);
   
   const formRef = useRef<HTMLDivElement>(null);
 
-  // 3D Card Tilt Mouse Tracker
+  // Subtle 3D Card Tilt Mouse Tracker
   const handleFormMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!formRef.current) return;
     const rect = formRef.current.getBoundingClientRect();
@@ -236,7 +160,7 @@ const ContactPage = () => {
     const normX = x / (rect.width / 2);
     const normY = y / (rect.height / 2);
 
-    formRef.current.style.transform = `perspective(1200px) rotateY(${normX * 6}deg) rotateX(${-normY * 6}deg) translateZ(10px)`;
+    formRef.current.style.transform = `perspective(1200px) rotateY(${normX * 3}deg) rotateX(${-normY * 3}deg) translateZ(5px)`;
   };
 
   const handleFormMouseLeave = () => {
@@ -268,49 +192,21 @@ const ContactPage = () => {
     }
 
     setIsSubmitting(true);
-    setSubmissionLogs([]);
 
-    const logSteps = [
-      'BOOTING END-TO-END TLS CHANNELS...',
-      'CONNECTING CLIENT SECURE PORTAL...',
-      'WRAPPING DATA PACKETS IN AES_256...',
-      'UPLINK TRANSCEIVING TO STAGING APIS...',
-      'TRANSMISSION SECURED SUCCESSFULLY.'
-    ];
-
-    logSteps.forEach((log, index) => {
+    // Simulate clean, professional transmission upload
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitStatus('success');
+      setFormData({ name: '', contactNumber: '', email: '', message: '' });
       setTimeout(() => {
-        setSubmissionLogs(prev => [...prev, log]);
-        if (index === logSteps.length - 1) {
-          setIsSubmitting(false);
-          setSubmitStatus('success');
-          setFormData({ name: '', contactNumber: '', email: '', message: '' });
-          setTimeout(() => {
-            setSubmitStatus('idle');
-            setSubmissionLogs([]);
-          }, 5000);
-        }
-      }, (index + 1) * 600);
-    });
+        setSubmitStatus('idle');
+      }, 5000);
+    }, 1500);
   };
 
   return (
     <div className="contact-page">
       <ContactThreeBackground />
-
-      {/* Surveillance Corner HUD Indicators */}
-      <div className="surveillance-hud-overlay tl">
-        <span className="rec-dot-pulse"></span>
-        <span className="hud-mono-red">CAM_09 [PORTAL_ONLINE]</span>
-        <span className="hud-divider">//</span>
-        <span className="hud-mono-green">SYS_STATUS: CONNECTED</span>
-      </div>
-
-      <div className="surveillance-hud-overlay tr">
-        <span className="hud-mono-gray">SECTOR: COMMUNICATION_LINE</span>
-        <span className="hud-divider">//</span>
-        <span className="hud-mono-red-blink">ENCRYPTION: AES_256</span>
-      </div>
 
       <div className="contact-content-wrapper">
         <div className="contact-grid">
@@ -319,22 +215,16 @@ const ContactPage = () => {
           <div className="contact-info-panel">
             <div className="brand-accent-chevron-group">
               <span className="accent-chevron-red">&gt;&gt;</span>
-              <span className="accent-badge-text">
-                <DecryptText text="CONNECT WITH X.ALT" delay={150} />
-              </span>
+              <span className="accent-badge-text">CONNECT WITH X.ALT</span>
             </div>
 
             <div className="cinematic-heading-group" style={{ marginBottom: '1.5rem' }}>
-              <div className="about-hero-backdrop-text">
-                <DecryptText text="GET IN TOUCH" delay={300} duration={1000} />
-              </div>
-              <h1 className="about-hero-fore-title">
-                <DecryptText text="GET IN TOUCH" delay={300} duration={1000} />
-              </h1>
+              <div className="about-hero-backdrop-text">GET IN TOUCH</div>
+              <h1 className="about-hero-fore-title">GET IN TOUCH</h1>
             </div>
 
             <p className="contact-subtitle-text">
-              Have a visionary project in mind or want to collaborate? Bridge the gap and send a secure transmission to our creative studio.
+              Have a visionary project in mind or want to collaborate? Contact our studio to share your creative vision.
             </p>
 
             <div className="contact-info-cards">
@@ -343,9 +233,7 @@ const ContactPage = () => {
               <div className="info-card-item">
                 <div className="info-card-header">
                   <span className="info-card-idx">[01]</span>
-                  <span className="info-card-label">
-                    <DecryptText text="HEADQUARTERS LOCATION" delay={500} />
-                  </span>
+                  <span className="info-card-label">HEADQUARTERS LOCATION</span>
                 </div>
                 <div className="info-card-body">
                   <h4 className="info-card-title">X Alt Studios Pvt. Ltd</h4>
@@ -361,9 +249,7 @@ const ContactPage = () => {
               <div className="info-card-item">
                 <div className="info-card-header">
                   <span className="info-card-idx">[02]</span>
-                  <span className="info-card-label">
-                    <DecryptText text="TELECOMMUNICATION" delay={700} />
-                  </span>
+                  <span className="info-card-label">TELECOMMUNICATION</span>
                 </div>
                 <div className="info-card-body">
                   <a href="tel:+919633322321" className="info-card-link">
@@ -377,9 +263,7 @@ const ContactPage = () => {
               <div className="info-card-item">
                 <div className="info-card-header">
                   <span className="info-card-idx">[03]</span>
-                  <span className="info-card-label">
-                    <DecryptText text="SECURE DATA CHANNELS" delay={900} />
-                  </span>
+                  <span className="info-card-label">EMAIL INQUIRIES</span>
                 </div>
                 <div className="info-card-body">
                   <a href="mailto:infos@xaltstudios.com" className="info-card-link">
@@ -392,7 +276,7 @@ const ContactPage = () => {
             </div>
           </div>
 
-          {/* Right Column: Cyber-HUD Contact Form */}
+          {/* Right Column: Sleek Contact Form */}
           <div className="contact-form-panel">
             <div 
               ref={formRef}
@@ -401,16 +285,8 @@ const ContactPage = () => {
               onMouseLeave={handleFormMouseLeave}
             >
               
-              {/* HUD Frame Elements */}
-              <div className="form-frame-corner tl"></div>
-              <div className="form-frame-corner tr"></div>
-              <div className="form-frame-corner bl"></div>
-              <div className="form-frame-corner br"></div>
-              
               <div className="form-header-bar">
-                <span className="form-header-status">
-                  {activeField ? `[TRANSMITTING: ${activeField.toUpperCase()}]` : '[SECURE TRANSMISSION NODE]'}
-                </span>
+                <span className="form-header-status">SEND A MESSAGE</span>
                 <span className="form-header-line"></span>
               </div>
 
@@ -432,15 +308,12 @@ const ContactPage = () => {
                     className="form-input"
                     required
                   />
-                  <div className="input-hud-status">
-                    {activeField === 'name' ? 'RECORDING_INPUT' : formData.name ? 'VERIFIED' : 'AWAITING_INPUT'}
-                  </div>
                 </div>
 
                 {/* Email Input */}
                 <div className={`form-group ${activeField === 'email' ? 'focused' : ''} ${formData.email ? 'has-value' : ''}`}>
                   <label className="form-label">
-                    <span className="label-index">02.</span> SECURE EMAIL ADDRESS <span className="req">*</span>
+                    <span className="label-index">02.</span> EMAIL ADDRESS <span className="req">*</span>
                   </label>
                   <input
                     type="email"
@@ -453,9 +326,6 @@ const ContactPage = () => {
                     className="form-input"
                     required
                   />
-                  <div className="input-hud-status">
-                    {activeField === 'email' ? 'RECORDING_INPUT' : formData.email ? 'VERIFIED' : 'AWAITING_INPUT'}
-                  </div>
                 </div>
 
                 {/* Contact Number Input */}
@@ -473,15 +343,12 @@ const ContactPage = () => {
                     placeholder="+91 XXXXX XXXXX"
                     className="form-input"
                   />
-                  <div className="input-hud-status">
-                    {activeField === 'contactNumber' ? 'RECORDING_INPUT' : formData.contactNumber ? 'VERIFIED' : 'OPTIONAL'}
-                  </div>
                 </div>
 
                 {/* Message Textarea */}
                 <div className={`form-group ${activeField === 'message' ? 'focused' : ''} ${formData.message ? 'has-value' : ''}`}>
                   <label className="form-label">
-                    <span className="label-index">04.</span> TRANSMISSION MESSAGE <span className="req">*</span>
+                    <span className="label-index">04.</span> MESSAGE <span className="req">*</span>
                   </label>
                   <textarea
                     name="message"
@@ -494,52 +361,29 @@ const ContactPage = () => {
                     rows={4}
                     required
                   />
-                  <div className="input-hud-status">
-                    {activeField === 'message' ? 'BUFFERING_STRING' : formData.message ? 'VERIFIED' : 'AWAITING_INPUT'}
-                  </div>
                 </div>
-
-                {/* Submission Log console terminal */}
-                {submissionLogs.length > 0 && (
-                  <div className="submission-terminal-log">
-                    <div className="terminal-header">
-                      <span className="terminal-dot red"></span>
-                      <span className="terminal-dot yellow"></span>
-                      <span className="terminal-dot green"></span>
-                      <span className="terminal-title">SYS_TRANSMISSION_LOG</span>
-                    </div>
-                    <div className="terminal-body">
-                      {submissionLogs.map((log, idx) => (
-                        <div key={idx} className="terminal-line">
-                          <span className="terminal-prompt">&gt;</span> {log}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Submit Feedback Bar */}
                 {submitStatus === 'success' && (
                   <div className="submit-message success">
-                    <span>&gt;&gt; TRANSMISSION SECURED. WE WILL ESTABLISH CONNECTION SHORTLY.</span>
+                    <span>Thank you. Your message has been sent successfully. We will get in touch with you shortly.</span>
                   </div>
                 )}
                 
                 {submitStatus === 'error' && (
                   <div className="submit-message error">
-                    <span>&gt;&gt; ERROR: PLEASE FILL IN ALL REQUIRED FIELD CHANNELS.</span>
+                    <span>Please fill in all required fields.</span>
                   </div>
                 )}
 
-                {/* Submit button with magnetic hover transitions */}
+                {/* Submit button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className={`form-submit-btn ${isSubmitting ? 'submitting' : ''}`}
                 >
-                  <span className="submit-btn-bg"></span>
                   <span className="submit-btn-text">
-                    {isSubmitting ? 'ENCRYPTING & TRANSCEIVING...' : 'INITIATE SECURE TRANSMISSION'}
+                    {isSubmitting ? 'SENDING MESSAGE...' : 'SEND MESSAGE'}
                   </span>
                   <span className="submit-btn-arrow">&gt;&gt;</span>
                 </button>
