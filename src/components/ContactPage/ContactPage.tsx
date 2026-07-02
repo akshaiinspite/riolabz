@@ -209,20 +209,22 @@ const ContactPage = () => {
       <ContactThreeBackground />
 
       <div className="contact-content-wrapper">
+        <div className="contact-header-section">
+          <div className="brand-accent-chevron-group">
+            <span className="accent-chevron-red">&gt;&gt;</span>
+            <span className="accent-badge-text">CONNECT WITH X.ALT</span>
+          </div>
+
+          <div className="contact-heading-group">
+            <div className="contact-backdrop-text">GET IN TOUCH</div>
+            <h1 className="contact-fore-title">GET IN TOUCH</h1>
+          </div>
+        </div>
+
         <div className="contact-grid">
           
           {/* Left Column: Coordinates & Information details */}
           <div className="contact-info-panel">
-            <div className="brand-accent-chevron-group">
-              <span className="accent-chevron-red">&gt;&gt;</span>
-              <span className="accent-badge-text">CONNECT WITH X.ALT</span>
-            </div>
-
-            <div className="cinematic-heading-group" style={{ marginBottom: '1.5rem' }}>
-              <div className="about-hero-backdrop-text">GET IN TOUCH</div>
-              <h1 className="about-hero-fore-title">GET IN TOUCH</h1>
-            </div>
-
             <p className="contact-subtitle-text">
               Have a visionary project in mind or want to collaborate? Contact our studio to share your creative vision.
             </p>
