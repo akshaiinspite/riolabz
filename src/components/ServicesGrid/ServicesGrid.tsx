@@ -28,6 +28,21 @@ const services = [
 ];
 
 const ServicesGrid = () => {
+  const handleCardClick = (id: number) => {
+    const hashes: { [key: number]: string } = {
+      1: '#projects/films',
+      2: '#projects/commercial',
+      3: '#projects/immersive'
+    };
+    const targetHash = hashes[id] || '#projects';
+    const lenisInstance = (window as any).lenis;
+    if (lenisInstance) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    }
+    window.scrollTo(0, 0);
+    window.location.hash = targetHash;
+  };
+
   return (
     <section className="services-section" id="services">
       <div className="services-container">
@@ -41,7 +56,12 @@ const ServicesGrid = () => {
 
         <div className="services-grid-layout">
           {services.map((service) => (
-            <div key={service.id} className="service-card">
+            <div 
+              key={service.id} 
+              className="service-card"
+              onClick={() => handleCardClick(service.id)}
+              style={{ cursor: 'pointer' }}
+            >
               {/* Image Container */}
               <div className="service-card-img-box">
                 <img src={service.image} alt={service.title} className="service-card-img" />

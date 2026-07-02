@@ -74,21 +74,41 @@ const AnimatedScrollCard = ({ service, index, scrollYProgress }: { service: any,
     end = 0.90;
   }
 
+  const handleExploreClick = () => {
+    const hashes = ['#projects/films', '#projects/commercial', '#projects/immersive'];
+    const targetHash = hashes[index] || '#projects';
+    const lenisInstance = (window as any).lenis;
+    if (lenisInstance) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    }
+    window.scrollTo(0, 0);
+    window.location.hash = targetHash;
+  };
+
   return (
     <motion.div 
       className="scroll-card"
       style={{ scale, y, rotate }}
     >
-      <ScrollRevealText 
-        text={service.title} 
-        className="scroll-card-title" 
-        elementType="h3" 
-        globalProgress={scrollYProgress}
-        globalRange={[start, end]}
-        splitBy="character"
-      />
+      <div 
+        style={{ cursor: 'pointer', width: 'fit-content' }}
+        onClick={handleExploreClick}
+      >
+        <ScrollRevealText 
+          text={service.title} 
+          className="scroll-card-title" 
+          elementType="h3" 
+          globalProgress={scrollYProgress}
+          globalRange={[start, end]}
+          splitBy="character"
+        />
+      </div>
       <div className="scroll-card-inner">
-        <div className="scroll-card-image-wrapper">
+        <div 
+          className="scroll-card-image-wrapper"
+          style={{ cursor: 'pointer' }}
+          onClick={handleExploreClick}
+        >
           <img src={service.image} alt={service.title} className="scroll-card-image" />
         </div>
         <div className="scroll-card-content">
@@ -100,7 +120,7 @@ const AnimatedScrollCard = ({ service, index, scrollYProgress }: { service: any,
             globalRange={[start, end]}
             splitBy="word"
           />
-          <button className="explore-btn">EXPLORE PROJECT &rarr;</button>
+          <button className="explore-btn" onClick={handleExploreClick}>EXPLORE PROJECT &rarr;</button>
         </div>
       </div>
     </motion.div>

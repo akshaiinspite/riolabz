@@ -292,35 +292,60 @@ const ProjectsPage = () => {
   }, [viewMode, selectedSubcategoryIdx, selectedCategoryIdx]);
 
   const handleSelect = (categoryIdx: number, subcategoryIdx: number) => {
-    setSelectedCategoryIdx(categoryIdx);
-    setSelectedSubcategoryIdx(subcategoryIdx);
+    const catIds = ['commercial', 'films', 'immersive'];
+    const catId = catIds[categoryIdx] || 'films';
+    window.location.hash = `#projects/${catId}/${subcategoryIdx}`;
     setActiveDropdown(null);
-    setViewMode('gallery');
   };
 
   const handleCategorySelect = (categoryIdx: number) => {
-    setSelectedCategoryIdx(categoryIdx);
-    setSelectedSubcategoryIdx(0);
+    const catIds = ['commercial', 'films', 'immersive'];
+    const catId = catIds[categoryIdx] || 'films';
+    window.location.hash = `#projects/${catId}`;
     setActiveDropdown(null);
-    setViewMode('board');
   };
 
   // Synchronize selected category with URL hash
   useEffect(() => {
     const handleHashCheck = () => {
       const hash = window.location.hash;
-      if (hash.startsWith('#projects/commercial')) {
-        setSelectedCategoryIdx(0);
-        setSelectedSubcategoryIdx(0);
-        setViewMode('board');
-      } else if (hash.startsWith('#projects/films')) {
-        setSelectedCategoryIdx(1);
-        setSelectedSubcategoryIdx(2); // default to CGI & VFX
-        setViewMode('board');
-      } else if (hash.startsWith('#projects/immersive')) {
-        setSelectedCategoryIdx(2);
-        setSelectedSubcategoryIdx(0);
-        setViewMode('board');
+      const parts = hash.split('/'); // e.g. ["#projects", "films", "2"] or ["#projects", "films"]
+
+      if (parts[0] === '#projects') {
+        let categoryIdx = -1;
+        let subcategoryIdx = 0;
+        let targetViewMode: 'board' | 'gallery' = 'board';
+
+        const catId = parts[1];
+        if (catId === 'commercial') {
+          categoryIdx = 0;
+        } else if (catId === 'films') {
+          categoryIdx = 1;
+          subcategoryIdx = 2; // Default to CGI & VFX for films when not specified
+        } else if (catId === 'immersive') {
+          categoryIdx = 2;
+        }
+
+        // If no category ID is specified, default to Films & Entertainment
+        if (!catId) {
+          categoryIdx = 1;
+          subcategoryIdx = 2;
+          targetViewMode = 'board';
+        }
+
+        if (categoryIdx !== -1) {
+          if (parts[2] !== undefined) {
+            const parsedSubIdx = parseInt(parts[2], 10);
+            if (!isNaN(parsedSubIdx) && parsedSubIdx >= 0 && parsedSubIdx < CATEGORIES_DATA[categoryIdx].subCategories.length) {
+              subcategoryIdx = parsedSubIdx;
+              targetViewMode = 'gallery';
+            }
+          }
+          
+          setSelectedCategoryIdx(categoryIdx);
+          setSelectedSubcategoryIdx(subcategoryIdx);
+          setViewMode(targetViewMode);
+        }
       }
     };
 
@@ -445,6 +470,28 @@ const ProjectsPage = () => {
             <h2 className="board-category-title">
               {renderHighlightedTitle(activeCategory.title)}
             </h2>
+
+            {/* Direct category hopping shortcuts */}
+            <div className="board-category-shortcuts">
+              <span className="shortcut-label">// HOP TO:</span>
+              <div className="shortcut-buttons">
+                {CATEGORIES_DATA.map((cat, idx) => {
+                  const isActive = selectedCategoryIdx === idx;
+                  return (
+                    <button
+                      key={cat.id}
+                      className={`board-shortcut-btn ${isActive ? 'active' : ''}`}
+                      onClick={() => handleCategorySelect(idx)}
+                    >
+                      <span className="btn-bracket">[</span>
+                      <span className="btn-text">{cat.title}</span>
+                      <span className="btn-bracket">]</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="board-desc-box">
               <span className="board-desc-line"></span>
               <p className="board-category-desc">{activeCategory.description}</p>
