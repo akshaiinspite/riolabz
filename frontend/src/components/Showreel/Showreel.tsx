@@ -1,10 +1,24 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import './Showreel.css';
 import showreelVideo from '../../assets/video/show-reel/showreel.mp4';
 
 const Showreel = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [videoUrl, setVideoUrl] = useState(showreelVideo);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/reels')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.videoUrl) {
+          if (data.videoUrl.startsWith('http') || (data.videoUrl.startsWith('/') && !data.videoUrl.includes('src/assets'))) {
+            setVideoUrl(data.videoUrl);
+          }
+        }
+      })
+      .catch(err => console.warn('Backend offline, using local showreel video.', err));
+  }, []);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -20,7 +34,7 @@ const Showreel = () => {
         <video 
           ref={videoRef}
           className="showreel-video-bg"
-          src={showreelVideo}
+          src={videoUrl}
           autoPlay
           loop
           muted

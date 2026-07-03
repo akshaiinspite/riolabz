@@ -266,12 +266,26 @@ const CATEGORIES_DATA: CategorySection[] = [
 ];
 
 const ProjectsPage = () => {
+  const [categoriesData, setCategoriesData] = useState<CategorySection[]>(CATEGORIES_DATA);
   const [selectedCategoryIdx, setSelectedCategoryIdx] = useState<number>(1); // Default: Films & Entertainment
   const [selectedSubcategoryIdx, setSelectedSubcategoryIdx] = useState<number>(2); // Default: CGI & VFX
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   
   // viewMode controls: 'board' (Evidence Board) vs 'gallery' (Detailed New Page)
   const [viewMode, setViewMode] = useState<'board' | 'gallery'>('board');
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/portfolio')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setCategoriesData(data);
+        }
+      })
+      .catch(err => {
+        console.warn('Backend offline or error loading portfolio, using static projects data.', err);
+      });
+  }, []);
 
   // Custom Cursor state
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -336,7 +350,7 @@ const ProjectsPage = () => {
         if (categoryIdx !== -1) {
           if (parts[2] !== undefined) {
             const parsedSubIdx = parseInt(parts[2], 10);
-            if (!isNaN(parsedSubIdx) && parsedSubIdx >= 0 && parsedSubIdx < CATEGORIES_DATA[categoryIdx].subCategories.length) {
+            if (!isNaN(parsedSubIdx) && parsedSubIdx >= 0 && categoriesData[categoryIdx] && parsedSubIdx < categoriesData[categoryIdx].subCategories.length) {
               subcategoryIdx = parsedSubIdx;
               targetViewMode = 'gallery';
             }
@@ -404,8 +418,16 @@ const ProjectsPage = () => {
     );
   };
 
-  const activeCategory = CATEGORIES_DATA[selectedCategoryIdx];
-  const activeSubcategory = activeCategory.subCategories[selectedSubcategoryIdx];
+  const activeCategory = categoriesData[selectedCategoryIdx] || categoriesData[0] || null;
+  const activeSubcategory = activeCategory?.subCategories[selectedSubcategoryIdx] || activeCategory?.subCategories[0] || null;
+
+  if (!activeCategory || !activeSubcategory) {
+    return (
+      <div className="projects-page-new loading-state" style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', backgroundColor: '#070709', color: '#ffffff', fontFamily: 'monospace' }}>
+        // LOADING PROJECT NODES...
+      </div>
+    );
+  }
 
   return (
     <div className="projects-page-new">
@@ -425,7 +447,7 @@ const ProjectsPage = () => {
         </div>
 
         <div className="projects-dropdowns-group">
-          {CATEGORIES_DATA.map((cat, idx) => (
+          {categoriesData.map((cat, idx) => (
             <div 
               key={cat.id}
               className={`proj-dropdown-wrapper ${activeDropdown === idx ? 'expanded' : ''}`}
@@ -475,7 +497,7 @@ const ProjectsPage = () => {
             <div className="board-category-shortcuts">
               <span className="shortcut-label">// HOP TO:</span>
               <div className="shortcut-buttons">
-                {CATEGORIES_DATA.map((cat, idx) => {
+                {categoriesData.map((cat, idx) => {
                   const isActive = selectedCategoryIdx === idx;
                   return (
                     <button

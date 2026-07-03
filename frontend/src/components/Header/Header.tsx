@@ -6,7 +6,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectsPage, setIsProjectsPage] = useState(window.location.hash.startsWith('#projects'));
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'about' | 'projects' | 'contact'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'about' | 'projects' | 'contact' | 'careers' | 'admin'>('home');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +18,12 @@ const Header = () => {
     };
 
     const handleHash = () => {
+      if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')) {
+        window.history.replaceState(null, '', '/');
+        window.location.hash = '#admin';
+        return;
+      }
+
       const hash = window.location.hash;
       setIsProjectsPage(hash.startsWith('#projects'));
       if (hash === '#about') {
@@ -26,6 +32,10 @@ const Header = () => {
         setActiveTab('projects');
       } else if (hash === '#contact') {
         setActiveTab('contact');
+      } else if (hash.startsWith('#careers')) {
+        setActiveTab('careers');
+      } else if (hash.startsWith('#admin')) {
+        setActiveTab('admin');
       } else {
         setActiveTab('home');
       }
@@ -135,6 +145,11 @@ const Header = () => {
           </div>
         </div>
         <span className="nav-separator">/</span>
+        <a href="#careers" className={`nav-link ${activeTab === 'careers' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#careers')}>
+          {activeTab === 'careers' && <span className="active-dot"></span>}
+          Careers
+        </a>
+        <span className="nav-separator">/</span>
         <a href="#contact" className={`nav-link ${activeTab === 'contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#contact')}>
           {activeTab === 'contact' && <span className="active-dot"></span>}
           Contact Us
@@ -183,6 +198,10 @@ const Header = () => {
               </a>
             </div>
           </div>
+
+          <a href="#careers" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#careers')}>
+            Careers
+          </a>
 
           <a href="#contact" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#contact')}>
             Contact Us
