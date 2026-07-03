@@ -10,7 +10,199 @@ interface Job {
   location: string;
   description: string;
 }
+interface FileUploadWidgetProps {
+  value: string;
+  onChange: (url: string) => void;
+  acceptType: 'image' | 'video' | 'any';
+}
 
+const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
+  value,
+  onChange,
+  acceptType
+}) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const uploadFile = (file: File) => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('xalt_admin_token');
+
+    // We use XMLHttpRequest to track upload progress
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://localhost:5000/api/upload', true);
+    if (token) {
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    }
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(percent);
+      }
+    };
+
+    xhr.onload = () => {
+      setIsUploading(false);
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          onChange(response.url);
+          toast.success('File uploaded successfully!');
+        } catch (error) {
+          toast.error('Failed to parse upload response.');
+        }
+      } else {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          toast.error(response.message || 'Upload failed.');
+        } catch (error) {
+          toast.error(`Upload failed with status ${xhr.status}`);
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      setIsUploading(false);
+      toast.error('Network error during file upload.');
+    };
+
+    xhr.send(formData);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      uploadFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      uploadFile(e.target.files[0]);
+    }
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange('');
+  };
+
+  // Detect file type from URL
+  const isVideoUrl = (url: string) => {
+    return !!(
+      url.match(/\.(mp4|webm|ogg|mov)$/i) || 
+      (url.includes('/uploads/') && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm') || url.toLowerCase().endsWith('.mov')))
+    );
+  };
+
+  const hasValue = !!value;
+
+  return (
+    <div className="premium-upload-widget">
+      {isUploading ? (
+        <div className="upload-progress-container">
+          <div className="upload-progress-text">
+            <span>Uploading file...</span>
+            <span>{uploadProgress}%</span>
+          </div>
+          <div className="upload-progress-bar-bg">
+            <div className="upload-progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>
+          </div>
+        </div>
+      ) : hasValue ? (
+        <div className="upload-preview-container">
+          {isVideoUrl(value) ? (
+            <video className="upload-preview-media" src={value} muted playsInline />
+          ) : (
+            <img 
+              className="upload-preview-media" 
+              src={value} 
+              alt="Preview" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
+              }} 
+            />
+          )}
+          <div className="upload-preview-info">
+            <span className="upload-preview-name" title={value}>{value.substring(value.lastIndexOf('/') + 1)}</span>
+            <span className="upload-preview-size" title={value} style={{ fontSize: '0.65rem', color: '#6b7280', wordBreak: 'break-all' }}>{value}</span>
+          </div>
+          <div className="upload-preview-actions">
+            <button type="button" className="upload-remove-btn" onClick={handleClear}>
+              Clear
+            </button>
+          </div>
+        </div>
+      ) : (
+        <label 
+          className={`upload-dropzone ${dragActive ? 'dragging' : ''}`}
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+        >
+          <input 
+            type="file" 
+            style={{ display: 'none' }} 
+            onChange={handleChange}
+            accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'}
+          />
+          <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <span className="upload-text">
+            <strong>Click to upload</strong> or drag & drop
+          </span>
+          <span className="upload-hint">
+            {acceptType === 'image' ? 'Supports JPEG, PNG, WEBP, SVG, GIF' : acceptType === 'video' ? 'Supports MP4, WEBM, MOV' : 'Images or Videos up to 100MB'}
+          </span>
+        </label>
+      )}
+    </div>
+  );
+};
+
+const getMediaUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  // Convert legacy local paths that might be stored in the database to backend uploads
+  if (url.startsWith('/src/assets/images/')) {
+    const filename = url.substring(url.lastIndexOf('/') + 1);
+    return `http://localhost:5000/uploads/${filename}`;
+  }
+  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return `http://localhost:5000${cleanUrl}`;
+  }
+  return url;
+};
 
 const AdminPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,9 +211,10 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Dashboard Tabs: 'careers' | 'projects' | 'showreel'
-  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'showreel'>('careers');
+  // Dashboard Tabs: 'careers' | 'projects' | 'home'
+  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home'>('careers');
   const [activeField, setActiveField] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // --- Careers State ---
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -51,6 +244,32 @@ const AdminPage = () => {
   });
   const [reelFeedback, setReelFeedback] = useState({ type: '', message: '' });
 
+  // --- Homepage Expertise State ---
+  const [expertiseItems, setExpertiseItems] = useState<any[]>([]);
+  const [newExpertise, setNewExpertise] = useState({
+    title: '',
+    category: '',
+    description: '',
+    image: '',
+    link: '',
+    order: 0
+  });
+  const [editingExpertiseId, setEditingExpertiseId] = useState<string | null>(null);
+  const [expertiseFeedback, setExpertiseFeedback] = useState({ type: '', message: '' });
+
+  // --- Confirmation Modal State ---
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
+
   // Check login state on mount
   useEffect(() => {
     const token = localStorage.getItem('xalt_admin_token');
@@ -79,6 +298,7 @@ const AdminPage = () => {
       fetchJobs();
       fetchPortfolio();
       fetchReel();
+      fetchExpertise();
     }
   }, [isLoggedIn]);
 
@@ -106,6 +326,99 @@ const AdminPage = () => {
         }
       })
       .catch(err => console.error('Error fetching showreel:', err));
+  };
+
+  const fetchExpertise = () => {
+    fetch('http://localhost:5000/api/expertise')
+      .then(res => res.json())
+      .then(data => setExpertiseItems(data))
+      .catch(err => console.error('Error fetching expertise:', err));
+  };
+
+  // --- Expertise CRUD Handlers ---
+  const handleExpertiseSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('xalt_admin_token');
+
+    const url = editingExpertiseId 
+      ? `http://localhost:5000/api/expertise/${editingExpertiseId}` 
+      : 'http://localhost:5000/api/expertise';
+    const method = editingExpertiseId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(newExpertise)
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to save expertise item');
+      }
+      setExpertiseFeedback({ 
+        type: 'success', 
+        message: editingExpertiseId ? 'Expertise item updated successfully!' : 'Expertise item created successfully!' 
+      });
+      toast.success(editingExpertiseId ? 'Expertise item updated successfully!' : 'Expertise item created successfully!');
+      setNewExpertise({ title: '', category: '', description: '', image: '', link: '', order: 0 });
+      setEditingExpertiseId(null);
+      fetchExpertise();
+      setTimeout(() => setExpertiseFeedback({ type: '', message: '' }), 3000);
+    })
+    .catch(err => {
+      setExpertiseFeedback({ type: 'error', message: err.message });
+      toast.error('Failed to save expertise item: ' + err.message);
+      setTimeout(() => setExpertiseFeedback({ type: '', message: '' }), 4000);
+    });
+  };
+
+  const startEditExpertise = (item: any) => {
+    setEditingExpertiseId(item._id);
+    setNewExpertise({
+      title: item.title,
+      category: item.category,
+      description: item.description,
+      image: item.image,
+      link: item.link || '',
+      order: item.order !== undefined ? item.order : 0
+    });
+  };
+
+  const cancelEditExpertise = () => {
+    setEditingExpertiseId(null);
+    setNewExpertise({ title: '', category: '', description: '', image: '', link: '', order: 0 });
+  };
+
+  const handleDeleteExpertise = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Decommission Expertise Item',
+      message: 'Are you sure you want to permanently decommission this expertise item? This action will remove it from the live Homepage.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/expertise/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete expertise item');
+          }
+          if (editingExpertiseId === id) {
+            cancelEditExpertise();
+          }
+          toast.success('Expertise item successfully decommissioned.');
+          fetchExpertise();
+        })
+        .catch(err => {
+          toast.error('Error deleting expertise item: ' + err.message);
+        });
+      }
+    });
   };
 
   // --- Auth Handlers ---
@@ -205,26 +518,31 @@ const AdminPage = () => {
   };
 
   const handleDeleteJob = (id: string) => {
-    if (!confirm('Are you sure you want to decommission this vacancy?')) return;
-    const token = localStorage.getItem('xalt_admin_token');
-
-    fetch(`http://localhost:5000/api/jobs/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(async res => {
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Failed to delete vacancy');
+    setConfirmModal({
+      isOpen: true,
+      title: 'Decommission Vacancy Node',
+      message: 'Are you sure you want to permanently decommission this job opening? This action will remove it from the live Careers portal.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/jobs/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete vacancy');
+          }
+          if (editingJobId === id) {
+            cancelEditJob();
+          }
+          toast.success('Vacancy successfully decommissioned.');
+          fetchJobs();
+        })
+        .catch(err => {
+          toast.error('Error deleting vacancy: ' + err.message);
+        });
       }
-      if (editingJobId === id) {
-        cancelEditJob();
-      }
-      toast.success('Vacancy successfully decommissioned.');
-      fetchJobs();
-    })
-    .catch(err => {
-      toast.error('Error deleting vacancy: ' + err.message);
     });
   };
 
@@ -304,24 +622,29 @@ const AdminPage = () => {
   };
 
   const handleSubcategoryDelete = (id: string) => {
-    if (!confirm('Are you sure you want to delete this subcategory? This will also purge all projects belonging to it.')) return;
-    const token = localStorage.getItem('xalt_admin_token');
-
-    fetch(`http://localhost:5000/api/portfolio/subcategories/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(async res => {
-      if (!res.ok) throw new Error('Failed to delete subcategory');
-      setProjectFeedback({ type: 'success', message: 'Subcategory deleted successfully!' });
-      toast.success('Subcategory deleted successfully!');
-      fetchPortfolio();
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
-    })
-    .catch(err => {
-      setProjectFeedback({ type: 'error', message: err.message });
-      toast.error('Failed to delete subcategory: ' + err.message);
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+    setConfirmModal({
+      isOpen: true,
+      title: 'Purge Subcategory Division',
+      message: 'Are you sure you want to delete this subcategory? This will also permanently purge all projects belonging to it.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/portfolio/subcategories/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) throw new Error('Failed to delete subcategory');
+          setProjectFeedback({ type: 'success', message: 'Subcategory deleted successfully!' });
+          toast.success('Subcategory deleted successfully!');
+          fetchPortfolio();
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
+        })
+        .catch(err => {
+          setProjectFeedback({ type: 'error', message: err.message });
+          toast.error('Failed to delete subcategory: ' + err.message);
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+        });
+      }
     });
   };
 
@@ -347,7 +670,8 @@ const AdminPage = () => {
         title: editingProject.title,
         tag: editingProject.tag,
         code: editingProject.code,
-        image: editingProject.image
+        image: editingProject.image,
+        video: editingProject.video || ''
       })
     })
     .then(async res => {
@@ -370,24 +694,29 @@ const AdminPage = () => {
   };
 
   const handleProjectDelete = (id: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-    const token = localStorage.getItem('xalt_admin_token');
-
-    fetch(`http://localhost:5000/api/projects/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(async res => {
-      if (!res.ok) throw new Error('Failed to delete project');
-      setProjectFeedback({ type: 'success', message: 'Project deleted successfully!' });
-      toast.success('Project deleted successfully!');
-      fetchPortfolio();
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
-    })
-    .catch(err => {
-      setProjectFeedback({ type: 'error', message: err.message });
-      toast.error('Failed to delete project: ' + err.message);
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Project Asset',
+      message: 'Are you sure you want to permanently delete this project from the portfolio gallery?',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/projects/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) throw new Error('Failed to delete project');
+          setProjectFeedback({ type: 'success', message: 'Project deleted successfully!' });
+          toast.success('Project deleted successfully!');
+          fetchPortfolio();
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
+        })
+        .catch(err => {
+          setProjectFeedback({ type: 'error', message: err.message });
+          toast.error('Failed to delete project: ' + err.message);
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+        });
+      }
     });
   };
 
@@ -495,12 +824,28 @@ const AdminPage = () => {
   }
 
   // ----------------------------------------------------
-  // ADMIN DASHBOARD (Professionally designed light theme with sidebar)
-  // ----------------------------------------------------
   return (
     <div className="admin-dashboard-layout">
+      {/* MOBILE HEADER BAR */}
+      <div className="admin-mobile-header">
+        <button className="mobile-menu-toggle" onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileSidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+          </svg>
+        </button>
+        <div className="mobile-logo-container">
+          <img src={logoImg} alt="X.ALT" className="mobile-logo" />
+          <span className="mobile-logo-text">Control Studio</span>
+        </div>
+      </div>
+
+      {/* MOBILE SIDEBAR OVERLAY */}
+      {isMobileSidebarOpen && (
+        <div className="admin-sidebar-overlay" onClick={() => setIsMobileSidebarOpen(false)}></div>
+      )}
+
       {/* SIDEBAR NAVIGATION */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${isMobileSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <img src={logoImg} alt="X.ALT" className="sidebar-logo" />
           <span className="sidebar-title">Control Studio</span>
@@ -509,7 +854,10 @@ const AdminPage = () => {
         <nav className="sidebar-nav">
           <button 
             className={`sidebar-nav-btn ${activeTab === 'careers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('careers')}
+            onClick={() => {
+              setActiveTab('careers');
+              setIsMobileSidebarOpen(false);
+            }}
           >
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -519,7 +867,10 @@ const AdminPage = () => {
           
           <button 
             className={`sidebar-nav-btn ${activeTab === 'projects' ? 'active' : ''}`}
-            onClick={() => setActiveTab('projects')}
+            onClick={() => {
+              setActiveTab('projects');
+              setIsMobileSidebarOpen(false);
+            }}
           >
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -528,13 +879,16 @@ const AdminPage = () => {
           </button>
 
           <button 
-            className={`sidebar-nav-btn ${activeTab === 'showreel' ? 'active' : ''}`}
-            onClick={() => setActiveTab('showreel')}
+            className={`sidebar-nav-btn ${activeTab === 'home' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('home');
+              setIsMobileSidebarOpen(false);
+            }}
           >
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
-            <span>Showreel Source</span>
+            <span>Home Menu</span>
           </button>
         </nav>
 
@@ -547,7 +901,10 @@ const AdminPage = () => {
             </div>
           </div>
           
-          <button className="admin-disconnect-btn" onClick={handleLogout}>
+          <button className="admin-disconnect-btn" onClick={() => {
+            handleLogout();
+            setIsMobileSidebarOpen(false);
+          }}>
             <svg className="disconnect-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -560,8 +917,8 @@ const AdminPage = () => {
       <main className="admin-workspace">
         <header className="workspace-header">
           <div className="workspace-title-area">
-            <h1>{activeTab === 'careers' ? 'Careers Openings' : activeTab === 'projects' ? 'Projects Portfolio' : 'Showreel Source'}</h1>
-            <p className="workspace-breadcrumbs">Console / {activeTab === 'careers' ? 'Careers Manager' : activeTab === 'projects' ? 'Portfolio Manager' : 'Showreel Config'}</p>
+            <h1>{activeTab === 'careers' ? 'Careers Openings' : activeTab === 'projects' ? 'Projects Portfolio' : 'Home Menu'}</h1>
+            <p className="workspace-breadcrumbs">Console / {activeTab === 'careers' ? 'Careers Manager' : activeTab === 'projects' ? 'Portfolio Manager' : 'Home Manager'}</p>
           </div>
 
           <div className="workspace-status-badge">
@@ -776,11 +1133,10 @@ const AdminPage = () => {
                         </div>
                         <div className="dashboard-form-group">
                           <label>SECTOR HERO BANNER IMAGE</label>
-                          <input 
-                            type="text" 
+                          <FileUploadWidget 
                             value={editingCategory.heroImage} 
-                            onChange={e => setEditingCategory({ ...editingCategory, heroImage: e.target.value })}
-                            required 
+                            onChange={url => setEditingCategory({ ...editingCategory, heroImage: url })}
+                            acceptType="image"
                           />
                         </div>
                         <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
@@ -790,7 +1146,7 @@ const AdminPage = () => {
                       </form>
                     ) : (
                       <div className="category-overview-display" style={{ marginTop: '15px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <img src={cat.heroImage} alt={cat.title} style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} onError={e => {
+                        <img src={getMediaUrl(cat.heroImage)} alt={cat.title} style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} onError={e => {
                           (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop';
                         }} />
                         <div>
@@ -845,12 +1201,10 @@ const AdminPage = () => {
                         </div>
                         <div className="dashboard-form-group">
                           <label>PREVIEW IMAGE URL</label>
-                          <input 
-                            type="text" 
-                            placeholder="e.g. /src/assets/images/img/img-1.jpg" 
+                          <FileUploadWidget 
                             value={editingSubcategory.image} 
-                            onChange={e => setEditingSubcategory({ ...editingSubcategory, image: e.target.value })}
-                            required 
+                            onChange={url => setEditingSubcategory({ ...editingSubcategory, image: url })}
+                            acceptType="image"
                           />
                         </div>
                         <div className="dashboard-form-actions">
@@ -898,11 +1252,10 @@ const AdminPage = () => {
                                 </div>
                                 <div className="dashboard-form-group">
                                   <label>IMAGE URL</label>
-                                  <input 
-                                    type="text" 
+                                  <FileUploadWidget 
                                     value={editingSubcategory.image} 
-                                    onChange={e => setEditingSubcategory({ ...editingSubcategory, image: e.target.value })}
-                                    required 
+                                    onChange={url => setEditingSubcategory({ ...editingSubcategory, image: url })}
+                                    acceptType="image"
                                   />
                                 </div>
                                 <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px' }}>
@@ -913,7 +1266,7 @@ const AdminPage = () => {
                             ) : (
                               <>
                                 <div style={{ display: 'flex', gap: '15px' }}>
-                                  <img src={sub.image} alt={sub.title} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} onError={e => {
+                                  <img src={getMediaUrl(sub.image)} alt={sub.title} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} onError={e => {
                                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80&auto=format&fit=crop';
                                   }} />
                                   <div>
@@ -957,7 +1310,7 @@ const AdminPage = () => {
                                 className="dashboard-btn primary"
                                 style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                                 onClick={() => {
-                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', code: '', image: '' });
+                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', code: '', image: '', video: '' });
                                   setIsAddingProject(true);
                                 }}
                               >
@@ -1004,15 +1357,21 @@ const AdminPage = () => {
                                       />
                                     </div>
                                     <div className="dashboard-form-group">
-                                      <label>IMAGE PATH</label>
-                                      <input 
-                                        type="text" 
-                                        placeholder="e.g. /src/assets/images/img/img-2.jpg" 
+                                      <label>MEDIA (IMAGE / THUMBNAIL)</label>
+                                      <FileUploadWidget 
                                         value={editingProject.image} 
-                                        onChange={e => setEditingProject({ ...editingProject, image: e.target.value })}
-                                        required 
+                                        onChange={url => setEditingProject({ ...editingProject, image: url })}
+                                        acceptType="image"
                                       />
                                     </div>
+                                  </div>
+                                  <div className="dashboard-form-group">
+                                    <label>VIDEO (OPTIONAL — MP4, WEBM)</label>
+                                    <FileUploadWidget 
+                                      value={editingProject.video || ''} 
+                                      onChange={url => setEditingProject({ ...editingProject, video: url })}
+                                      acceptType="video"
+                                    />
                                   </div>
                                   <div className="dashboard-form-actions" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                                     <button type="submit" className="dashboard-btn primary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>Create Project</button>
@@ -1062,13 +1421,19 @@ const AdminPage = () => {
                                         />
                                       </div>
                                       <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>IMAGE URL</label>
-                                        <input 
-                                          type="text" 
+                                        <label style={{ fontSize: '0.65rem' }}>IMAGE / THUMBNAIL</label>
+                                        <FileUploadWidget 
                                           value={editingProject.image} 
-                                          onChange={e => setEditingProject({ ...editingProject, image: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
-                                          required 
+                                          onChange={url => setEditingProject({ ...editingProject, image: url })}
+                                          acceptType="image"
+                                        />
+                                      </div>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
+                                        <label style={{ fontSize: '0.65rem' }}>VIDEO (OPTIONAL)</label>
+                                        <FileUploadWidget 
+                                          value={editingProject.video || ''} 
+                                          onChange={url => setEditingProject({ ...editingProject, video: url })}
+                                          acceptType="video"
                                         />
                                       </div>
                                       <div className="dashboard-form-actions" style={{ display: 'flex', gap: '6px' }}>
@@ -1079,7 +1444,7 @@ const AdminPage = () => {
                                   ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                        <img src={proj.image} alt={proj.title} style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '3px' }} onError={e => {
+                                        <img src={getMediaUrl(proj.image)} alt={proj.title} style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '3px' }} onError={e => {
                                           (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=50&auto=format&fit=crop';
                                         }} />
                                         <div style={{ overflow: 'hidden' }}>
@@ -1092,7 +1457,12 @@ const AdminPage = () => {
                                         </div>
                                       </div>
                                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '8px', marginTop: '4px' }}>
-                                        <span style={{ fontSize: '0.65rem', color: '#6b7280' }}>Tag: {proj.tag}</span>
+                                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                          <span style={{ fontSize: '0.65rem', color: '#6b7280' }}>Tag: {proj.tag}</span>
+                                          {proj.video && (
+                                            <span style={{ fontSize: '0.6rem', color: '#fff', background: '#e10600', padding: '1px 6px', borderRadius: '3px', fontWeight: '600' }}>VIDEO</span>
+                                          )}
+                                        </div>
                                         <div className="list-item-actions" style={{ margin: 0, paddingTop: 0, border: 'none', gap: '5px' }}>
                                           <button 
                                             className="list-action-btn edit" 
@@ -1104,7 +1474,8 @@ const AdminPage = () => {
                                               title: proj.title, 
                                               tag: proj.tag, 
                                               code: proj.code, 
-                                              image: proj.image 
+                                              image: proj.image,
+                                              video: proj.video || ''
                                             })}
                                           >
                                             Edit
@@ -1134,11 +1505,13 @@ const AdminPage = () => {
               ))}
             </div>
           )}
-
-          {/* TAB 3: SHOWREEL CONFIG */}
-          {activeTab === 'showreel' && (
-            <div className="dashboard-single-card-container">
-              <div className="dashboard-card">
+          
+          {/* TAB 3: HOME MENU MANAGER (SHOWREEL & EXPERTISE ITEMS) */}
+          {activeTab === 'home' && (
+            <div className="dashboard-grid">
+              
+              {/* Showreel Section */}
+              <div className="dashboard-card" style={{ gridColumn: 'span 2' }}>
                 <div className="dashboard-card-header">
                   <h3>Homepage Reel Transmission Source</h3>
                   <p>Configure the primary MP4 streaming source of the main homepage showcase video.</p>
@@ -1163,14 +1536,12 @@ const AdminPage = () => {
 
                   <div className="dashboard-form-group">
                     <label>VIDEO SOURCE LINK (DIRECT MP4)</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. /src/assets/videos/showreel.mp4 or direct hosting link"
-                      value={reel.videoUrl}
-                      onChange={(e) => setReel({ ...reel, videoUrl: e.target.value })}
-                      required
+                    <FileUploadWidget 
+                      value={reel.videoUrl} 
+                      onChange={url => setReel({ ...reel, videoUrl: url })}
+                      acceptType="video"
                     />
-                    <small className="field-hint">// Supports absolute URLs or root-relative paths targeting direct video formats.</small>
+                    <small className="field-hint">// Supports file uploads or absolute URLs targeting direct video formats.</small>
                   </div>
 
                   <div className="dashboard-form-actions">
@@ -1180,11 +1551,191 @@ const AdminPage = () => {
                   </div>
                 </form>
               </div>
+
+              {/* Add/Edit Expertise Card */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header">
+                  <h3>{editingExpertiseId ? 'Edit Expertise Item' : 'Create Expertise Item'}</h3>
+                  <p>{editingExpertiseId ? 'Modify details for the selected homepage item.' : 'Initialize and publish a new homepage item.'}</p>
+                </div>
+
+                {expertiseFeedback.message && (
+                  <div className={`feedback-alert ${expertiseFeedback.type}`}>
+                    {expertiseFeedback.message}
+                  </div>
+                )}
+
+                <form onSubmit={handleExpertiseSubmit} className="dashboard-form">
+                  <div className="dashboard-form-group">
+                    <label>TITLE</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Films & Entertainment"
+                      value={newExpertise.title}
+                      onChange={(e) => setNewExpertise({ ...newExpertise, title: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>SUBTITLE / CATEGORY</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. VFX & Post Production"
+                      value={newExpertise.category}
+                      onChange={(e) => setNewExpertise({ ...newExpertise, category: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>DESCRIPTION</label>
+                    <textarea 
+                      rows={4}
+                      placeholder="Enter description summary for the homepage expertise section..."
+                      value={newExpertise.description}
+                      onChange={(e) => setNewExpertise({ ...newExpertise, description: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label>LINK TARGET (HASH OR PATH)</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. #projects/films"
+                        value={newExpertise.link}
+                        onChange={(e) => setNewExpertise({ ...newExpertise, link: e.target.value })}
+                      />
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label>DISPLAY ORDER</label>
+                      <input 
+                        type="number" 
+                        placeholder="0"
+                        value={newExpertise.order}
+                        onChange={(e) => setNewExpertise({ ...newExpertise, order: parseInt(e.target.value) || 0 })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>IMAGE</label>
+                    <FileUploadWidget 
+                      value={newExpertise.image} 
+                      onChange={url => setNewExpertise({ ...newExpertise, image: url })}
+                      acceptType="image"
+                    />
+                  </div>
+
+                  <div className="dashboard-form-actions">
+                    <button type="submit" className="dashboard-btn primary">
+                      {editingExpertiseId ? 'Save Changes' : 'Initialize Expertise Item'}
+                    </button>
+                    {editingExpertiseId && (
+                      <button type="button" className="dashboard-btn secondary" onClick={cancelEditExpertise}>
+                        Cancel Edit
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+
+              {/* Active Expertise List */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header">
+                  <h3>Homepage Expertise Items ({expertiseItems.length})</h3>
+                  <p>Currently active sections in "What We Do" and "OUR EXPERTISE" grids on the homepage.</p>
+                </div>
+
+                <div className="dashboard-list-scroller">
+                  {expertiseItems.length === 0 ? (
+                    <div className="dashboard-empty-state">
+                      <span>No active expertise items found.</span>
+                    </div>
+                  ) : (
+                    expertiseItems.map((item) => (
+                      <div key={item._id} className="dashboard-list-item">
+                        <div className="list-item-header" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                          <img 
+                            src={getMediaUrl(item.image)} 
+                            alt={item.title} 
+                            style={{ width: '70px', height: '50px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #e5e7eb' }} 
+                            onError={e => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
+                            }}
+                          />
+                          <div>
+                            <span className="item-title" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>{item.title}</span>
+                            <span className="item-meta" style={{ fontSize: '0.75rem', color: '#e10600', fontWeight: 'bold', display: 'block' }}>{item.category}</span>
+                          </div>
+                        </div>
+                        <p className="list-item-description" style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>{item.description}</p>
+                        <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '4px' }}>
+                          <span>Link: {item.link || 'None'} | Order: {item.order}</span>
+                        </div>
+                        
+                        <div className="list-item-actions" style={{ marginTop: '8px' }}>
+                          <button 
+                            className="list-action-btn edit"
+                            onClick={() => startEditExpertise(item)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="list-action-btn delete"
+                            onClick={() => handleDeleteExpertise(item._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
             </div>
           )}
 
         </div>
       </main>
+
+      {/* PREMIUM CONFIRMATION MODAL */}
+      {confirmModal.isOpen && (
+        <div className="confirm-modal-overlay" onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}>
+          <div className="confirm-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-modal-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <h3 className="confirm-modal-title">{confirmModal.title}</h3>
+            <p className="confirm-modal-message">{confirmModal.message}</p>
+            <div className="confirm-modal-actions">
+              <button
+                className="confirm-modal-btn cancel"
+                onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+              >
+                Cancel
+              </button>
+              <button
+                className="confirm-modal-btn danger"
+                onClick={() => {
+                  confirmModal.onConfirm();
+                  setConfirmModal({ ...confirmModal, isOpen: false });
+                }}
+              >
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
