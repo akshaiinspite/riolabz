@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AdminPage.css';
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../../config';
 
 interface Job {
   _id: string;
@@ -16,172 +17,103 @@ interface FileUploadWidgetProps {
   acceptType: 'image' | 'video' | 'any';
 }
 
+// Detect file type from URL
+const isVideoUrl = (url: string) => {
+  if (!url) return false;
+  const cleanUrl = url.split('?')[0].split('#')[0];
+  return !!(
+    cleanUrl.match(/\.(mp4|webm|ogg|mov|m4v)$/i) || 
+    (url.includes('/uploads/') && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm') || url.toLowerCase().endsWith('.mov')))
+  );
+};
+
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   value,
   onChange,
   acceptType
 }) => {
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [dragActive, setDragActive] = useState(false);
+  const [urlInput, setUrlInput] = useState(value || '');
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
+  // Keep urlInput in sync when value changes externally
+  React.useEffect(() => {
+    setUrlInput(value || '');
+  }, [value]);
+
+  const handleBlur = () => {
+    onChange(urlInput);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onChange(urlInput);
     }
   };
 
-  const uploadFile = (file: File) => {
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const token = localStorage.getItem('xalt_admin_token');
-
-    // We use XMLHttpRequest to track upload progress
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:5000/api/upload', true);
-    if (token) {
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-    }
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        setUploadProgress(percent);
-      }
-    };
-
-    xhr.onload = () => {
-      setIsUploading(false);
-      if (xhr.status === 200) {
-        try {
-          const response = JSON.parse(xhr.responseText);
-          onChange(response.url);
-          toast.success('File uploaded successfully!');
-        } catch (error) {
-          toast.error('Failed to parse upload response.');
-        }
-      } else {
-        try {
-          const response = JSON.parse(xhr.responseText);
-          toast.error(response.message || 'Upload failed.');
-        } catch (error) {
-          toast.error(`Upload failed with status ${xhr.status}`);
-        }
-      }
-    };
-
-    xhr.onerror = () => {
-      setIsUploading(false);
-      toast.error('Network error during file upload.');
-    };
-
-    xhr.send(formData);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      uploadFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      uploadFile(e.target.files[0]);
-    }
-  };
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleClear = () => {
+    setUrlInput('');
     onChange('');
   };
 
-  // Detect file type from URL
-  const isVideoUrl = (url: string) => {
-    return !!(
-      url.match(/\.(mp4|webm|ogg|mov)$/i) || 
-      (url.includes('/uploads/') && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm') || url.toLowerCase().endsWith('.mov')))
-    );
-  };
-
-  const hasValue = !!value;
-
   return (
-    <div className="premium-upload-widget">
-      {isUploading ? (
-        <div className="upload-progress-container">
-          <div className="upload-progress-text">
-            <span>Uploading file...</span>
-            <span>{uploadProgress}%</span>
-          </div>
-          <div className="upload-progress-bar-bg">
-            <div className="upload-progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>
-          </div>
-        </div>
-      ) : hasValue ? (
-        <div className="upload-preview-container">
+    <div className="cdn-link-widget" style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <input 
+          type="text" 
+          placeholder={`Enter CDN ${acceptType === 'image' ? 'Image' : acceptType === 'video' ? 'Video' : 'Media'} URL...`}
+          value={urlInput}
+          onChange={(e) => setUrlInput(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          style={{ 
+            flex: 1, 
+            padding: '10px 14px', 
+            fontSize: '0.85rem', 
+            border: '1px solid #d1d5db', 
+            borderRadius: '4px', 
+            background: '#fff', 
+            color: '#1f2937', 
+            height: '42px',
+            boxSizing: 'border-box'
+          }}
+        />
+        {value && (
+          <button 
+            type="button" 
+            onClick={handleClear}
+            className="dashboard-btn secondary"
+            style={{ padding: '0 16px', height: '42px', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      {value && (
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '8px 12px' }}>
           {isVideoUrl(value) ? (
-            <video className="upload-preview-media" src={value} muted playsInline />
+            <video 
+              src={getMediaUrl(value)} 
+              muted 
+              playsInline 
+              autoPlay 
+              loop 
+              style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }} 
+            />
           ) : (
             <img 
-              className="upload-preview-media" 
-              src={value} 
+              src={getMediaUrl(value)} 
               alt="Preview" 
+              style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
               }} 
             />
           )}
-          <div className="upload-preview-info">
-            <span className="upload-preview-name" title={value}>{value.substring(value.lastIndexOf('/') + 1)}</span>
-            <span className="upload-preview-size" title={value} style={{ fontSize: '0.65rem', color: '#6b7280', wordBreak: 'break-all' }}>{value}</span>
-          </div>
-          <div className="upload-preview-actions">
-            <button type="button" className="upload-remove-btn" onClick={handleClear}>
-              Clear
-            </button>
-          </div>
+          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }} title={value}>
+            Active URL: {value}
+          </span>
         </div>
-      ) : (
-        <label 
-          className={`upload-dropzone ${dragActive ? 'dragging' : ''}`}
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-        >
-          <input 
-            type="file" 
-            style={{ display: 'none' }} 
-            onChange={handleChange}
-            accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'}
-          />
-          <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-          <span className="upload-text">
-            <strong>Click to upload</strong> or drag & drop
-          </span>
-          <span className="upload-hint">
-            {acceptType === 'image' ? 'Supports JPEG, PNG, WEBP, SVG, GIF' : acceptType === 'video' ? 'Supports MP4, WEBM, MOV' : 'Images or Videos up to 100MB'}
-          </span>
-        </label>
       )}
     </div>
   );
@@ -195,11 +127,11 @@ const getMediaUrl = (url: string) => {
   // Convert legacy local paths that might be stored in the database to backend uploads
   if (url.startsWith('/src/assets/images/')) {
     const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `http://localhost:5000/uploads/${filename}`;
+    return `/uploads/${filename}`;
   }
   if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
     const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return `http://localhost:5000${cleanUrl}`;
+    return cleanUrl;
   }
   return url;
 };
@@ -211,8 +143,8 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Dashboard Tabs: 'careers' | 'projects' | 'home'
-  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home'>('careers');
+  // Dashboard Tabs: 'careers' | 'projects' | 'home' | 'team'
+  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home' | 'team'>('careers');
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -257,6 +189,20 @@ const AdminPage = () => {
   const [editingExpertiseId, setEditingExpertiseId] = useState<string | null>(null);
   const [expertiseFeedback, setExpertiseFeedback] = useState({ type: '', message: '' });
 
+  // --- Teams State ---
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [newTeamMember, setNewTeamMember] = useState({
+    name: '',
+    role: '',
+    department: 'CREATIVE_3D_LAB',
+    bio: '',
+    gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+    image: '',
+    order: 0
+  });
+  const [editingTeamMemberId, setEditingTeamMemberId] = useState<string | null>(null);
+  const [teamFeedback, setTeamFeedback] = useState({ type: '', message: '' });
+
   // --- Confirmation Modal State ---
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -270,12 +216,27 @@ const AdminPage = () => {
     onConfirm: () => {}
   });
 
+  const scrollToForm = (formId: string) => {
+    setTimeout(() => {
+      const element = document.getElementById(formId);
+      if (element) {
+        const lenis = (window as any).lenis;
+        if (lenis) {
+          lenis.scrollTo(element, { duration: 1.0, offset: -20 });
+        } else {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 100);
+  };
+
+
   // Check login state on mount
   useEffect(() => {
     const token = localStorage.getItem('xalt_admin_token');
     if (token) {
       // Validate token
-      fetch('http://localhost:5000/api/admin/verify', {
+      fetch(`${API_BASE_URL}/admin/verify`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => {
@@ -299,26 +260,27 @@ const AdminPage = () => {
       fetchPortfolio();
       fetchReel();
       fetchExpertise();
+      fetchTeamMembers();
     }
   }, [isLoggedIn]);
 
   // --- Fetch API calls ---
   const fetchJobs = () => {
-    fetch('http://localhost:5000/api/jobs')
+    fetch(`${API_BASE_URL}/jobs`)
       .then(res => res.json())
       .then(data => setJobs(data))
       .catch(err => console.error('Error fetching jobs:', err));
   };
 
   const fetchPortfolio = () => {
-    fetch('http://localhost:5000/api/portfolio')
+    fetch(`${API_BASE_URL}/portfolio`)
       .then(res => res.json())
       .then(data => setPortfolio(data))
       .catch(err => console.error('Error fetching portfolio:', err));
   };
 
   const fetchReel = () => {
-    fetch('http://localhost:5000/api/reels')
+    fetch(`${API_BASE_URL}/reels`)
       .then(res => res.json())
       .then(data => {
         if (data) {
@@ -329,10 +291,21 @@ const AdminPage = () => {
   };
 
   const fetchExpertise = () => {
-    fetch('http://localhost:5000/api/expertise')
+    fetch(`${API_BASE_URL}/expertise`)
       .then(res => res.json())
       .then(data => setExpertiseItems(data))
       .catch(err => console.error('Error fetching expertise:', err));
+  };
+
+  const fetchTeamMembers = () => {
+    fetch(`${API_BASE_URL}/team-members`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTeamMembers(data);
+        }
+      })
+      .catch(err => console.error('Error fetching team members:', err));
   };
 
   // --- Expertise CRUD Handlers ---
@@ -341,8 +314,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingExpertiseId 
-      ? `http://localhost:5000/api/expertise/${editingExpertiseId}` 
-      : 'http://localhost:5000/api/expertise';
+      ? `${API_BASE_URL}/expertise/${editingExpertiseId}` 
+      : `${API_BASE_URL}/expertise`;
     const method = editingExpertiseId ? 'PUT' : 'POST';
     
     fetch(url, {
@@ -385,6 +358,7 @@ const AdminPage = () => {
       link: item.link || '',
       order: item.order !== undefined ? item.order : 0
     });
+    scrollToForm('expertise-form-container');
   };
 
   const cancelEditExpertise = () => {
@@ -399,7 +373,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to permanently decommission this expertise item? This action will remove it from the live Homepage.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/expertise/${id}`, {
+        fetch(`${API_BASE_URL}/expertise/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -421,6 +395,94 @@ const AdminPage = () => {
     });
   };
 
+  // --- Teams CRUD Handlers ---
+  const handleTeamSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('xalt_admin_token');
+
+    const url = editingTeamMemberId 
+      ? `${API_BASE_URL}/team-members/${editingTeamMemberId}` 
+      : `${API_BASE_URL}/team-members`;
+    const method = editingTeamMemberId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(newTeamMember)
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to save team member');
+      }
+      setTeamFeedback({ 
+        type: 'success', 
+        message: editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!' 
+      });
+      toast.success(editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!');
+      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', order: 0 });
+      setEditingTeamMemberId(null);
+      fetchTeamMembers();
+      setTimeout(() => setTeamFeedback({ type: '', message: '' }), 3000);
+    })
+    .catch(err => {
+      setTeamFeedback({ type: 'error', message: err.message });
+      toast.error('Failed to save team member: ' + err.message);
+      setTimeout(() => setTeamFeedback({ type: '', message: '' }), 4000);
+    });
+  };
+
+  const startEditTeamMember = (member: any) => {
+    setEditingTeamMemberId(member._id);
+    setNewTeamMember({
+      name: member.name,
+      role: member.role,
+      department: member.department || 'CREATIVE_3D_LAB',
+      bio: member.bio || '',
+      gradient: member.gradient || 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+      image: member.image || '',
+      order: member.order !== undefined ? member.order : 0
+    });
+    scrollToForm('team-form-container');
+  };
+
+  const cancelEditTeamMember = () => {
+    setEditingTeamMemberId(null);
+    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', order: 0 });
+  };
+
+  const handleDeleteTeamMember = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Team Member',
+      message: 'Are you sure you want to permanently delete this team member? This action will remove them from the live About page.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`${API_BASE_URL}/team-members/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete team member');
+          }
+          if (editingTeamMemberId === id) {
+            cancelEditTeamMember();
+          }
+          toast.success('Team member successfully deleted.');
+          fetchTeamMembers();
+        })
+        .catch(err => {
+          toast.error('Error deleting team member: ' + err.message);
+        });
+      }
+    });
+  };
+
   // --- Auth Handlers ---
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -432,7 +494,7 @@ const AdminPage = () => {
     setIsSubmitting(true);
     setLoginError('');
 
-    fetch('http://localhost:5000/api/admin/login', {
+    fetch(`${API_BASE_URL}/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -468,8 +530,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingJobId 
-      ? `http://localhost:5000/api/jobs/${editingJobId}` 
-      : 'http://localhost:5000/api/jobs';
+      ? `${API_BASE_URL}/jobs/${editingJobId}` 
+      : `${API_BASE_URL}/jobs`;
     const method = editingJobId ? 'PUT' : 'POST';
     
     fetch(url, {
@@ -510,6 +572,7 @@ const AdminPage = () => {
       location: job.location,
       description: job.description
     });
+    scrollToForm('career-form-container');
   };
 
   const cancelEditJob = () => {
@@ -524,7 +587,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to permanently decommission this job opening? This action will remove it from the live Careers portal.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/jobs/${id}`, {
+        fetch(`${API_BASE_URL}/jobs/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -552,7 +615,7 @@ const AdminPage = () => {
     if (!editingCategory) return;
     const token = localStorage.getItem('xalt_admin_token');
 
-    fetch(`http://localhost:5000/api/portfolio/categories/${editingCategory.id}`, {
+    fetch(`${API_BASE_URL}/portfolio/categories/${editingCategory.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -585,8 +648,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingSubcategory._id 
-      ? `http://localhost:5000/api/portfolio/subcategories/${editingSubcategory._id}`
-      : 'http://localhost:5000/api/portfolio/subcategories';
+      ? `${API_BASE_URL}/portfolio/subcategories/${editingSubcategory._id}`
+      : `${API_BASE_URL}/portfolio/subcategories`;
     const method = editingSubcategory._id ? 'PUT' : 'POST';
 
     fetch(url, {
@@ -628,7 +691,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to delete this subcategory? This will also permanently purge all projects belonging to it.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/portfolio/subcategories/${id}`, {
+        fetch(`${API_BASE_URL}/portfolio/subcategories/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -654,8 +717,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingProject._id 
-      ? `http://localhost:5000/api/projects/${editingProject._id}` 
-      : 'http://localhost:5000/api/projects';
+      ? `${API_BASE_URL}/projects/${editingProject._id}` 
+      : `${API_BASE_URL}/projects`;
     const method = editingProject._id ? 'PUT' : 'POST';
 
     fetch(url, {
@@ -700,7 +763,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to permanently delete this project from the portfolio gallery?',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/projects/${id}`, {
+        fetch(`${API_BASE_URL}/projects/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -725,7 +788,7 @@ const AdminPage = () => {
     e.preventDefault();
     const token = localStorage.getItem('xalt_admin_token');
 
-    fetch('http://localhost:5000/api/reels', {
+    fetch(`${API_BASE_URL}/reels`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -890,6 +953,19 @@ const AdminPage = () => {
             </svg>
             <span>Home Menu</span>
           </button>
+
+          <button 
+            className={`sidebar-nav-btn ${activeTab === 'team' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('team');
+              setIsMobileSidebarOpen(false);
+            }}
+          >
+            <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Teams Menu</span>
+          </button>
         </nav>
 
         <div className="sidebar-footer">
@@ -917,8 +993,26 @@ const AdminPage = () => {
       <main className="admin-workspace">
         <header className="workspace-header">
           <div className="workspace-title-area">
-            <h1>{activeTab === 'careers' ? 'Careers Openings' : activeTab === 'projects' ? 'Projects Portfolio' : 'Home Menu'}</h1>
-            <p className="workspace-breadcrumbs">Console / {activeTab === 'careers' ? 'Careers Manager' : activeTab === 'projects' ? 'Portfolio Manager' : 'Home Manager'}</p>
+            <h1>
+              {activeTab === 'careers' 
+                ? 'Careers Openings' 
+                : activeTab === 'projects' 
+                ? 'Projects Portfolio' 
+                : activeTab === 'home' 
+                ? 'Home Menu' 
+                : 'Teams Menu'}
+            </h1>
+            <p className="workspace-breadcrumbs">
+              Console / {
+                activeTab === 'careers' 
+                  ? 'Careers Manager' 
+                  : activeTab === 'projects' 
+                  ? 'Portfolio Manager' 
+                  : activeTab === 'home' 
+                  ? 'Home Manager' 
+                  : 'Teams Menu'
+              }
+            </p>
           </div>
 
           <div className="workspace-status-badge">
@@ -934,7 +1028,7 @@ const AdminPage = () => {
             <div className="dashboard-grid">
               
               {/* Add/Edit Career Form */}
-              <div className="dashboard-card">
+              <div className="dashboard-card" id="career-form-container">
                 <div className="dashboard-card-header">
                   <h3>{editingJobId ? 'Edit Vacancy Node' : 'Create Vacancy Node'}</h3>
                   <p>{editingJobId ? 'Modify details for the selected vacancy opening.' : 'Initialize and broadcast a new vacancy vacancy.'}</p>
@@ -1131,28 +1225,14 @@ const AdminPage = () => {
                             rows={3}
                           />
                         </div>
-                        <div className="dashboard-form-group">
-                          <label>SECTOR HERO BANNER IMAGE</label>
-                          <FileUploadWidget 
-                            value={editingCategory.heroImage} 
-                            onChange={url => setEditingCategory({ ...editingCategory, heroImage: url })}
-                            acceptType="image"
-                          />
-                        </div>
                         <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
                           <button type="submit" className="dashboard-btn primary">Save Changes</button>
                           <button type="button" className="dashboard-btn secondary" onClick={() => setEditingCategory(null)}>Cancel</button>
                         </div>
                       </form>
                     ) : (
-                      <div className="category-overview-display" style={{ marginTop: '15px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <img src={getMediaUrl(cat.heroImage)} alt={cat.title} style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} onError={e => {
-                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop';
-                        }} />
-                        <div>
-                          <p style={{ margin: '0 0 5px 0', fontSize: '0.85rem', color: '#6b7280' }}><strong>Hero Image:</strong> {cat.heroImage}</p>
-                          <p style={{ margin: '0', fontSize: '0.9rem', color: '#374151', lineHeight: '1.4' }}>{cat.description}</p>
-                        </div>
+                      <div className="category-overview-display" style={{ marginTop: '15px' }}>
+                        <p style={{ margin: '0', fontSize: '0.9rem', color: '#374151', lineHeight: '1.4' }}>{cat.description}</p>
                       </div>
                     )}
                   </div>
@@ -1320,10 +1400,10 @@ const AdminPage = () => {
 
                             {/* Add Project Form inline */}
                             {isAddingProject && editingProject && editingProject.subcategoryTitle === sub.title && !editingProject._id && (
-                              <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '6px', border: '1px dashed #3b82f6', marginBottom: '15px' }}>
-                                <h5 style={{ margin: '0 0 10px 0', fontSize: '0.8rem' }}>ADD PROJECT TO {sub.title.toUpperCase()}</h5>
-                                <form onSubmit={handleProjectSave} className="dashboard-form">
-                                  <div className="dashboard-form-row">
+                              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                                <h5 style={{ margin: '0 0 15px 0', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ADD PROJECT TO {sub.title.toUpperCase()}</h5>
+                                <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '15px' }}>
+                                  <div className="dashboard-form-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                                     <div className="dashboard-form-group">
                                       <label>PROJECT TITLE</label>
                                       <input 
@@ -1331,6 +1411,7 @@ const AdminPage = () => {
                                         placeholder="e.g. Chronos Identity" 
                                         value={editingProject.title} 
                                         onChange={e => setEditingProject({ ...editingProject, title: e.target.value })}
+                                        style={{ height: '38px', fontSize: '0.85rem' }}
                                         required 
                                       />
                                     </div>
@@ -1341,11 +1422,10 @@ const AdminPage = () => {
                                         placeholder="e.g. Visual Narrative" 
                                         value={editingProject.tag} 
                                         onChange={e => setEditingProject({ ...editingProject, tag: e.target.value })}
+                                        style={{ height: '38px', fontSize: '0.85rem' }}
                                         required 
                                       />
                                     </div>
-                                  </div>
-                                  <div className="dashboard-form-row">
                                     <div className="dashboard-form-group">
                                       <label>PROJECT CODE / SKU</label>
                                       <input 
@@ -1353,32 +1433,32 @@ const AdminPage = () => {
                                         placeholder="e.g. FILM_CH_02" 
                                         value={editingProject.code} 
                                         onChange={e => setEditingProject({ ...editingProject, code: e.target.value })}
+                                        style={{ height: '38px', fontSize: '0.85rem' }}
                                         required 
-                                      />
-                                    </div>
-                                    <div className="dashboard-form-group">
-                                      <label>MEDIA (IMAGE / THUMBNAIL)</label>
-                                      <FileUploadWidget 
-                                        value={editingProject.image} 
-                                        onChange={url => setEditingProject({ ...editingProject, image: url })}
-                                        acceptType="image"
                                       />
                                     </div>
                                   </div>
                                   <div className="dashboard-form-group">
-                                    <label>VIDEO (OPTIONAL — MP4, WEBM)</label>
+                                    <label>PROJECT MEDIA (IMAGE, VIDEO, OR CDN LINK)</label>
                                     <FileUploadWidget 
-                                      value={editingProject.video || ''} 
-                                      onChange={url => setEditingProject({ ...editingProject, video: url })}
-                                      acceptType="video"
+                                      value={editingProject.video || editingProject.image} 
+                                      onChange={url => {
+                                        const isVid = isVideoUrl(url);
+                                        setEditingProject({
+                                          ...editingProject,
+                                          image: isVid ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop' : url,
+                                          video: isVid ? url : ''
+                                        });
+                                      }}
+                                      acceptType="any"
                                     />
                                   </div>
-                                  <div className="dashboard-form-actions" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-                                    <button type="submit" className="dashboard-btn primary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>Create Project</button>
-                                    <button type="button" className="dashboard-btn secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => {
+                                  <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '15px', borderTop: '1px solid #e2e8f0', paddingTop: '15px' }}>
+                                    <button type="button" className="dashboard-btn secondary" style={{ padding: '8px 16px', fontSize: '0.78rem', margin: 0 }} onClick={() => {
                                       setIsAddingProject(false);
                                       setEditingProject(null);
                                     }}>Cancel</button>
+                                    <button type="submit" className="dashboard-btn primary" style={{ padding: '8px 16px', fontSize: '0.78rem', margin: 0 }}>Create Project</button>
                                   </div>
                                 </form>
                               </div>
@@ -1389,56 +1469,55 @@ const AdminPage = () => {
                               {sub.galleryItems && sub.galleryItems.map((proj: any) => (
                                 <div key={proj._id || proj.code} className="project-grid-item" style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '12px' }}>
                                   {editingProject && editingProject._id === proj._id ? (
-                                    <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '8px' }}>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>TITLE</label>
+                                    <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '10px' }}>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>TITLE</label>
                                         <input 
                                           type="text" 
                                           value={editingProject.title} 
                                           onChange={e => setEditingProject({ ...editingProject, title: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
+                                          style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
                                           required 
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>TAG</label>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>TAG</label>
                                         <input 
                                           type="text" 
                                           value={editingProject.tag} 
                                           onChange={e => setEditingProject({ ...editingProject, tag: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
+                                          style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
                                           required 
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>CODE</label>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>CODE</label>
                                         <input 
                                           type="text" 
                                           value={editingProject.code} 
                                           onChange={e => setEditingProject({ ...editingProject, code: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
+                                          style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
                                           required 
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>IMAGE / THUMBNAIL</label>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '4px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>PROJECT MEDIA (IMAGE, VIDEO, OR CDN LINK)</label>
                                         <FileUploadWidget 
-                                          value={editingProject.image} 
-                                          onChange={url => setEditingProject({ ...editingProject, image: url })}
-                                          acceptType="image"
+                                          value={editingProject.video || editingProject.image} 
+                                          onChange={url => {
+                                            const isVid = isVideoUrl(url);
+                                            setEditingProject({
+                                              ...editingProject,
+                                              image: isVid ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop' : url,
+                                              video: isVid ? url : ''
+                                            });
+                                          }}
+                                          acceptType="any"
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>VIDEO (OPTIONAL)</label>
-                                        <FileUploadWidget 
-                                          value={editingProject.video || ''} 
-                                          onChange={url => setEditingProject({ ...editingProject, video: url })}
-                                          acceptType="video"
-                                        />
-                                      </div>
-                                      <div className="dashboard-form-actions" style={{ display: 'flex', gap: '6px' }}>
-                                        <button type="submit" className="dashboard-btn primary" style={{ padding: '4px 8px', fontSize: '0.7rem' }}>Save</button>
-                                        <button type="button" className="dashboard-btn secondary" style={{ padding: '4px 8px', fontSize: '0.7rem' }} onClick={() => setEditingProject(null)}>Cancel</button>
+                                      <div className="dashboard-form-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', borderTop: '1px solid #f3f4f6', paddingTop: '8px', marginTop: '4px' }}>
+                                        <button type="button" className="dashboard-btn secondary" style={{ padding: '5px 12px', fontSize: '0.7rem', margin: 0 }} onClick={() => setEditingProject(null)}>Cancel</button>
+                                        <button type="submit" className="dashboard-btn primary" style={{ padding: '5px 12px', fontSize: '0.7rem', margin: 0 }}>Save</button>
                                       </div>
                                     </form>
                                   ) : (
@@ -1553,10 +1632,10 @@ const AdminPage = () => {
               </div>
 
               {/* Add/Edit Expertise Card */}
-              <div className="dashboard-card">
+              <div className="dashboard-card" id="expertise-form-container">
                 <div className="dashboard-card-header">
-                  <h3>{editingExpertiseId ? 'Edit Expertise Item' : 'Create Expertise Item'}</h3>
-                  <p>{editingExpertiseId ? 'Modify details for the selected homepage item.' : 'Initialize and publish a new homepage item.'}</p>
+                  <h3>{editingExpertiseId ? 'Edit Expertise Item' : 'Add Expertise Item'}</h3>
+                  <p>{editingExpertiseId ? 'Modify details for the selected homepage item.' : 'Enter details for the new homepage item.'}</p>
                 </div>
 
                 {expertiseFeedback.message && (
@@ -1599,28 +1678,6 @@ const AdminPage = () => {
                     />
                   </div>
 
-                  <div className="dashboard-form-row">
-                    <div className="dashboard-form-group">
-                      <label>LINK TARGET (HASH OR PATH)</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. #projects/films"
-                        value={newExpertise.link}
-                        onChange={(e) => setNewExpertise({ ...newExpertise, link: e.target.value })}
-                      />
-                    </div>
-                    <div className="dashboard-form-group">
-                      <label>DISPLAY ORDER</label>
-                      <input 
-                        type="number" 
-                        placeholder="0"
-                        value={newExpertise.order}
-                        onChange={(e) => setNewExpertise({ ...newExpertise, order: parseInt(e.target.value) || 0 })}
-                        required
-                      />
-                    </div>
-                  </div>
-
                   <div className="dashboard-form-group">
                     <label>IMAGE</label>
                     <FileUploadWidget 
@@ -1632,11 +1689,11 @@ const AdminPage = () => {
 
                   <div className="dashboard-form-actions">
                     <button type="submit" className="dashboard-btn primary">
-                      {editingExpertiseId ? 'Save Changes' : 'Initialize Expertise Item'}
+                      {editingExpertiseId ? 'Save Changes' : 'Add Expertise Item'}
                     </button>
                     {editingExpertiseId && (
                       <button type="button" className="dashboard-btn secondary" onClick={cancelEditExpertise}>
-                        Cancel Edit
+                        Cancel
                       </button>
                     )}
                   </div>
@@ -1645,9 +1702,22 @@ const AdminPage = () => {
 
               {/* Active Expertise List */}
               <div className="dashboard-card">
-                <div className="dashboard-card-header">
-                  <h3>Homepage Expertise Items ({expertiseItems.length})</h3>
-                  <p>Currently active sections in "What We Do" and "OUR EXPERTISE" grids on the homepage.</p>
+                <div className="dashboard-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3>Homepage Expertise Items ({expertiseItems.length})</h3>
+                    <p>Currently active sections in "What We Do" and "OUR EXPERTISE" grids on the homepage.</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="dashboard-btn primary"
+                    style={{ margin: 0, padding: '8px 16px', fontSize: '0.8rem' }}
+                    onClick={() => {
+                      cancelEditExpertise();
+                      scrollToForm('expertise-form-container');
+                    }}
+                  >
+                    + Add Expertise Item
+                  </button>
                 </div>
 
                 <div className="dashboard-list-scroller">
@@ -1673,9 +1743,6 @@ const AdminPage = () => {
                           </div>
                         </div>
                         <p className="list-item-description" style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>{item.description}</p>
-                        <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '4px' }}>
-                          <span>Link: {item.link || 'None'} | Order: {item.order}</span>
-                        </div>
                         
                         <div className="list-item-actions" style={{ marginTop: '8px' }}>
                           <button 
@@ -1687,6 +1754,190 @@ const AdminPage = () => {
                           <button 
                             className="list-action-btn delete"
                             onClick={() => handleDeleteExpertise(item._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {activeTab === 'team' && (
+            <div className="dashboard-grid animate-fade-in">
+              
+              {/* Form Card */}
+              <div className="dashboard-card" id="team-form-container">
+                <div className="dashboard-card-header">
+                  <h3>{editingTeamMemberId ? 'Edit Team Member' : 'Add Team Member'}</h3>
+                  <p>{editingTeamMemberId ? 'Update team member details and profile image.' : 'Enter details for the new team member.'}</p>
+                </div>
+
+                {teamFeedback.message && (
+                  <div className={`feedback-alert ${teamFeedback.type}`}>
+                    {teamFeedback.message}
+                  </div>
+                )}
+
+                <form onSubmit={handleTeamSubmit} className="dashboard-form">
+                  <div className="dashboard-form-group">
+                    <label>FULL NAME</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Alex Mercer"
+                      value={newTeamMember.name}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>ROLE / DESIGNATION</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Founder / CEO"
+                      value={newTeamMember.role}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>PROFILE PHOTO</label>
+                    <FileUploadWidget 
+                      value={newTeamMember.image}
+                      onChange={(url) => setNewTeamMember({ ...newTeamMember, image: url })}
+                      acceptType="image"
+                    />
+                    <small className="field-hint">// Upload profile photo (JPG, PNG, WebP) or paste a CDN URL.</small>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>DEPARTMENT SECTION</label>
+                    <select 
+                      value={newTeamMember.department}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, department: e.target.value })}
+                      className="dashboard-select"
+                      required
+                    >
+                      <option value="ADMINISTRATIVE_CORE">ADMINISTRATIVE CORE</option>
+                      <option value="OPERATION_MGMT">OPERATION MGMT</option>
+                      <option value="CREATIVE_3D_LAB">CREATIVE 3D LAB</option>
+                    </select>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>BIO SUMMARY</label>
+                    <textarea 
+                      rows={5}
+                      placeholder="Enter team member bio details..."
+                      value={newTeamMember.bio}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, bio: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-actions">
+                    <button type="submit" className="dashboard-btn primary">
+                      {editingTeamMemberId ? 'Save Changes' : 'Add Team Member'}
+                    </button>
+                    {editingTeamMemberId && (
+                      <button type="button" className="dashboard-btn secondary" onClick={cancelEditTeamMember}>
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+
+              {/* List Card */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3>Active Team Members ({teamMembers.length})</h3>
+                    <p>Current team members displayed on the About page.</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="dashboard-btn primary"
+                    style={{ margin: 0, padding: '8px 16px', fontSize: '0.8rem' }}
+                    onClick={() => {
+                      cancelEditTeamMember();
+                      scrollToForm('team-form-container');
+                    }}
+                  >
+                    + Add Team Member
+                  </button>
+                </div>
+
+                <div className="dashboard-list-scroller">
+                  {teamMembers.length === 0 ? (
+                    <div className="dashboard-empty-state">
+                      <span>No team members found.</span>
+                    </div>
+                  ) : (
+                    teamMembers.map((member) => (
+                      <div key={member._id} className="dashboard-list-item">
+                        <div className="list-item-header" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                          {member.image ? (
+                            <img 
+                              src={getMediaUrl(member.image)} 
+                              alt={member.name} 
+                              style={{ 
+                                width: '50px', 
+                                height: '50px', 
+                                borderRadius: '8px', 
+                                objectFit: 'cover',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }} 
+                            />
+                          ) : (
+                            <div 
+                              style={{ 
+                                width: '50px', 
+                                height: '50px', 
+                                borderRadius: '8px', 
+                                background: member.gradient || 'var(--color-primary-dark)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#fff',
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                fontFamily: 'Share Tech Mono, monospace'
+                              }}
+                            >
+                              {member.name.charAt(0)}
+                            </div>
+                          )}
+                          <div>
+                            <span className="item-title" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>{member.name}</span>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--color-primary, #e10600)', fontWeight: 600, display: 'block', margin: '2px 0' }}>{member.role || 'No Role Assigned'}</span>
+                            <span style={{ fontSize: '0.65rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
+                              {member.department ? member.department.replace(/_/g, ' ') : 'CREATIVE 3D LAB'}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="list-item-description" style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>
+                          {member.bio}
+                        </p>
+
+                        
+                        <div className="list-item-actions" style={{ marginTop: '8px' }}>
+                          <button 
+                            className="list-action-btn edit"
+                            onClick={() => startEditTeamMember(member)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="list-action-btn delete"
+                            onClick={() => handleDeleteTeamMember(member._id)}
                           >
                             Delete
                           </button>

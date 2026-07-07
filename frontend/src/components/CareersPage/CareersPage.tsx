@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './CareersPage.css';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../../config';
 
 // ----------------------------------------------------
 // THREE.JS PLEXUS BACKGROUND FOR CAREERS
@@ -168,7 +169,7 @@ const CareersPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/jobs')
+    fetch(`${API_BASE_URL}/jobs`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -196,6 +197,7 @@ const CareersPage = () => {
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [careersFile, setCareersFile] = useState<File | null>(null);
   const [isDragActive, setIsDragActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -203,6 +205,7 @@ const CareersPage = () => {
 
   const formRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const emailFormRef = useRef<HTMLFormElement>(null);
 
   // Close modal when pressing Escape key
   useEffect(() => {
@@ -295,6 +298,14 @@ const CareersPage = () => {
         return;
       }
       setCareersFile(droppedFile);
+
+      // Programmatically assign the dropped file to the file input DOM element
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(droppedFile);
+      if (fileInputRef.current) {
+        fileInputRef.current.files = dataTransfer.files;
+      }
+
       simulateFileUpload();
     }
   };
@@ -319,21 +330,51 @@ const CareersPage = () => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.contactNumber || !careersFile) {
       setSubmitStatus('error');
-      setTimeout(() => setSubmitStatus('idle'), 3000);
+      setErrorMessage('Please complete all fields and attach CV before transmitting.');
+      setTimeout(() => {
+        setSubmitStatus('idle');
+        setErrorMessage(null);
+      }, 3000);
       return;
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', contactNumber: '' });
-      setCareersFile(null);
-      setTimeout(() => {
-        setSubmitStatus('idle');
-        closeModal();
-      }, 2000);
-    }, 2000);
+
+    const submissionData = new FormData();
+    submissionData.append('name', formData.name);
+    submissionData.append('email', formData.email);
+    submissionData.append('contactNumber', formData.contactNumber);
+    submissionData.append('job_title', selectedJob?.title || 'General Application');
+    submissionData.append('resume', careersFile);
+
+    fetch(`${API_BASE_URL}/contact/careers`, {
+      method: 'POST',
+      body: submissionData,
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || 'Server error occurred.');
+        }
+        setIsSubmitting(false);
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', contactNumber: '' });
+        setCareersFile(null);
+        setTimeout(() => {
+          setSubmitStatus('idle');
+          closeModal();
+        }, 3000);
+      })
+      .catch((err) => {
+        console.error('Careers submission error:', err);
+        setIsSubmitting(false);
+        setSubmitStatus('error');
+        setErrorMessage(err.message || 'An error occurred while sending the email.');
+        setTimeout(() => {
+          setSubmitStatus('idle');
+          setErrorMessage(null);
+        }, 5000);
+      });
   };
 
   const handleJobClick = (job: Job) => {
@@ -455,7 +496,8 @@ const CareersPage = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="cyber-form">
+            <form ref={emailFormRef} onSubmit={handleSubmit} className="cyber-form">
+              <input type="hidden" name="job_title" value={selectedJob.title} />
               
               {/* Name Input */}
               <div className={`form-group ${activeField === 'name' ? 'focused' : ''} ${formData.name ? 'has-value' : ''}`}>
@@ -526,6 +568,7 @@ const CareersPage = () => {
                   <input 
                     type="file" 
                     ref={fileInputRef} 
+                    name="resume"
                     onChange={handleFileChange} 
                     accept=".pdf,.csv,.doc,.docx,.txt"
                     className="hidden-file-input"
@@ -580,7 +623,7 @@ const CareersPage = () => {
               
               {submitStatus === 'error' && (
                 <div className="submit-message error">
-                  <span>Please complete all fields and attach CV before transmitting.</span>
+                  <span>{errorMessage || 'Please complete all fields and attach CV before transmitting.'}</span>
                 </div>
               )}
 

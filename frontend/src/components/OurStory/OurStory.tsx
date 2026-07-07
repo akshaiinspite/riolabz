@@ -60,62 +60,50 @@ const AnimatedCounter = ({ target, duration = 1500, suffix = '' }: CounterProps)
 const OurStory = () => {
   return (
     <section className="our-story-section" id="about">
-      {/* Huge faded typography behind content */}
-      <div className="about-backdrop-text">X.ALT STUDIO</div>
+      {/* Cinematic Red Overlays and Background elements */}
+      <div className="cinematic-bg-darken"></div>
+      <div className="cinematic-bg-red-wash"></div>
+      <div className="light-flare"></div>
+      <div className="light-streak"></div>
       
+
+
       <div className="our-story-container">
-        <div className="our-story-split-grid">
+        <motion.div 
+          className="our-story-content-block"
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
+        >
+          <div className="story-badge">// SECURE NODE ACCESS: STUDIO PROFILE</div>
           
-          {/* Left Column: Badge & Title */}
-          <motion.div 
-            className="our-story-left-col"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <div className="story-badge">STUDIO PROFILE</div>
-            <h2 className="story-title">
-              WHO <span className="title-highlight">WE ARE</span>
-            </h2>
-          </motion.div>
+          <h2 className="story-title">WHO WE <span className="story-highlight">ARE</span></h2>
           
-          {/* Right Column: Descriptions & Stats Layout */}
-          <motion.div 
-            className="our-story-right-col"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
-          >
-            <div className="about-description-box">
-              <span className="about-accent-line"></span>
-              <p className="about-intro-text">
-                We are a team of visionary creators, tech innovators, and visual artists pushing the boundaries of what is possible in the digital realm.
-              </p>
-              <p>
-                X.ALT Studio bridges the gap between raw imagination and technical execution. We craft high-end visual effects, interactive 3D assets, and immersive XR experiences that do not just tell a story—they transport audiences entirely.
-              </p>
-            </div>
+          <div className="about-description-box">
+            <p className="about-hud-text">
+              AT XALT STUDIOS, WE ARE A TEAM OF VISIONARY CREATORS, TECH INNOVATORS, AND VISUAL ARTISTS PUSHING THE BOUNDARIES OF WHAT IS POSSIBLE IN THE DIGITAL REALM.
+            </p>
+            <p className="about-hud-text">
+              X.ALT STUDIO BRIDGES THE GAP BETWEEN RAW IMAGINATION AND TECHNICAL EXECUTION. WE CRAFT HIGH-END VISUAL EFFECTS, INTERACTIVE 3D ASSETS, AND IMMERSIVE XR EXPERIENCES THAT DO NOT JUST TELL A STORY—THEY TRANSPORT AUDIENCES ENTIRELY.
+            </p>
+          </div>
 
-            <div className="story-stats-layout">
-              <div className="stat-item">
-                <h3 className="stat-number">
-                  <AnimatedCounter target={250} suffix="+" />
-                </h3>
-                <p className="stat-label">Projects Completed</p>
-              </div>
-
-              <div className="stat-item">
-                <h3 className="stat-number">
-                  <AnimatedCounter target={120} suffix="+" />
-                </h3>
-                <p className="stat-label">Happy Clients</p>
-              </div>
+          <div className="telemetry-stats">
+            <div className="telemetry-item">
+              <span className="telemetry-label">PROJECTS COMPLETED:</span>
+              <span className="telemetry-val">
+                <AnimatedCounter target={250} suffix="+" />
+              </span>
             </div>
-          </motion.div>
-          
-        </div>
+            <div className="telemetry-item">
+              <span className="telemetry-label">HAPPY CLIENTS:</span>
+              <span className="telemetry-val">
+                <AnimatedCounter target={120} suffix="+" />
+              </span>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

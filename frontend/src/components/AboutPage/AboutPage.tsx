@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './AboutPage.css';
+import { API_BASE_URL } from '../../config';
 
 // Import images
 import studioWorkspaceImg from '../../assets/images/about/studio_workspace.png';
@@ -159,10 +160,30 @@ const ThreeBackground = () => {
 // 3D TILT TEAM CARD COMPONENT (With Zoom & Wide Expand)
 // ----------------------------------------------------
 interface TeamMember {
+  _id?: string;
   name: string;
   role: string;
   gradient: string;
+  department?: string;
+  bio?: string;
+  image?: string;
 }
+
+const getMediaUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  if (url.startsWith('/src/assets/images/')) {
+    const filename = url.substring(url.lastIndexOf('/') + 1);
+    return `/uploads/${filename}`;
+  }
+  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return cleanUrl;
+  }
+  return url;
+};
 
 interface TeamCardProps {
   member: TeamMember;
@@ -219,21 +240,12 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
 
   const idNumber = String(index + 1).padStart(2, '0');
 
-  // Hardcoded profiles for visual flair
   const getDepartment = () => {
-    if (index === 0) return 'ADMINISTRATIVE_CORE';
-    if (index === 1) return 'OPERATION_MGMT';
-    return 'CREATIVE_3D_LAB';
+    return member.department || 'CREATIVE_3D_LAB';
   };
 
   const getDossierBio = () => {
-    if (index === 0) {
-      return 'Key visionary behind X.ALT. Directs administrative strategies, business partnerships, and structural expansion plans to redefine digital design standards.';
-    }
-    if (index === 1) {
-      return 'Supervises studio workflow, project milestones, and resource allocation. Bridges organizational systems with production pipelines for flawless delivery.';
-    }
-    return 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.';
+    return member.bio || 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.';
   };
 
 
@@ -255,7 +267,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
         <span className="hud-status-text">
           {isClicked ? 'SECURE_DOSSIER // DECRYPTED' : 'ENCRYPTED_FILE // RESTRICTED'}
         </span>
-        <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO DECRYPT'}</span>
+        <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
         <span className="hud-corner-bracket bracket-tr">]</span>
       </div>
 
@@ -284,7 +296,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
             </div>
 
             {/* HUD Surveillance photo container with scanlines */}
-            <div className="card-avatar-container">
+            <div className="card-avatar-container" style={{ position: 'relative', overflow: 'hidden' }}>
               <div className="avatar-scanlines"></div>
               <div className="avatar-red-circle"></div>
               
@@ -293,10 +305,29 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
                 <circle cx="50" cy="50" r="45" stroke="var(--color-primary)" strokeWidth="1.5" fill="none" strokeDasharray="10 8" className="spinning-hud" />
               </svg>
 
-              <svg viewBox="0 0 24 24" className="avatar-placeholder-svg" fill="none" stroke="currentColor" strokeWidth="0.8">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
+              {member.image ? (
+                <img 
+                  src={getMediaUrl(member.image)} 
+                  alt={member.name} 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover', 
+                    borderRadius: '50%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 2,
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    filter: 'grayscale(35%) contrast(110%) brightness(95%)'
+                  }} 
+                />
+              ) : (
+                <svg viewBox="0 0 24 24" className="avatar-placeholder-svg" fill="none" stroke="currentColor" strokeWidth="0.8">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              )}
             </div>
 
             <div className="evidence-card-basic-details">
@@ -331,7 +362,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
 
         {/* Action Button at the bottom */}
         <div className="evidence-action-btn">
-          {isClicked ? '[ DISMISS DOSSIER ]' : '[ DECRYPT DATA FILE ]'}
+          {isClicked ? '[ DISMISS DOSSIER ]' : '[ OPEN DATA FILE ]'}
         </div>
 
       </div>
@@ -356,38 +387,69 @@ const AboutPage = () => {
   const [hoverDirection, setHoverDirection] = useState<'left' | 'right' | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const teamMembers: TeamMember[] = [
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
       name: 'Alex Mercer',
       role: 'Founder / CEO',
       gradient: 'linear-gradient(135deg, #050505 0%, #300006 100%)',
+      department: 'ADMINISTRATIVE_CORE',
+      bio: 'Key visionary behind X.ALT. Directs administrative strategies, business partnerships, and structural expansion plans to redefine digital design standards.',
+      image: '/uploads/alex_mercer.png'
     },
     {
       name: 'Sarah Connor',
       role: 'Manager',
       gradient: 'linear-gradient(135deg, #101012 0%, #440d16 100%)',
+      department: 'OPERATION_MGMT',
+      bio: 'Supervises studio workflow, project milestones, and resource allocation. Bridges organizational systems with production pipelines for flawless delivery.',
+      image: '/uploads/sarah_connor.png'
     },
     {
       name: 'David Miller',
       role: 'Senior 3D Environment Artist',
       gradient: 'linear-gradient(135deg, #1b0206 0%, #520510 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
+      image: '/uploads/david_miller.png'
     },
     {
       name: 'Michael Chen',
       role: 'Senior 3D Environment Artist',
       gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
+      image: '/uploads/michael_chen.png'
     },
     {
       name: 'Marcus Vance',
       role: 'Creative Director',
       gradient: 'linear-gradient(135deg, #120318 0%, #4a030a 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
+      image: '/uploads/marcus_vance.png'
     },
     {
       name: 'Liam Vance',
       role: 'Partner',
       gradient: 'linear-gradient(135deg, #040108 0%, #350218 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
+      image: '/uploads/liam_vance.png'
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/team-members`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setTeamMembers(data);
+        }
+      })
+      .catch(err => {
+        console.warn('Backend offline or error fetching team members, using local dummy list.', err);
+      });
+  }, []);
 
   // Mouse wheel scroll horizontal listener
   useEffect(() => {
@@ -921,7 +983,7 @@ const AboutPage = () => {
               </h3>
               <p className="team-intro-desc">
                 We believe in the power of visuals to transport audiences and ignite emotions. 
-                <strong> Click on any card below to decrypt and reveal personnel dossiers.</strong>
+                <strong> Click on any card below to open and reveal personnel dossiers.</strong>
               </p>
             </div>
 

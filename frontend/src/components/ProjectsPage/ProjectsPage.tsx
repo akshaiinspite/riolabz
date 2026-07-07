@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import './ProjectsPage.css';
+import { API_BASE_URL } from '../../config';
 
 // Import images
 import commercialHero from '../../assets/images/services/commercial_landscape.png';
@@ -274,11 +275,11 @@ const getMediaUrl = (url: string) => {
   // Convert legacy local paths that might be stored in the database to backend uploads
   if (url.startsWith('/src/assets/images/')) {
     const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `http://localhost:5000/uploads/${filename}`;
+    return `/uploads/${filename}`;
   }
   if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
     const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return `http://localhost:5000${cleanUrl}`;
+    return cleanUrl;
   }
   return url;
 };
@@ -291,9 +292,23 @@ const ProjectsPage = () => {
   
   // viewMode controls: 'board' (Evidence Board) vs 'gallery' (Detailed New Page)
   const [viewMode, setViewMode] = useState<'board' | 'gallery'>('board');
+  const [selectedProjectNode, setSelectedProjectNode] = useState<GalleryItem | null>(null);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedProjectNode(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/portfolio')
+    fetch(`${API_BASE_URL}/portfolio`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {
@@ -305,18 +320,7 @@ const ProjectsPage = () => {
       });
   }, []);
 
-  // Custom Cursor state
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [cursorActive, setCursorActive] = useState(false);
-  const [isWiderCursor, setIsWiderCursor] = useState(false);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   // Scroll window to top when changing views or subcategories
   useEffect(() => {
@@ -450,13 +454,7 @@ const ProjectsPage = () => {
   return (
     <div className="projects-page-new">
       
-      {/* Custom hover cursor outline */}
-      <div 
-        className={`custom-projects-cursor ${cursorActive ? 'active' : ''} ${isWiderCursor ? 'wide' : ''}`}
-        style={{ left: `${mousePos.x}px`, top: `${mousePos.y}px` }}
-      >
-        <span className="cursor-text-label">DECRYPT NODE</span>
-      </div>
+
 
       {/* TOP DROPDOWN NAVIGATION BAR */}
       <div className="projects-nav-bar">
@@ -547,14 +545,6 @@ const ProjectsPage = () => {
                   key={sIdx} 
                   className={`board-subcard ${isSelected ? 'active-card' : ''}`}
                   onClick={() => handleSelect(selectedCategoryIdx, sIdx)}
-                  onMouseEnter={() => {
-                    setCursorActive(true);
-                    setIsWiderCursor(true);
-                  }}
-                  onMouseLeave={() => {
-                    setCursorActive(false);
-                    setIsWiderCursor(false);
-                  }}
                 >
                   {/* Cyber Corner Brackets */}
                   <div className="card-corners">
@@ -577,11 +567,11 @@ const ProjectsPage = () => {
                   <div className="card-telemetry-overlay">
                     <div className="telemetry-line"><span>NODE:</span> <span>0{sIdx + 1}_VFX</span></div>
                     <div className="telemetry-line"><span>SYS_DB:</span> <span>XALT_LOC_X</span></div>
-                    <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">DECRYPT_READY</span></div>
+                    <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">ACCESS_READY</span></div>
                   </div>
 
                   <div className="board-subcard-indicator">
-                    <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO DECRYPT'}</span>
+                    <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO OPEN'}</span>
                   </div>
                 </div>
               );
@@ -657,14 +647,7 @@ const ProjectsPage = () => {
               <div 
                 key={idx} 
                 className="gallery-sharp-slot"
-                onMouseEnter={() => {
-                  setCursorActive(true);
-                  setIsWiderCursor(true);
-                }}
-                onMouseLeave={() => {
-                  setCursorActive(false);
-                  setIsWiderCursor(false);
-                }}
+                onClick={() => setSelectedProjectNode(item)}
               >
                 {/* Cyber Corner Brackets */}
                 <div className="slot-corners">
@@ -717,6 +700,64 @@ const ProjectsPage = () => {
 
 
 
+        </div>
+      )}
+
+      {/* Lightbox / Video Player Modal */}
+      {selectedProjectNode && (
+        <div className="project-lightbox-overlay" onClick={() => setSelectedProjectNode(null)}>
+          <div className="project-lightbox-card" onClick={(e) => e.stopPropagation()}>
+            {/* Close Button */}
+            <button className="lightbox-close-btn" onClick={() => setSelectedProjectNode(null)}>
+              [ CLOSE FILE ] ✕
+            </button>
+
+            {/* Media Display Area */}
+            <div className="lightbox-media-container">
+              {selectedProjectNode.video ? (
+                <video 
+                  src={getMediaUrl(selectedProjectNode.video)} 
+                  controls 
+                  autoPlay 
+                  className="lightbox-video" 
+                />
+              ) : (
+                <img 
+                  src={getMediaUrl(selectedProjectNode.image)} 
+                  alt={selectedProjectNode.title} 
+                  className="lightbox-image" 
+                />
+              )}
+            </div>
+
+            {/* HUD / Telemetry Details */}
+            <div className="lightbox-details-panel">
+              <div className="lightbox-details-corners">
+                <span className="corner tl"></span>
+                <span className="corner tr"></span>
+                <span className="corner bl"></span>
+                <span className="corner br"></span>
+              </div>
+              <div className="details-header">
+                <span className="details-tag">// SECURITY INTEL DECRYPTED</span>
+                <span className="details-status">SYSTEM_PLAYBACK_ACTIVE</span>
+              </div>
+              <div className="details-row">
+                <div className="details-item">
+                  <span className="details-label">PROJECT:</span>
+                  <span className="details-value">{selectedProjectNode.title}</span>
+                </div>
+                <div className="details-item">
+                  <span className="details-label">TYPE:</span>
+                  <span className="details-value">{selectedProjectNode.tag}</span>
+                </div>
+                <div className="details-item">
+                  <span className="details-label">CODE:</span>
+                  <span className="details-value text-red">{selectedProjectNode.code}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

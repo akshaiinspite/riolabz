@@ -4,6 +4,8 @@ import imgFilms from '../../assets/images/image-galley/gallery-img-1.jpg';
 import imgCommercial from '../../assets/images/image-galley/gallery-img-3.jpg';
 import imgArvr from '../../assets/images/image-galley/gallery-img-5.jpg';
 
+import { API_BASE_URL } from '../../config';
+
 // Original images mapped by order — these never change
 const LOCAL_IMAGES: { [key: number]: string } = {
   0: imgFilms,
@@ -42,7 +44,7 @@ const ServicesGrid = () => {
   const [services, setServices] = useState<any[]>(DEFAULT_SERVICES);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/expertise')
+    fetch(`${API_BASE_URL}/expertise`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {
@@ -81,23 +83,41 @@ const ServicesGrid = () => {
               key={service._id || index} 
               className="service-card"
               onClick={() => handleCardClick(service)}
-              style={{ cursor: 'pointer' }}
             >
-              {/* Image Container — always uses original local images */}
+              {/* Image Container covers the entire card */}
               <div className="service-card-img-box">
+                {/* Cyber Corner Brackets */}
+                <div className="card-corners">
+                  <span className="corner tl"></span>
+                  <span className="corner tr"></span>
+                  <span className="corner bl"></span>
+                  <span className="corner br"></span>
+                </div>
+                
                 <img src={LOCAL_IMAGES[index] || imgFilms} alt={service.title} className="service-card-img" />
                 <div className="service-card-overlay"></div>
                 <div className="service-card-glow-red"></div>
+
+                {/* Cyber Telemetry Overlay */}
+                <div className="card-telemetry-overlay">
+                  <div className="telemetry-line"><span>NODE:</span> <span>0{index + 1}_VFX</span></div>
+                  <div className="telemetry-line"><span>SYS_DB:</span> <span>XALT_LOC_X</span></div>
+                  <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">ACCESS_READY</span></div>
+                </div>
+
+                <div className="board-subcard-indicator">
+                  <span>&gt;&gt; CLICK TO OPEN</span>
+                </div>
               </div>
 
-              {/* Card Content — text comes from API */}
+              {/* Text overlay content */}
               <div className="service-card-content">
-                <div className="service-card-category">{service.category}</div>
+                <span className="service-card-category">{service.category}</span>
                 <h3 className="service-card-title">{service.title}</h3>
                 <p className="service-card-desc">{service.description}</p>
                 
-                <button className="service-card-btn">
-                  Read More
+                <button className="service-card-btn view-project-btn">
+                  VIEW PROJECT
                   <span className="btn-arrow">&rarr;</span>
                 </button>
               </div>
