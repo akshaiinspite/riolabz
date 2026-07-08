@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './AboutPage.css';
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL, getMediaUrl } from '../../config';
 
 // Import images
 import studioWorkspaceImg from '../../assets/images/about/studio_workspace.png';
@@ -168,22 +168,6 @@ interface TeamMember {
   bio?: string;
   image?: string;
 }
-
-const getMediaUrl = (url: string) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
-  }
-  if (url.startsWith('/src/assets/images/')) {
-    const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `/uploads/${filename}`;
-  }
-  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
-    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return cleanUrl;
-  }
-  return url;
-};
 
 interface TeamCardProps {
   member: TeamMember;
@@ -809,11 +793,56 @@ const AboutPage = () => {
       {/* SECTION 1: ABOUT US (Consolidated with Text and Office Photos) */}
       <section ref={aboutSectionRef} className="about-section-consolidated" id="about-hero">
         
-        {/* Concentric rings background pattern */}
-        <div className="story-concentric-bg-radial">
-          <div className="concentric-ring-circle ring-1"></div>
-          <div className="concentric-ring-circle ring-2"></div>
-          <div className="concentric-ring-circle ring-3"></div>
+        {/* Background Tech Diagram Overlay */}
+        <div className="bg-diagram-overlay">
+          <svg viewBox="0 0 1000 1000" className="bg-diagram-svg">
+            <defs>
+              <radialGradient id="radialRed" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#e10600" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="#e10600" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+
+            {/* Rotating Concentric Rings */}
+            <g className="diagram-rotate-clockwise">
+              <circle cx="500" cy="500" r="100" stroke="rgba(225, 6, 0, 0.15)" strokeWidth="1" strokeDasharray="5,5" fill="none" />
+              <circle cx="500" cy="500" r="225" stroke="rgba(225, 6, 0, 0.2)" strokeWidth="1.5" strokeDasharray="15,10" fill="none" />
+              <circle cx="500" cy="500" r="480" stroke="rgba(225, 6, 0, 0.08)" strokeWidth="1" strokeDasharray="40,20" fill="none" />
+            </g>
+
+            <g className="diagram-rotate-counter">
+              <circle cx="500" cy="500" r="220" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" fill="none" />
+              <circle cx="500" cy="500" r="350" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M 500 20 A 480 480 0 0 1 980 500" stroke="rgba(225, 6, 0, 0.05)" strokeWidth="2" fill="none" strokeDasharray="5,20" />
+              <path d="M 500 980 A 480 480 0 0 1 20 500" stroke="rgba(225, 6, 0, 0.05)" strokeWidth="2" fill="none" strokeDasharray="5,20" />
+            </g>
+
+            {/* Static Crosshairs & Telemetry */}
+            <line x1="500" y1="20" x2="500" y2="980" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" strokeDasharray="5,15" />
+            <line x1="20" y1="500" x2="980" y2="500" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" strokeDasharray="5,15" />
+            <line x1="150" y1="150" x2="850" y2="850" stroke="rgba(225, 6, 0, 0.03)" strokeWidth="1" strokeDasharray="8,8" />
+            <line x1="150" y1="850" x2="850" y2="150" stroke="rgba(225, 6, 0, 0.03)" strokeWidth="1" strokeDasharray="8,8" />
+
+            {/* Coordinate Target Lock */}
+            <circle cx="518" cy="411" r="12" stroke="#e10600" strokeWidth="1.5" fill="none" opacity="0.5" />
+            <circle cx="518" cy="411" r="2" fill="#e10600" opacity="0.7" />
+            <line x1="518" y1="380" x2="518" y2="442" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
+            <line x1="487" y1="411" x2="549" y2="411" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
+
+            <text x="535" y="405" fill="#e10600" fontSize="12" fontFamily="Share Tech Mono, monospace" opacity="0.5">TARGET_LOCK // X: 518 Y: 411</text>
+            <text x="535" y="420" fill="rgba(255, 255, 255, 0.4)" fontSize="10" fontFamily="Share Tech Mono, monospace" opacity="0.4">SYS_REF: XALT_PROJ_SECTOR</text>
+
+            {/* Text Labels */}
+            <text x="50" y="80" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" letterSpacing="2">[ DIAGRAM: OPTICAL_PROJECTION_GRID ]</text>
+            <text x="50" y="100" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">SCALE: 1:1.5 // RES: 4K_NATIVE</text>
+            <text x="50" y="920" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">AZIMUTH: 312° // ELEVATION: 42°</text>
+            <text x="50" y="940" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace">SYSTEM: STABLE // SYS_DB: XALT_LOC_X</text>
+
+            <text x="950" y="80" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace" textAnchor="end">FRAME_RATIO: 1.77:1</text>
+            <text x="950" y="100" fill="rgba(225, 6, 0, 0.25)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">SECURE_SECTOR // DECRYPT_ACTIVE</text>
+            <text x="950" y="920" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">[ X.ALT STUDIOS // 2026 ]</text>
+            <text x="950" y="940" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace" textAnchor="end">REF_NODE_01_VFX</text>
+          </svg>
         </div>
 
         <div className="consolidated-grid-new">

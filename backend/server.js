@@ -4,6 +4,11 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844']);
+} catch (err) {
+  console.warn('Unable to set custom DNS servers, using system defaults:', err.message);
+}
 require('dotenv').config();
 
 const inMemoryDb = require('./utils/inMemoryDb');
@@ -111,7 +116,9 @@ async function seedDefaultTeamMembers() {
 }
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI)
+const dbUri = process.env.MONGODB_URI || 'mongodb+srv://developerinspitetech_db_user:rvwx1qDA7ijXxmDU@cluster0.oqphjhw.mongodb.net/xalt-studio?retryWrites=true&w=majority&appName=Cluster0';
+
+mongoose.connect(dbUri)
   .then(() => {
     console.log('MongoDB Connected successfully.');
     inMemoryDb.setIsMongoConnected(true);
