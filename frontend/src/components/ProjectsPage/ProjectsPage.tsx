@@ -25,7 +25,9 @@ import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 interface GalleryItem {
   title: string;
   tag: string;
-  code: string;
+  code?: string;
+  year?: string;
+  client?: string;
   image: string;
   video?: string;
 }
@@ -615,11 +617,20 @@ const ProjectsPage = () => {
         </div>
       ) : (
         /* VIEW STATE 2: NEW GALLERY PAGE LAYOUT */
-        <div className="gallery-new-page-container">
+        <div className="gallery-view-wrapper">
           
-          {/* SPLIT HERO HEADER: Left Text content, Right Category Image */}
-          <div className="gallery-new-header-split">
-            <div className="gallery-header-left">
+          {/* FULL SCREEN WIDTH HEADER BANNER */}
+          <div className="gallery-header-banner">
+            <div className="gallery-banner-image-container">
+              <img 
+                src={getMediaUrl(activeSubcategory.image)} 
+                alt="" 
+                className="gallery-banner-image" 
+              />
+              <div className="gallery-banner-gradient-overlay"></div>
+            </div>
+            
+            <div className="gallery-banner-content-inner">
               <div className="gallery-breadcrumb-bar">
                 <span className="gallery-header-mono">// SECTOR: {activeCategory.title} / {activeSubcategory.title.toUpperCase()}</span>
               </div>
@@ -657,84 +668,59 @@ const ProjectsPage = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="gallery-header-right">
-              <div className="gallery-hero-image-wrapper">
-                <div className="slot-corners">
-                  <span className="corner tl"></span>
-                  <span className="corner tr"></span>
-                  <span className="corner bl"></span>
-                  <span className="corner br"></span>
+          {/* CENTERED PROJECTS GRID SECTION */}
+          <div className="gallery-grid-container">
+            {/* Grid of Sharp Detailed Project Cells */}
+            <div className="gallery-sharp-grid">
+              {activeSubcategory.galleryItems.map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className="gallery-sharp-slot"
+                  onClick={() => setSelectedProjectNode(item)}
+                >
+                  {/* Cyber Corner Brackets */}
+                  <div className="slot-corners">
+                    <span className="corner tl"></span>
+                    <span className="corner tr"></span>
+                    <span className="corner bl"></span>
+                    <span className="corner br"></span>
+                  </div>
+
+                  <div className="slot-img-wrapper">
+                    {item.video ? (
+                      <video 
+                        src={getMediaUrl(item.video)} 
+                        poster={getMediaUrl(item.image)} 
+                        muted 
+                        loop 
+                        playsInline 
+                        autoPlay
+                        className="slot-preview-img" 
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
+                    )}
+                    <div className="slot-cyber-overlay"></div>
+                  </div>
+
+                  <div className="slot-interactive-hud">
+                    <div className="hud-line">
+                      <span className="hud-label">PROJECT:</span>
+                      <span className="hud-val">{item.title}</span>
+                    </div>
+                  </div>
+
+                  <div className="slot-bottom-telemetry">
+                    <span>CLIENT: {item.client || item.tag || 'X.ALT STUDIOS'}</span>
+                    <span className="hud-val text-red">YEAR: {item.year || item.code || '2026'}</span>
+                  </div>
                 </div>
-                <img 
-                  src={getMediaUrl(activeSubcategory.image)} 
-                  alt={activeSubcategory.title} 
-                  className="gallery-hero-image" 
-                />
-                <div className="gallery-hero-image-overlay"></div>
-              </div>
+              ))}
             </div>
           </div>
-
-          {/* Grid of Sharp Detailed Project Cells */}
-          <div className="gallery-sharp-grid">
-            {activeSubcategory.galleryItems.map((item, idx) => (
-              <div 
-                key={idx} 
-                className="gallery-sharp-slot"
-                onClick={() => setSelectedProjectNode(item)}
-              >
-                {/* Cyber Corner Brackets */}
-                <div className="slot-corners">
-                  <span className="corner tl"></span>
-                  <span className="corner tr"></span>
-                  <span className="corner bl"></span>
-                  <span className="corner br"></span>
-                </div>
-
-                <div className="slot-img-wrapper">
-                  {item.video ? (
-                    <video 
-                      src={getMediaUrl(item.video)} 
-                      poster={getMediaUrl(item.image)} 
-                      muted 
-                      loop 
-                      playsInline 
-                      autoPlay
-                      className="slot-preview-img" 
-                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                    />
-                  ) : (
-                    <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
-                  )}
-                  <div className="slot-cyber-overlay"></div>
-                </div>
-
-                <div className="slot-interactive-hud">
-                  <div className="hud-line">
-                    <span className="hud-label">PROJECT:</span>
-                    <span className="hud-val">{item.title}</span>
-                  </div>
-                  <div className="hud-line">
-                    <span className="hud-label">TYPE:</span>
-                    <span className="hud-val">{item.tag}</span>
-                  </div>
-                  <div className="hud-line">
-                    <span className="hud-label">CODE:</span>
-                    <span className="hud-val text-red">{item.code}</span>
-                  </div>
-                </div>
-
-                <div className="slot-bottom-telemetry">
-                  <span>SECURE_FILE_0{idx + 1}</span>
-                  <span>SYSTEM_LOAD_OK</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-
-
         </div>
       )}
 
@@ -787,8 +773,8 @@ const ProjectsPage = () => {
                   <span className="details-value">{selectedProjectNode.tag}</span>
                 </div>
                 <div className="details-item">
-                  <span className="details-label">CODE:</span>
-                  <span className="details-value text-red">{selectedProjectNode.code}</span>
+                  <span className="details-label">YEAR:</span>
+                  <span className="details-value text-red">{selectedProjectNode.year || selectedProjectNode.code}</span>
                 </div>
               </div>
             </div>
