@@ -130,6 +130,7 @@ const defaultTeamMembers = [
     bio: 'Key visionary behind X.ALT. Directs administrative strategies, business partnerships, and structural expansion plans to redefine digital design standards.',
     gradient: 'linear-gradient(135deg, #050505 0%, #300006 100%)',
     image: '/uploads/alex_mercer.png',
+    empNo: '01',
     order: 0
   },
   {
@@ -140,6 +141,7 @@ const defaultTeamMembers = [
     bio: 'Supervises studio workflow, project milestones, and resource allocation. Bridges organizational systems with production pipelines for flawless delivery.',
     gradient: 'linear-gradient(135deg, #101012 0%, #440d16 100%)',
     image: '/uploads/sarah_connor.png',
+    empNo: '02',
     order: 1
   },
   {
@@ -150,6 +152,7 @@ const defaultTeamMembers = [
     bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
     gradient: 'linear-gradient(135deg, #1b0206 0%, #520510 100%)',
     image: '/uploads/david_miller.png',
+    empNo: '03',
     order: 2
   },
   {
@@ -160,6 +163,7 @@ const defaultTeamMembers = [
     bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
     gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
     image: '/uploads/michael_chen.png',
+    empNo: '04',
     order: 3
   },
   {
@@ -170,6 +174,7 @@ const defaultTeamMembers = [
     bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
     gradient: 'linear-gradient(135deg, #120318 0%, #4a030a 100%)',
     image: '/uploads/marcus_vance.png',
+    empNo: '05',
     order: 4
   },
   {
@@ -180,6 +185,7 @@ const defaultTeamMembers = [
     bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
     gradient: 'linear-gradient(135deg, #040108 0%, #350218 100%)',
     image: '/uploads/liam_vance.png',
+    empNo: '06',
     order: 5
   }
 ];
@@ -198,5 +204,65 @@ module.exports = {
   defaultExpertise,
   inMemoryExpertise,
   defaultTeamMembers,
-  inMemoryTeamMembers
+  inMemoryTeamMembers,
+  defaultAboutPhotos: [
+    {
+      _id: 'about-photo-1',
+      key: 'about_us_1',
+      title: 'X.Alt Modern Creative Studio Workspace',
+      label: '',
+      imageUrl: '/uploads/studio_workspace.png'
+    },
+    {
+      _id: 'about-photo-2',
+      key: 'about_us_2',
+      title: 'X.Alt Design Artists at Workstations',
+      label: '',
+      imageUrl: '/uploads/design_artists.png'
+    },
+    {
+      _id: 'about-photo-3',
+      key: 'studio_floor_1',
+      title: 'VFX Synthesis Bay',
+      label: '// ZONE_01: VFX SYNTHESIS BAY',
+      imageUrl: '/uploads/studio_floor_vfx.png'
+    },
+    {
+      _id: 'about-photo-4',
+      key: 'studio_floor_2',
+      title: 'Sonic Resonance Lab',
+      label: '// ZONE_02: SONIC MIXING SUITE',
+      imageUrl: '/uploads/studio_floor_audio.png'
+    }
+  ],
+  inMemoryAboutPhotos: [
+    {
+      _id: 'about-photo-1',
+      key: 'about_us_1',
+      title: 'X.Alt Modern Creative Studio Workspace',
+      label: '',
+      imageUrl: '/uploads/studio_workspace.png'
+    },
+    {
+      _id: 'about-photo-2',
+      key: 'about_us_2',
+      title: 'X.Alt Design Artists at Workstations',
+      label: '',
+      imageUrl: '/uploads/design_artists.png'
+    },
+    {
+      _id: 'about-photo-3',
+      key: 'studio_floor_1',
+      title: 'VFX Synthesis Bay',
+      label: '// ZONE_01: VFX SYNTHESIS BAY',
+      imageUrl: '/uploads/studio_floor_vfx.png'
+    },
+    {
+      _id: 'about-photo-4',
+      key: 'studio_floor_2',
+      title: 'Sonic Resonance Lab',
+      label: '// ZONE_02: SONIC MIXING SUITE',
+      imageUrl: '/uploads/studio_floor_audio.png'
+    }
+  ]
 };
