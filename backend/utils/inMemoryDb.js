@@ -89,7 +89,8 @@ function seedMemoryPortfolio() {
         category: cat.id,
         title: sub.title,
         description: sub.description,
-        image: sub.image
+        image: sub.image,
+        video: sub.video || ''
       });
 
       sub.galleryItems.forEach((proj, projIdx) => {
@@ -103,7 +104,8 @@ function seedMemoryPortfolio() {
           year: proj.year || proj.code || '',
           client: proj.client || '',
           image: proj.image,
-          video: proj.video || ''
+          video: proj.video || '',
+          galleryImages: proj.galleryImages || []
         });
       });
     });
@@ -212,28 +214,32 @@ module.exports = {
       key: 'about_us_1',
       title: 'X.Alt Modern Creative Studio Workspace',
       label: '',
-      imageUrl: '/uploads/studio_workspace.png'
+      imageUrl: '/uploads/studio_workspace.png',
+      imageUrls: ['/uploads/studio_workspace.png']
     },
     {
       _id: 'about-photo-2',
       key: 'about_us_2',
       title: 'X.Alt Design Artists at Workstations',
       label: '',
-      imageUrl: '/uploads/design_artists.png'
+      imageUrl: '/uploads/design_artists.png',
+      imageUrls: ['/uploads/design_artists.png']
     },
     {
       _id: 'about-photo-3',
       key: 'studio_floor_1',
       title: 'VFX Synthesis Bay',
       label: '// ZONE_01: VFX SYNTHESIS BAY',
-      imageUrl: '/uploads/studio_floor_vfx.png'
+      imageUrl: '/uploads/studio_floor_vfx.png',
+      imageUrls: ['/uploads/studio_floor_vfx.png']
     },
     {
       _id: 'about-photo-4',
       key: 'studio_floor_2',
       title: 'Sonic Resonance Lab',
       label: '// ZONE_02: SONIC MIXING SUITE',
-      imageUrl: '/uploads/studio_floor_audio.png'
+      imageUrl: '/uploads/studio_floor_audio.png',
+      imageUrls: ['/uploads/studio_floor_audio.png']
     }
   ],
   inMemoryAboutPhotos: [
@@ -242,28 +248,32 @@ module.exports = {
       key: 'about_us_1',
       title: 'X.Alt Modern Creative Studio Workspace',
       label: '',
-      imageUrl: '/uploads/studio_workspace.png'
+      imageUrl: '/uploads/studio_workspace.png',
+      imageUrls: ['/uploads/studio_workspace.png']
     },
     {
       _id: 'about-photo-2',
       key: 'about_us_2',
       title: 'X.Alt Design Artists at Workstations',
       label: '',
-      imageUrl: '/uploads/design_artists.png'
+      imageUrl: '/uploads/design_artists.png',
+      imageUrls: ['/uploads/design_artists.png']
     },
     {
       _id: 'about-photo-3',
       key: 'studio_floor_1',
       title: 'VFX Synthesis Bay',
       label: '// ZONE_01: VFX SYNTHESIS BAY',
-      imageUrl: '/uploads/studio_floor_vfx.png'
+      imageUrl: '/uploads/studio_floor_vfx.png',
+      imageUrls: ['/uploads/studio_floor_vfx.png']
     },
     {
       _id: 'about-photo-4',
       key: 'studio_floor_2',
       title: 'Sonic Resonance Lab',
       label: '// ZONE_02: SONIC MIXING SUITE',
-      imageUrl: '/uploads/studio_floor_audio.png'
+      imageUrl: '/uploads/studio_floor_audio.png',
+      imageUrls: ['/uploads/studio_floor_audio.png']
     }
   ]
 };
