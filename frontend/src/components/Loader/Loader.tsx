@@ -54,7 +54,7 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
       if (currentProgress === 100) {
         clearInterval(interval);
       }
-    }, 75);
+    }, 70);
 
     return () => clearInterval(interval);
   }, []);
@@ -66,7 +66,7 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
       const fadeTimer = setTimeout(() => {
         setLoading(false);
         if (onFinish) {
-          setTimeout(onFinish, 900); // Allow slide up animation to complete
+          setTimeout(onFinish, 900); // Allow slide split animation to complete
         }
       }, 1500); // 1.5s reading time for welcome before entering site
       
@@ -78,42 +78,51 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   const currentStageText = STAGES[currentStageIdx];
 
   return (
-    <div className={`loader-container ${!loading ? 'fade-out' : ''} ${welcomeActive ? 'welcome-granted' : ''}`}>
+    <div className={`broed-loader-container ${!loading ? 'reveal-site' : ''} ${welcomeActive ? 'welcome-active' : ''}`}>
       {/* Cyber Grid Scanlines */}
-      <div className="loader-scanline-grid"></div>
+      <div className="loader-scanline-overlay"></div>
 
-      <div className="loader-content">
-        {/* Logo chevron graphic */}
-        <div className="loader-chevron-logo">
-          <div className="chevron-bar chevron-left"></div>
-          <div className="chevron-bar chevron-right"></div>
+      {/* TOP RED PANEL */}
+      <div className="broed-panel broed-panel-top">
+        <div className="broed-panel-inner">
+          <div className="broed-telemetry-row">
+            <span className="telemetry-tag">[ X.ALT PIPELINE PRELOADER ]</span>
+            <span className="telemetry-status">SYS_STATUS // ONLINE</span>
+          </div>
         </div>
+      </div>
 
-        {/* Big percentage counter */}
-        <div className="loader-percentage-container">
-          <span className="loader-percentage-number">
-            {progress.toString().padStart(3, '0')}
-          </span>
-          <span className="loader-percentage-symbol">%</span>
+      {/* MIDDLE APERTURE SLIT */}
+      <div className="broed-slit">
+        <div className="broed-slit-bg"></div>
+        <div className="broed-slit-content">
+          {/* Progress percentage on top */}
+          <div className="broed-percentage-indicator">
+            <span className="percentage-number">{progress.toString().padStart(3, '0')}</span>
+            <span className="percentage-lbl">/ 100</span>
+          </div>
+
+          {/* Main Huge Stage Text with key-based re-render for slide-up CSS animation */}
+          <div className="broed-stage-text-container">
+            <span key={currentStageIdx} className={`broed-stage-text ${welcomeActive ? 'welcome-text' : ''}`}>
+              {progress === 100 ? 'WELCOME' : currentStageText.toUpperCase()}
+            </span>
+          </div>
         </div>
+      </div>
 
-        {/* Glowing Progress bar track */}
-        <div className="loader-track-container">
-          <div 
-            className="loader-progress-bar" 
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-
-        {/* Single Row: Step-by-Step Loader Text */}
-        <div className="loader-console-log">
-          <span className="console-prompt">&gt;&gt;</span>
-          <span className="console-text">
-            {progress === 100 
-              ? 'WELCOME' 
-              : `${currentStageText.toUpperCase()}...`
-            }
-          </span>
+      {/* BOTTOM RED PANEL */}
+      <div className="broed-panel broed-panel-bottom">
+        <div className="broed-panel-inner">
+          {/* Animated red-lined progress indicator */}
+          <div className="broed-progressbar-track">
+            <div className="broed-progressbar-fill" style={{ width: `${progress}%` }}></div>
+          </div>
+          
+          <div className="broed-telemetry-row">
+            <span className="telemetry-tag">BUILDING VIRTUAL FRAMEWORK</span>
+            <span className="telemetry-status">LOAD_RATIO // {progress}%</span>
+          </div>
         </div>
       </div>
     </div>
