@@ -1,65 +1,89 @@
 import { useState, useEffect } from 'react';
 import './Loader.css';
 
-const LOG_LINES = [
-  'INITIALIZING SYS_CORE...',
-  'CONNECTING TO X.ALT CORE NETWORK...',
-  'GFX_RENDERER: VULKAN_ACTIVE',
-  'SYNCING STAGE LAYOUTS...',
-  'DECRYPTING PORTFOLIO NODES...',
-  'COMPILING SHADERS...',
-  'OPTIMIZING IMMERSIVE ASSETS...',
-  'ESTABLISHING SECURE COMMUNICATIONS...',
-  'READY FOR TRANSMISSION.'
+const STAGES = [
+  'Initializing',
+  'Loading Assets',
+  'Modeling',
+  'Texturing',
+  'Lighting',
+  'Rendering',
+  'Compositing',
+  'Optimizing',
+  'Finalizing',
+  'Welcome'
 ];
+
+const getStageIndex = (p: number) => {
+  if (p === 100) return 9; // Welcome
+  if (p >= 90) return 8;   // Finalizing
+  if (p >= 78) return 7;   // Optimizing
+  if (p >= 65) return 6;   // Compositing
+  if (p >= 48) return 5;   // Rendering
+  if (p >= 38) return 4;   // Lighting
+  if (p >= 28) return 3;   // Texturing
+  if (p >= 18) return 2;   // Modeling
+  if (p >= 8) return 1;    // Loading Assets
+  return 0;                // Initializing
+};
 
 const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   const [progress, setProgress] = useState(0);
-  const [activeLogIndex, setActiveLogIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [welcomeActive, setWelcomeActive] = useState(false);
 
   useEffect(() => {
-    // Increase progress counter
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + Math.floor(Math.random() * 8) + 2;
-        if (next >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return next;
-      });
-    }, 45);
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      // Variable speed for realistic loading feedback
+      let increment = Math.floor(Math.random() * 4) + 2; // 2% to 5% default
+      
+      if (currentProgress >= 48 && currentProgress <= 76) {
+        // Slower rendering & compositing phase
+        increment = Math.random() > 0.45 ? 1 : 2;
+      } else if (currentProgress >= 90 && currentProgress < 99) {
+        // Slow down near finalizing
+        increment = 1;
+      } else if (currentProgress === 99) {
+        increment = 1;
+      }
 
-    return () => clearInterval(progressInterval);
+      currentProgress = Math.min(100, currentProgress + increment);
+      setProgress(currentProgress);
+
+      if (currentProgress === 100) {
+        clearInterval(interval);
+      }
+    }, 75);
+
+    return () => clearInterval(interval);
   }, []);
 
-  // Cycle console logs based on loading progress
+  // Handle welcome phase and exit transition
   useEffect(() => {
-    const logIndex = Math.min(
-      Math.floor((progress / 100) * LOG_LINES.length),
-      LOG_LINES.length - 1
-    );
-    setActiveLogIndex(logIndex);
-
     if (progress === 100) {
-      const timer = setTimeout(() => {
+      setWelcomeActive(true);
+      const fadeTimer = setTimeout(() => {
         setLoading(false);
         if (onFinish) {
-          setTimeout(onFinish, 600); // Wait for slide-up transition to finish
+          setTimeout(onFinish, 900); // Allow slide up animation to complete
         }
-      }, 700);
-      return () => clearTimeout(timer);
+      }, 1500); // 1.5s reading time for welcome before entering site
+      
+      return () => clearTimeout(fadeTimer);
     }
   }, [progress, onFinish]);
 
+  const currentStageIdx = getStageIndex(progress);
+  const currentStageText = STAGES[currentStageIdx];
+
   return (
-    <div className={`loader-container ${!loading ? 'fade-out' : ''}`}>
-      {/* Background cyber grid scanline overlay */}
+    <div className={`loader-container ${!loading ? 'fade-out' : ''} ${welcomeActive ? 'welcome-granted' : ''}`}>
+      {/* Cyber Grid Scanlines */}
       <div className="loader-scanline-grid"></div>
 
       <div className="loader-content">
-        {/* Symmetrical glowing red chevron graphic */}
+        {/* Logo chevron graphic */}
         <div className="loader-chevron-logo">
           <div className="chevron-bar chevron-left"></div>
           <div className="chevron-bar chevron-right"></div>
@@ -73,7 +97,7 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
           <span className="loader-percentage-symbol">%</span>
         </div>
 
-        {/* Loading progress track */}
+        {/* Glowing Progress bar track */}
         <div className="loader-track-container">
           <div 
             className="loader-progress-bar" 
@@ -81,10 +105,15 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
           ></div>
         </div>
 
-        {/* Dynamic system log details */}
+        {/* Single Row: Step-by-Step Loader Text */}
         <div className="loader-console-log">
           <span className="console-prompt">&gt;&gt;</span>
-          <span className="console-text">{LOG_LINES[activeLogIndex]}</span>
+          <span className="console-text">
+            {progress === 100 
+              ? 'WELCOME' 
+              : `${currentStageText.toUpperCase()}...`
+            }
+          </span>
         </div>
       </div>
     </div>

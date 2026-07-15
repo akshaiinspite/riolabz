@@ -396,19 +396,109 @@ interface ImageSliderProps {
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, altText, className }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const validUrls = Array.isArray(imageUrls) ? imageUrls.filter(url => !!url) : [];
   const slides = validUrls.length > 0 ? validUrls : [fallbackImage];
 
-  const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handlePrev = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setCurrentIndex(prev => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setCurrentIndex(prev => (prev === slides.length - 1 ? 0 : prev + 1));
   };
+
+  // Mouse wheel and drag scrolling handler
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const container = sliderRef.current;
+    if (!container) return;
+
+    let isThrottled = false;
+    let startX = 0;
+    let isDragging = false;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Check if user scrolled enough vertically or horizontally
+      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (Math.abs(delta) < 8) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (isThrottled) return;
+      isThrottled = true;
+
+      if (delta > 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+
+      setTimeout(() => {
+        isThrottled = false;
+      }, 700);
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      startX = e.clientX;
+      isDragging = true;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const diffX = e.clientX - startX;
+      if (Math.abs(diffX) > 60) {
+        isDragging = false;
+        if (diffX > 0) {
+          handlePrev();
+        } else {
+          handleNext();
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
+      const diffX = e.touches[0].clientX - startX;
+      if (Math.abs(diffX) > 50) {
+        isDragging = false;
+        if (diffX > 0) {
+          handlePrev();
+        } else {
+          handleNext();
+        }
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouchMove);
+
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [slides.length, currentIndex]);
 
   if (slides.length <= 1) {
     return (
@@ -422,7 +512,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, alt
   }
 
   return (
-    <div className={`about-image-slider ${className || ''}`}>
+    <div className={`about-image-slider ${className || ''}`} ref={sliderRef} data-lenis-prevent>
       <div className="slider-images-container">
         {slides.map((slide, idx) => (
           <img
@@ -997,8 +1087,8 @@ const AboutPage = () => {
             </div>
 
             <div className="cinematic-heading-group">
-              <div className="about-hero-backdrop-text">ABOUT US</div>
-              <h1 className="about-hero-fore-title">ABOUT US</h1>
+              <div className="about-hero-backdrop-text">THE STUDIO</div>
+              <h1 className="about-hero-fore-title">THE STUDIO</h1>
             </div>
 
             <div className="story-badge-new">THE CHRONICLE</div>
@@ -1011,16 +1101,13 @@ const AboutPage = () => {
             <div className="story-body-text-new">
               <span className="story-decor-corner-indicator"></span>
               <p>
-                "X.Alt is a visionary visual media company, deriving its name from 
-                <strong> 'exalted,'</strong> symbolizing unparalleled excellence and power. 
-                With an alternate interpretation suggesting it as the premier alternative 
-                for subject X, X.Alt promises innovative and dynamic solutions in the 
-                realm of visual media."
+                We are X.ALT Studios, a creative technology studio dedicated to transforming ideas into extraordinary visual experiences. By blending artistry, innovation, and technical expertise, we create compelling digital content that inspires, engages, and leaves a lasting impact.
               </p>
               <p>
-                Our studio bridges the gap between raw imagination and technical execution. 
-                We craft high-end visual effects, interactive 3D assets, and immersive XR 
-                experiences that do not just tell a story—they transport audiences entirely.
+                Our expertise spans 3D Animation, Visual Effects (VFX), Motion Graphics, CGI, Product Visualization, Virtual Production, and Extended Reality (XR). Whether it's a cinematic sequence, a commercial campaign, an immersive virtual experience, or a photorealistic architectural visualization, we produce visuals that craft immersive experiences that connect imagination with reality. Every frame we create reflects our passion for innovation, attention to detail, and relentless pursuit of creative excellence.
+              </p>
+              <p style={{ fontWeight: 'bold', color: 'var(--color-primary, #e10600)', marginTop: '1.5rem' }}>
+                Creating extraordinary visuals. Building unforgettable experiences.
               </p>
             </div>
           </div>
@@ -1067,15 +1154,15 @@ const AboutPage = () => {
 
               <div className="cinematic-heading-group">
                 <div className="floor-backdrop-text">FACILITY</div>
-                <h2 className="floor-fore-title">STUDIO FLOOR</h2>
+                <h2 className="floor-fore-title">MOCAP FLOOR</h2>
               </div>
 
               <div className="floor-intro-text-block">
                 <p>
-                  Spanning across two custom-designed levels, the X.Alt Studio space is architected for peak creative synergy and technological horsepower. We integrate high-speed computing pipelines with acoustic optimization to bridge the gap between imagination and execution.
+                  Our dedicated Motion Capture Floor enables us to capture authentic human movement with exceptional precision, bringing digital characters and performances to life. Equipped for high-quality animation production, our facility streamlines the creation of realistic character motion for films, games, commercials, virtual production, and immersive XR experiences.
                 </p>
                 <p>
-                  From raw environment synthesis to post-production color mastering and multi-channel sound staging, our floor plan is designed to streamline workflow collaboration between digital artists and directors.
+                  By combining advanced motion capture technology with our animation expertise, we deliver natural, expressive performances while accelerating production workflows.
                 </p>
               </div>
             </div>
@@ -1125,8 +1212,8 @@ const AboutPage = () => {
             </div>
 
             <div className="cinematic-heading-group">
-              <div className="about-team-backdrop-text">OUR TEAM</div>
-              <h2 className="about-team-fore-title">OUR TEAM</h2>
+              <div className="about-team-backdrop-text">PEOPLE BEHIND</div>
+              <h2 className="about-team-fore-title">PEOPLE BEHIND</h2>
             </div>
 
             <div className="team-subtitle-column">
@@ -1135,8 +1222,7 @@ const AboutPage = () => {
                 <span className="cta-highlight">OF VISUAL STORYTELLING.</span>
               </h3>
               <p className="team-intro-desc">
-                We believe in the power of visuals to transport audiences and ignite emotions. 
-                <strong> Click on any card below to open and reveal personnel dossiers.</strong>
+                We believe every great idea deserves exceptional execution. Our multidisciplinary team of artists, designers, animators, and technical specialists works collaboratively to deliver visually stunning solutions tailored to each client's vision and objectives. By combining cutting-edge technology with thoughtful storytelling, we create experiences that resonate with audiences and elevate brands. <strong style={{ color: 'var(--color-primary, #e10600)' }}>Click on any card below to open and reveal personnel dossiers.</strong>
               </p>
             </div>
 
