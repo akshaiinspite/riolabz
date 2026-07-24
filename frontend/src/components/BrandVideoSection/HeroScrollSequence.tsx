@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import './BrandVideoSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -8,9 +9,12 @@ gsap.registerPlugin(ScrollTrigger);
 // Configuration
 // ─────────────────────────────────────────────────────────────────────
 const FRAME_PATH = '/finalmov/finalmov_';
-const FRAME_EXT = '.png';
+const FRAME_EXT = '.webp';
 const TOTAL_FRAMES = 192;        // frames 00000 → 00191
 const SCROLL_HEIGHT_MULTIPLIER = 5; // scroll distance = 5× viewport
+const BUFFER_AHEAD = 30;         // preload this many frames ahead of current
+const BUFFER_BEHIND = 15;        // keep this many frames behind current
+const BATCH_SIZE = 6;            // concurrent fetches per batch
 
 /** Pad frame index to 5 digits: 0 → "00000" */
 const padFrame = (n: number): string => String(n).padStart(5, '0');
@@ -31,23 +35,24 @@ const HeroScrollSequence = () => {
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
     if (!ctx) return;
 
     // ── State ──────────────────────────────────────────────────────
     const images: (HTMLImageElement | null)[] = new Array(TOTAL_FRAMES).fill(null);
+    const loadingSet = new Set<number>();
     let currentFrame = 0;
     let isDestroyed = false;
+    let isVisible = false;
 
     // ── Canvas sizing (High-DPI aware) ────────────────────────────
     const sizeCanvas = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
         canvas.width = w * dpr;
         canvas.height = h * dpr;
-        // Reset transform after resize to apply fresh DPR scale
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
     };
@@ -56,7 +61,6 @@ const HeroScrollSequence = () => {
     const drawFrame = (frameIdx: number) => {
       const img = images[frameIdx];
       if (!img || !img.complete || img.naturalWidth === 0) {
-        // If requested frame isn't loaded yet, find nearest loaded frame
         for (let offset = 1; offset < 10; offset++) {
           const fallback = images[frameIdx - offset];
           if (fallback && fallback.complete && fallback.naturalWidth > 0) {
@@ -75,7 +79,6 @@ const HeroScrollSequence = () => {
       const displayW = canvas.clientWidth;
       const displayH = canvas.clientHeight;
 
-      // Cover-fit calculation
       const imgRatio = img.naturalWidth / img.naturalHeight;
       const canvasRatio = displayW / displayH;
 
@@ -96,41 +99,83 @@ const HeroScrollSequence = () => {
       ctx.drawImage(img, dx, dy, dw, dh);
     };
 
-    // ── Image preloader ───────────────────────────────────────────
+    // ── Single image loader ───────────────────────────────────────
     const loadImage = (idx: number): Promise<HTMLImageElement | null> =>
       new Promise((resolve) => {
         if (images[idx]?.complete) { resolve(images[idx]); return; }
+        if (loadingSet.has(idx)) { resolve(null); return; }
+        loadingSet.add(idx);
         const img = new Image();
         img.decoding = 'async';
         img.src = frameUrl(idx);
         img.onload = () => {
           if (!isDestroyed) images[idx] = img;
+          loadingSet.delete(idx);
           resolve(img);
         };
-        img.onerror = () => resolve(null);
+        img.onerror = () => {
+          // Fallback to PNG if WebP is missing for any index
+          img.src = `${FRAME_PATH}${padFrame(idx)}.png`;
+          img.onload = () => {
+            if (!isDestroyed) images[idx] = img;
+            loadingSet.delete(idx);
+            resolve(img);
+          };
+          img.onerror = () => {
+            loadingSet.delete(idx);
+            resolve(null);
+          };
+        };
       });
 
-    // ── Phase 1: Load first frame immediately, then batch the rest ─
-    const preloadAll = async () => {
-      // Load frame 0 first so we can show something immediately
-      await loadImage(0);
-      if (!isDestroyed) drawFrame(0);
+    // ── Load frames around the current scroll position ────────────
+    const loadFramesAroundCurrent = async () => {
+      if (isDestroyed || !isVisible) return;
 
-      // Load all remaining frames in parallel batches
-      const BATCH = 20;
-      for (let start = 1; start < TOTAL_FRAMES; start += BATCH) {
+      const center = currentFrame;
+      const start = Math.max(0, center - BUFFER_BEHIND);
+      const end = Math.min(TOTAL_FRAMES - 1, center + BUFFER_AHEAD);
+
+      const toLoad: number[] = [];
+      for (let i = center; i <= end; i++) {
+        if (!images[i]?.complete && !loadingSet.has(i)) toLoad.push(i);
+      }
+      for (let i = center - 1; i >= start; i--) {
+        if (!images[i]?.complete && !loadingSet.has(i)) toLoad.push(i);
+      }
+
+      for (let b = 0; b < toLoad.length; b += BATCH_SIZE) {
         if (isDestroyed) return;
-        const promises: Promise<HTMLImageElement | null>[] = [];
-        for (let i = start; i < Math.min(start + BATCH, TOTAL_FRAMES); i++) {
-          promises.push(loadImage(i));
-        }
-        await Promise.all(promises);
+        const batch = toLoad.slice(b, b + BATCH_SIZE);
+        await Promise.all(batch.map(loadImage));
       }
     };
 
+    // ── Initial bootstrap: load frame 0, then nearby frames ───────
+    const bootstrap = async () => {
+      await loadImage(0);
+      if (!isDestroyed) drawFrame(0);
+
+      const initialBatch = [];
+      for (let i = 1; i <= Math.min(10, TOTAL_FRAMES - 1); i++) {
+        initialBatch.push(loadImage(i));
+      }
+      await Promise.all(initialBatch);
+    };
+
+    // ── IntersectionObserver: defer heavy loading until visible ────
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          loadFramesAroundCurrent();
+        }
+      },
+      { rootMargin: '200px 0px' }
+    );
+    observer.observe(container);
+
     // ── GSAP ScrollTrigger Setup ──────────────────────────────────
-    // We use a simple proxy object whose `frame` property is
-    // animated from 0 → TOTAL_FRAMES-1 by ScrollTrigger.
     const proxy = { frame: 0 };
 
     const tween = gsap.to(proxy, {
@@ -140,43 +185,39 @@ const HeroScrollSequence = () => {
         trigger: container,
         start: 'top top',
         end: () => `+=${window.innerHeight * SCROLL_HEIGHT_MULTIPLIER}`,
-        scrub: 0.3,          // smooth interpolation (works great with Lenis)
-        pin: true,            // pin the container during the animation
-        anticipatePin: 1,     // compensate for pinning glitches
+        scrub: 0.3,
+        pin: true,
+        anticipatePin: 1,
         invalidateOnRefresh: true,
       },
       onUpdate: () => {
         const newFrame = Math.round(proxy.frame);
-        // Clamp to valid range
         const clamped = Math.max(0, Math.min(TOTAL_FRAMES - 1, newFrame));
         if (clamped !== currentFrame) {
           currentFrame = clamped;
           drawFrame(clamped);
+          loadFramesAroundCurrent();
         }
       },
     });
 
-    // ── Start preloading images ───────────────────────────────────
-    preloadAll();
+    bootstrap();
 
-    // ── Handle window resize ──────────────────────────────────────
     const onResize = () => {
       sizeCanvas();
       drawFrame(currentFrame);
     };
     window.addEventListener('resize', onResize);
 
-    // ── Refresh ScrollTrigger after a short delay ─────────────────
-    // This ensures Lenis + ScrollTrigger have both initialized
     const refreshTimer = setTimeout(() => {
       ScrollTrigger.refresh();
     }, 200);
 
-    // ── Cleanup ───────────────────────────────────────────────────
     return () => {
       isDestroyed = true;
       clearTimeout(refreshTimer);
       window.removeEventListener('resize', onResize);
+      observer.disconnect();
       tween.scrollTrigger?.kill();
       tween.kill();
     };

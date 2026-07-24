@@ -21,6 +21,8 @@ import img2 from '../../assets/images/img/img-2.jpg';
 import img3 from '../../assets/images/img/img-3.jpg';
 
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
+import { AutoPauseVideo } from '../AutoPauseVideo/AutoPauseVideo';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 interface GalleryItem {
   _id?: string;
@@ -338,7 +340,7 @@ const ProjectsPage = () => {
       }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('wheel', handleWheel, { passive: true });
     return () => {
       container.removeEventListener('wheel', handleWheel);
     };
@@ -387,7 +389,7 @@ const ProjectsPage = () => {
       }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('wheel', handleWheel, { passive: true });
     return () => {
       container.removeEventListener('wheel', handleWheel);
     };
@@ -473,6 +475,19 @@ const ProjectsPage = () => {
     const catId = catIds[categoryIdx] || 'films';
     window.location.hash = `#projects/${catId}`;
     setActiveDropdown(null);
+  };
+
+  const preloadCategoryImages = (categoryIdx: number) => {
+    setActiveDropdown(categoryIdx);
+    const cat = categoriesData[categoryIdx];
+    if (cat?.subCategories) {
+      cat.subCategories.forEach((sub) => {
+        if (sub.image) {
+          const img = new Image();
+          img.src = getMediaUrl(sub.image);
+        }
+      });
+    }
   };
 
   // Synchronize selected category with URL hash
@@ -648,7 +663,7 @@ const ProjectsPage = () => {
       <div className="projects-nav-bar">
         <div className="projects-nav-container">
           <div className="nav-logo-area" onClick={() => window.location.hash = '#home'}>
-            <img src={logoImg} alt="Xalt Studio" className="projects-nav-logo" />
+            <ProgressiveImage src={logoImg} alt="Xalt Studio" className="projects-nav-logo" />
           </div>
 
           <div className="projects-dropdowns-group">
@@ -656,7 +671,7 @@ const ProjectsPage = () => {
               <div 
                 key={cat.id}
                 className={`proj-dropdown-wrapper ${activeDropdown === idx ? 'expanded' : ''}`}
-                onMouseEnter={() => setActiveDropdown(idx)}
+                onMouseEnter={() => preloadCategoryImages(idx)}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
                 <button 
@@ -768,7 +783,7 @@ const ProjectsPage = () => {
                   </div>
                   
                   <div className="board-subcard-img-container">
-                    <img src={getMediaUrl(sub.image)} alt={sub.title} className="board-subcard-img" />
+                    <ProgressiveImage src={getMediaUrl(sub.image)} alt={sub.title} className="board-subcard-img" />
                     <div className="board-subcard-filter"></div>
                   </div>
 
@@ -787,7 +802,7 @@ const ProjectsPage = () => {
           {/* FULL SCREEN WIDTH HEADER BANNER */}
           <div className="gallery-header-banner">
             <div className="gallery-banner-image-container">
-              <img 
+              <ProgressiveImage 
                 src={getMediaUrl(activeSubcategory.image)} 
                 alt="" 
                 className="gallery-banner-image" 
@@ -864,7 +879,7 @@ const ProjectsPage = () => {
                         >
                           <div className="slide-media-wrapper">
                             {item.video ? (
-                              <video 
+                              <AutoPauseVideo preload="none" 
                                 src={getMediaUrl(item.video)} 
                                 poster={getMediaUrl(item.image)} 
                                 muted 
@@ -874,7 +889,7 @@ const ProjectsPage = () => {
                                 className="slide-media"
                               />
                             ) : (
-                              <img src={getMediaUrl(item.image)} alt={item.title} className="slide-media" />
+                              <ProgressiveImage src={getMediaUrl(item.image)} alt={item.title} className="slide-media" />
                             )}
                             <div className="slide-gradient-overlay"></div>
                           </div>
@@ -931,9 +946,11 @@ const ProjectsPage = () => {
                       <span className="corner bl"></span>
                       <span className="corner br"></span>
                     </div>
-                    <video
+                    <AutoPauseVideo 
+                      preload="auto"
+                      poster={getMediaUrl(activeSubcategory.image)}
                       key={activeSubcategory.video || 'default'} // Force reload video when category/subcategory changes
-                      src={getMediaUrl(activeSubcategory.video || '/src/assets/videos/showreel.mp4')}
+                      src={getMediaUrl(activeSubcategory.video || '/video/show-reel/showreel.mp4')}
                       controls
                       autoPlay
                       muted
@@ -973,7 +990,7 @@ const ProjectsPage = () => {
 
                     <div className="slot-img-wrapper">
                       {item.video ? (
-                        <video 
+                        <AutoPauseVideo preload="none" 
                           src={getMediaUrl(item.video)} 
                           poster={getMediaUrl(item.image)} 
                           muted 
@@ -984,7 +1001,7 @@ const ProjectsPage = () => {
                           style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                         />
                       ) : (
-                        <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
+                        <ProgressiveImage src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
                       )}
                       <div className="slot-cyber-overlay"></div>
                     </div>
@@ -1062,14 +1079,14 @@ const ProjectsPage = () => {
             {/* Media Display Area */}
             <div className="lightbox-media-container">
               {selectedProjectNode.video ? (
-                <video 
+                <AutoPauseVideo preload="metadata" 
                   src={getMediaUrl(selectedProjectNode.video)} 
                   controls 
                   autoPlay 
                   className="lightbox-video" 
                 />
               ) : (
-                <img 
+                <ProgressiveImage 
                   src={getMediaUrl(selectedProjectNode.image)} 
                   alt={selectedProjectNode.title} 
                   className="lightbox-image" 
@@ -1142,13 +1159,13 @@ const ProjectsPage = () => {
                           </div>
 
                           {isVideoUrl(imgUrl) ? (
-                            <video 
+                            <AutoPauseVideo preload="metadata" 
                               src={getMediaUrl(imgUrl)} 
                               controls
                               className="lightbox-slider-media"
                             />
                           ) : (
-                            <img 
+                            <ProgressiveImage 
                               src={getMediaUrl(imgUrl)} 
                               alt={`${selectedProjectNode.title} gallery ${imgIdx + 1}`} 
                               className="lightbox-slider-media"
